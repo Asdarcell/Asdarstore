@@ -11,36 +11,61 @@ const db = admin.firestore();
  * Dipanggil oleh pengguna dari halaman toko (index.html).
  */
 exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
+    console.log("Function 'requestManualDeposit' triggered.");
+
     // 1. Pastikan pengguna sudah login
     if (!context.auth) {
+        console.error("Authentication check failed: User is not authenticated.");
         throw new functions.https.HttpsError('unauthenticated', 'Anda harus login untuk membuat deposit.');
     }
+    console.log(`User authenticated with UID: ${context.auth.uid}`);
 
-    const userId = context.auth.uid;
-    const amount = parseInt(data.amount);
+    try {w
+        const userId = context.auth.uid;
+        const amount = parseInt(data.amount);
 
-    // 2. Validasi jumlah minimal deposit
-    if (!amount || amount < 10000) {
-        throw new functions.https.HttpsError('invalid-argument', 'Jumlah deposit minimal adalah Rp 10.000.');
+        console.log(`Received amount: ${data.amount}, Parsed amount: ${amount}`);
+
+        // 2. Validasi jumlah minimal deposit
+        if (isNaN(amount) || amount < 10000) {
+            console.error(`Validation failed: Invalid amount received (${amount}).`);
+            throw new functions.https.HttpsError('invalid-argument', 'Jumlah deposit minimal adalah Rp 10.000.');
+        }
+
+        const depositId = `DEP-${Date.now()}`;
+        console.log(`Generated Deposit ID: ${depositId}`);
+
+        // PERBAIKAN: Menangani kasus jika pengguna tidak memiliki email, gunakan UID sebagai fallback.
+        const userEmail = context.auth.token.email || `uid:${userId}`;
+        console.log(`User email identified as: ${userEmail}`);
+
+        const depositData = {
+            id: depositId,
+            userId: userId,
+            userEmail: userEmail,
+            amount: amount,
+            status: 'Menunggu Pembayaran',
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            bukti_pembayaran: null
+        };
+
+        // 3. Simpan permintaan deposit ke Firestore
+        console.log("Attempting to write to Firestore with data:", depositData);
+        await db.collection('deposits').doc(depositId).set(depositData);
+        console.log("Successfully wrote to Firestore.");
+
+        return { success: true, message: 'Tiket deposit berhasil dibuat.', depositId: depositId };
+
+    } catch (error) {
+        console.error("CRITICAL ERROR in requestManualDeposit:", error);
+        // Jika ini adalah error yang sudah kita definisikan, lempar kembali.
+        if (error instanceof functions.https.HttpsError) {
+            throw error;
+        } else {
+            // Jika tidak, ini adalah error tak terduga. Catat dan lempar sebagai 'internal'.
+            throw new functions.https.HttpsError('internal', 'Terjadi kesalahan tak terduga di server.');
+        }
     }
-
-    const depositId = `DEP-${Date.now()}`;
-
-    // PERBAIKAN: Menangani kasus jika pengguna tidak memiliki email, gunakan UID sebagai fallback.
-    const userEmail = context.auth.token.email || `uid:${userId}`;
-
-    // 3. Simpan permintaan deposit ke Firestore dengan status 'Menunggu Pembayaran'
-    await db.collection('deposits').doc(depositId).set({
-        id: depositId,
-        userId: userId,
-        userEmail: userEmail,
-        amount: amount,
-        status: 'Menunggu Pembayaran', // Pengguna harus transfer & upload bukti
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        bukti_pembayaran: null
-    });
-
-    return { success: true, message: 'Tiket deposit berhasil dibuat.', depositId: depositId };
 });
 
 
@@ -49,13 +74,13 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
  * PENTING: Fungsi ini HANYA BOLEH dipanggil dari Halaman Admin Anda.
  */
 exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
-    // 4. Verifikasi apakah yang memanggil adalah admin (dan punya email)
+    // Verifikasi apakah yang memanggil adalah admin (dan punya email)
     if (!context.auth || !context.auth.token.email) {
         throw new functions.https.HttpsError('unauthenticated', 'Hanya admin dengan email yang bisa mengakses fungsi ini.');
     }
     
     // --> GANTI DENGAN EMAIL ADMIN ANDA <--
-    const adminEmails = ['emailadmin@contoh.com', 'emailanda@gmail.com']; 
+    const adminEmails = ['emailadmin@contoh.com', 'asdarcell@gmail.com']; 
     const adminEmail = context.auth.token.email;
 
     if (!adminEmails.includes(adminEmail)) {
@@ -70,7 +95,6 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
     const depositRef = db.collection('deposits').doc(depositId);
 
     try {
-        // 5. Jalankan transaksi yang aman
         return await db.runTransaction(async (t) => {
             const depositDoc = await t.get(depositRef);
             if (!depositDoc.exists) throw new functions.https.HttpsError('not-found', 'Deposit tidak ditemukan.');
@@ -87,7 +111,6 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
             const walletDoc = await t.get(userWalletRef);
             let newBalance = amount + (walletDoc.exists ? (walletDoc.data().balance || 0) : 0);
 
-            // 6. Update saldo pengguna dan status deposit
             t.set(userWalletRef, { balance: newBalance, lastUpdated: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
             t.update(depositRef, { status: 'Selesai', confirmedBy: adminEmail });
 
@@ -135,9 +158,9 @@ exports.purchaseWithBalance = functions.https.onCall(async (data, context) => {
             const orderData = {
                 id: orderId, userId, productId,
                 nama_produk: productData.nama_produk,
-                nomor_pelanggan: nomorTujuan, // Menggunakan nama field yang konsisten
+                nomor_pelanggan: nomorTujuan,
                 harga: productPrice,
-                status: 'Diproses', // Langsung diproses karena sudah bayar
+                status: 'Diproses',
                 jenis_produk: productData.jenis_produk || 'manual',
                 waktu: admin.firestore.FieldValue.serverTimestamp()
             };
