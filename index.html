@@ -187,7 +187,7 @@
     async function loadAndDisplayCategories() {
         const categoryGrid = document.getElementById('category-grid');
         try {
-            const snapshot = await db.collection('produk').orderBy('kategori').get();
+            const snapshot = await db.collection('produk').get();
             const categories = [...new Set(snapshot.docs.map(doc => doc.data().kategori))];
             
             categoryGrid.innerHTML = '';
@@ -217,18 +217,25 @@
         purchaseBtn.disabled = true;
 
         try {
-            const snapshot = await db.collection('produk').where('kategori', '==', kategori).orderBy('urutan').get();
+            // PERBAIKAN: Menghapus .orderBy() untuk menghindari error indeks
+            const snapshot = await db.collection('produk').where('kategori', '==', kategori).get();
+            
             let productsHTML = `<label for="produk">Produk</label><select id="produk" class="form-select" required><option value="">Pilih Produk</option>`;
-            snapshot.forEach(doc => {
-                productsHTML += `<option value="${doc.id}">${doc.data().nama_produk}</option>`;
-            });
+            const products = [];
+            snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+
+            // PERBAIKAN: Mengurutkan produk di sisi client (browser)
+            products.sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+            
+            products.forEach(prod => { productsHTML += `<option value="${prod.id}">${prod.nama_produk}</option>`; });
             productsHTML += `</select><div class="info mt-2" id="infoProduk">Pilih produk untuk melihat detail.</div>`;
             
             productSelectionArea.innerHTML = productsHTML;
             document.getElementById('produk').addEventListener('change', handleProductSelection);
             window.scrollTo({ top: orderFormContainer.offsetTop - 80, behavior: 'smooth' });
         } catch (error) {
-            productSelectionArea.innerHTML = '<p class="text-danger">Gagal memuat produk.</p>';
+            console.error("Error saat memuat produk:", error); // Log error untuk debug
+            productSelectionArea.innerHTML = '<p class="text-danger">Gagal memuat produk. Silakan coba lagi.</p>';
         }
     }
 
@@ -318,7 +325,6 @@
     window.cekStatus = async () => {
         const idCek = document.getElementById('idCek').value.trim();
         if (!idCek) { alert("ID tidak boleh kosong."); return; }
-        // Arahkan ke halaman status, di sana akan ada logika untuk fetch data
         window.location.href = `status.html?id=${idCek}`;
     }
 
@@ -346,7 +352,7 @@
                 const bubble = document.createElement('div');
                 bubble.className = 'alert alert-light';
                 bubble.innerHTML = `<strong>${testi.nama}</strong>: ${testi.isi}`;
-                container.prepend(bubble); // Tampilkan yang terbaru di atas
+                container.prepend(bubble);
             });
         });
     }
