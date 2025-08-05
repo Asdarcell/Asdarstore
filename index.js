@@ -8,9 +8,10 @@ const db = admin.firestore();
 
 /**
  * Membuat tiket/permintaan deposit manual.
- * Dipanggil oleh pengguna dari halaman toko.
+ * Dipanggil oleh pengguna dari halaman toko (index.html).
  */
 exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
+    // 1. Pastikan pengguna sudah login
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Anda harus login untuk membuat deposit.');
     }
@@ -18,19 +19,20 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
     const userId = context.auth.uid;
     const amount = parseInt(data.amount);
 
+    // 2. Validasi jumlah minimal deposit
     if (!amount || amount < 10000) {
         throw new functions.https.HttpsError('invalid-argument', 'Jumlah deposit minimal adalah Rp 10.000.');
     }
 
     const depositId = `DEP-${Date.now()}`;
 
-    // Simpan permintaan deposit ke Firestore
+    // 3. Simpan permintaan deposit ke Firestore dengan status 'Menunggu Pembayaran'
     await db.collection('deposits').doc(depositId).set({
         id: depositId,
         userId: userId,
         userEmail: context.auth.token.email,
         amount: amount,
-        status: 'Menunggu Pembayaran',
+        status: 'Menunggu Pembayaran', // Pengguna harus transfer & upload bukti
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         bukti_pembayaran: null
     });
@@ -41,16 +43,14 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
 
 /**
  * Mengkonfirmasi deposit dan menambah saldo pengguna.
- * PENTING: Fungsi ini HANYA BOLEH dipanggil dari Halaman Admin Anda yang aman.
- * Anda perlu menambahkan verifikasi apakah yang memanggil adalah admin.
+ * PENTING: Fungsi ini HANYA BOLEH dipanggil dari Halaman Admin Anda.
  */
 exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
-    // Verifikasi sederhana, di production Anda harus punya sistem role admin yang lebih baik
+    // 4. Verifikasi apakah yang memanggil adalah admin (tambahkan email Anda)
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Hanya admin yang bisa mengakses fungsi ini.');
     }
-    // Anda bisa menambahkan pengecekan email admin di sini
-    const adminEmails = ['emailadmin1@gmail.com', 'emailanda@gmail.com'];
+    const adminEmails = ['emailadmin@contoh.com', 'emailanda@gmail.com']; // <-- GANTI DENGAN EMAIL ADMIN ANDA
     if (!adminEmails.includes(context.auth.token.email)) {
          throw new functions.https.HttpsError('permission-denied', 'Anda bukan admin.');
     }
@@ -63,16 +63,14 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
     const depositRef = db.collection('deposits').doc(depositId);
 
     try {
+        // 5. Jalankan transaksi yang aman
         return await db.runTransaction(async (t) => {
             const depositDoc = await t.get(depositRef);
-
-            if (!depositDoc.exists) {
-                throw new functions.https.HttpsError('not-found', 'Deposit tidak ditemukan.');
-            }
+            if (!depositDoc.exists) throw new functions.https.HttpsError('not-found', 'Deposit tidak ditemukan.');
+            
             const depositData = depositDoc.data();
-
-            if (depositData.status !== 'Menunggu Konfirmasi') { // Atau status setelah upload bukti
-                throw new functions.https.HttpsError('failed-precondition', `Deposit ini sudah diproses atau belum upload bukti. Status saat ini: ${depositData.status}`);
+            if (depositData.status !== 'Menunggu Konfirmasi') {
+                throw new functions.https.HttpsError('failed-precondition', `Deposit ini sudah diproses atau belum ada bukti. Status: ${depositData.status}`);
             }
 
             const userId = depositData.userId;
@@ -85,17 +83,14 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
                 newBalance += (walletDoc.data().balance || 0);
             }
 
-            // 1. Update saldo pengguna
+            // 6. Update saldo pengguna dan status deposit
             t.set(userWalletRef, { balance: newBalance, lastUpdated: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
-            
-            // 2. Update status deposit menjadi 'Selesai'
             t.update(depositRef, { status: 'Selesai', confirmedBy: context.auth.token.email });
 
             return { success: true, message: `Saldo untuk ${depositData.userEmail} berhasil ditambah sebesar Rp ${amount}.` };
         });
     } catch (error) {
         console.error("Gagal konfirmasi deposit:", error);
-        // Melempar kembali error agar bisa ditangkap di sisi client (admin panel)
         throw error;
     }
 });
@@ -103,17 +98,13 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
 
 /**
  * Memproses pembelian produk menggunakan saldo wallet.
- * (Fungsi ini sama seperti sebelumnya, tidak ada perubahan)
  */
 exports.purchaseWithBalance = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'Anda harus login.');
-    }
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Anda harus login.');
+    
     const userId = context.auth.uid;
     const { productId, nomorTujuan } = data;
-    if (!productId || !nomorTujuan) {
-        throw new functions.https.HttpsError('invalid-argument', 'Informasi produk dan nomor tujuan wajib diisi.');
-    }
+    if (!productId || !nomorTujuan) throw new functions.https.HttpsError('invalid-argument', 'Data tidak lengkap.');
 
     const productRef = db.collection('produk').doc(productId);
     const walletRef = db.collection('wallets').doc(userId);
@@ -140,8 +131,9 @@ exports.purchaseWithBalance = functions.https.onCall(async (data, context) => {
             const orderData = {
                 id: orderId, userId, productId,
                 nama_produk: productData.nama_produk,
-                nomor_tujuan: nomorTujuan, harga: productPrice,
-                status: 'Diproses', // Langsung diproses karena sudah bayar pakai saldo
+                nomor_pelanggan: nomorTujuan, // Menggunakan nama field yang konsisten
+                harga: productPrice,
+                status: 'Diproses', // Langsung diproses karena sudah bayar
                 jenis_produk: productData.jenis_produk || 'manual',
                 waktu: admin.firestore.FieldValue.serverTimestamp()
             };
