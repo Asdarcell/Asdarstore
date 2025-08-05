@@ -20,7 +20,7 @@
       --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
       --muted-text: #8a93a2;
     }
-    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
     header {
       position: sticky; top: 0; background: var(--card); padding: 10px 15px;
       display: flex; justify-content: space-between; align-items: center;
@@ -39,7 +39,7 @@
     /* Grid Kategori */
     #category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
     .category-item { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; transition: transform 0.2s ease; border: 1px solid var(--border); }
-    .category-item.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .category-item.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
     .category-item.active .category-icon, .category-item.active .category-name { color: white; }
     .category-icon { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
     .category-name { font-size: 12px; font-weight: 600; }
@@ -47,6 +47,15 @@
     /* Modal Deposit */
     #deposit-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1001; }
     #deposit-modal-content { background: var(--card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
+    
+    /* Style untuk fitur lama */
+    .info { background: var(--card); padding: 15px; margin-top: 1rem; border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow); }
+    hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
+    #testimoniContainer { background: var(--bg); border-radius: 12px; padding: 15px; height: 350px; overflow-y: auto; position: relative; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 1rem; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; }
+    .faq-question { cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .faq-item.active .faq-answer { max-height: 999px; }
   </style>
 </head>
 
@@ -79,6 +88,14 @@
       </div>
       <button type="button" id="purchaseBtn" class="btn btn-primary w-100 mt-3" disabled>Bayar dengan Saldo</button>
     </div>
+
+    <hr>
+    <div data-aos="fade-up"><h2>Testimoni Pelanggan</h2><div id="testimoniContainer"></div></div>
+    <div data-aos="fade-up" class="section-container"><h2>Beri Testimoni</h2><form id="formTestimoni"><label for="testiNama">Nama Anda</label><input type="text" id="testiNama" class="form-control" required><label for="testiPesan">Pesan Anda</label><textarea id="testiPesan" class="form-control" rows="4" required></textarea><button type="submit" class="btn btn-info w-100">Kirim</button></form></div>
+    <hr>
+    <div data-aos="fade-up"><h2>Tanya Jawab</h2><div class="section-container" id="faq-container"></div></div>
+    <hr>
+    <div data-aos="fade-up" class="section-container"><h2>Cek Status Pesanan</h2><form onsubmit="event.preventDefault(); cekStatus();"><label for="idCek">Masukkan ID Pesanan/Deposit</label><input type="text" id="idCek" class="form-control" required /><button type="submit" class="btn btn-secondary w-100">Cek</button></form></div>
 </main>
 
 <!-- Modal Deposit -->
@@ -96,33 +113,68 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     AOS.init({ duration: 800, once: true, offset: 50 });
 
-    const firebaseConfig = { /* ... Konfigurasi Firebase Anda ... */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+      authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+      databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+      projectId: "asdarstoredigitalll-d89c4",
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     const functions = firebase.functions();
+    const dbRT = firebase.database();
 
+    // === ELEMEN DOM ===
     const userPanelLeft = document.getElementById('user-panel-left');
     const userPanelRight = document.getElementById('user-panel-right');
     const balanceAmountEl = document.getElementById('balance-amount');
     const depositModal = document.getElementById('deposit-modal');
+    const orderFormContainer = document.getElementById('order-form-container');
+    const productSelectionArea = document.getElementById('product-selection-area');
+    const customerDataArea = document.getElementById('customer-data-area');
+    const purchaseBtn = document.getElementById('purchaseBtn');
+    const formTitle = document.getElementById('form-title');
     
+    // === VARIABEL GLOBAL ===
     let currentUser = null;
     let produkTerpilihData = null;
     let unsubscribeWallet = null;
 
-    const categoryIcons = { /* ... Pemetaan ikon Anda ... */ };
+    const categoryIcons = {
+        'PULSA': 'fas fa-mobile-alt', 'TOKEN LISTRIK': 'fas fa-bolt',
+        'GAMES': 'fas fa-gamepad', 'E-MONEY': 'fas fa-wallet',
+        'VOUCHER DATA': 'fas fa-wifi', 'DEFAULT': 'fas fa-box'
+    };
+
+    // === FUNGSI UTAMA & EVENT LISTENERS ===
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAndDisplayCategories();
+      loadApprovedTestimonials();
+      loadAndRenderFaq();
+      
+      document.getElementById('formTestimoni').addEventListener('submit', handleTestimoniSubmit);
+      document.getElementById('btn-show-deposit').addEventListener('click', () => depositModal.style.display = 'flex');
+      document.getElementById('btn-close-deposit').addEventListener('click', () => depositModal.style.display = 'none');
+      document.getElementById('btn-process-deposit').addEventListener('click', handleProcessDeposit);
+      purchaseBtn.addEventListener('click', handlePurchase);
+    });
 
     auth.onAuthStateChanged(user => {
         currentUser = user;
         if (user) {
             userPanelLeft.style.display = 'none';
             userPanelRight.style.display = 'flex';
-            listenToWalletChanges(user.uid);
+            if (unsubscribeWallet) unsubscribeWallet();
+            unsubscribeWallet = db.collection('wallets').doc(user.uid).onSnapshot(doc => {
+                const balance = doc.exists ? (doc.data().balance || 0) : 0;
+                balanceAmountEl.innerText = `Rp ${balance.toLocaleString('id-ID')}`;
+            }, console.error);
         } else {
             userPanelLeft.style.display = 'block';
             userPanelRight.style.display = 'none';
@@ -131,43 +183,116 @@
         }
     });
 
-    function listenToWalletChanges(userId) {
-        if (unsubscribeWallet) unsubscribeWallet();
-        unsubscribeWallet = db.collection('wallets').doc(userId)
-            .onSnapshot(doc => {
-                const balance = doc.exists ? (doc.data().balance || 0) : 0;
-                balanceAmountEl.innerText = `Rp ${balance.toLocaleString('id-ID')}`;
-            }, console.error);
+    // === LOGIKA TAMPILAN KATEGORI & PRODUK ===
+    async function loadAndDisplayCategories() {
+        const categoryGrid = document.getElementById('category-grid');
+        try {
+            const snapshot = await db.collection('produk').orderBy('kategori').get();
+            const categories = [...new Set(snapshot.docs.map(doc => doc.data().kategori))];
+            
+            categoryGrid.innerHTML = '';
+            categories.forEach(kategori => {
+                if (!kategori) return;
+                const item = document.createElement('div');
+                item.className = 'category-item';
+                item.dataset.kategori = kategori;
+                const iconClass = categoryIcons[kategori.toUpperCase()] || categoryIcons['DEFAULT'];
+                item.innerHTML = `<i class="category-icon ${iconClass}"></i><span class="category-name">${kategori}</span>`;
+                item.addEventListener('click', () => handleCategoryClick(kategori, item));
+                categoryGrid.appendChild(item);
+            });
+        } catch (error) {
+            console.error("Gagal memuat kategori:", error);
+        }
+    }
+    
+    async function handleCategoryClick(kategori, element) {
+        document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        
+        orderFormContainer.style.display = 'block';
+        formTitle.innerText = `Kategori: ${kategori}`;
+        productSelectionArea.innerHTML = '<p class="text-center">Memuat produk...</p>';
+        customerDataArea.style.display = 'none';
+        purchaseBtn.disabled = true;
+
+        try {
+            const snapshot = await db.collection('produk').where('kategori', '==', kategori).orderBy('urutan').get();
+            let productsHTML = `<label for="produk">Produk</label><select id="produk" class="form-select" required><option value="">Pilih Produk</option>`;
+            snapshot.forEach(doc => {
+                productsHTML += `<option value="${doc.id}">${doc.data().nama_produk}</option>`;
+            });
+            productsHTML += `</select><div class="info mt-2" id="infoProduk">Pilih produk untuk melihat detail.</div>`;
+            
+            productSelectionArea.innerHTML = productsHTML;
+            document.getElementById('produk').addEventListener('change', handleProductSelection);
+            window.scrollTo({ top: orderFormContainer.offsetTop - 80, behavior: 'smooth' });
+        } catch (error) {
+            productSelectionArea.innerHTML = '<p class="text-danger">Gagal memuat produk.</p>';
+        }
     }
 
-    document.getElementById('btn-show-deposit').addEventListener('click', () => depositModal.style.display = 'flex');
-    document.getElementById('btn-close-deposit').addEventListener('click', () => depositModal.style.display = 'none');
-    
-    document.getElementById('btn-process-deposit').addEventListener('click', async () => {
+    async function handleProductSelection() {
+        const produkId = document.getElementById('produk').value;
+        const infoProduk = document.getElementById('infoProduk');
+        
+        if (!produkId) {
+            infoProduk.innerHTML = 'Pilih produk untuk melihat detail.';
+            customerDataArea.style.display = 'none';
+            purchaseBtn.disabled = true;
+            return;
+        }
+        
+        infoProduk.innerHTML = 'Memuat detail...';
+        try {
+            const doc = await db.collection('produk').doc(produkId).get();
+            if (!doc.exists) { infoProduk.innerHTML = 'Produk tidak ditemukan.'; return; }
+            
+            produkTerpilihData = { id: doc.id, ...doc.data() };
+            const harga = produkTerpilihData.harga_reseller || produkTerpilihData.harga_umum || 0;
+            const stok = produkTerpilihData.stok || 0;
+            
+            let jenisProdukLabel = produkTerpilihData.jenis_produk === 'otomatis' ? `<span class="badge bg-success">⚡ Otomatis</span><br><br>` : '';
+
+            infoProduk.innerHTML = `${jenisProdukLabel}<b style="font-size: 1.2em;">Harga: Rp${harga.toLocaleString('id-ID')}</b><hr class="my-2"><b>Deskripsi:</b> ${produkTerpilihData.deskripsi || '-'}`;
+
+            if (stok > 0) {
+                customerDataArea.style.display = 'block';
+                purchaseBtn.disabled = false;
+            } else {
+                infoProduk.innerHTML += `<br><b class="text-danger">Stok saat ini habis.</b>`;
+                customerDataArea.style.display = 'none';
+                purchaseBtn.disabled = true;
+            }
+        } catch (error) {
+            infoProduk.innerHTML = 'Gagal memuat detail produk.';
+        }
+    }
+
+    // === LOGIKA DEPOSIT & PEMBELIAN ===
+    async function handleProcessDeposit() {
         const amount = document.getElementById('deposit-amount').value;
         if (!currentUser) { alert("Silakan login terlebih dahulu."); return; }
         if (!amount || amount < 10000) { alert("Jumlah deposit minimal Rp 10.000"); return; }
 
         const btn = document.getElementById('btn-process-deposit');
-        btn.disabled = true;
-        btn.innerText = "Memproses...";
+        btn.disabled = true; btn.innerText = "Memproses...";
 
         try {
             const requestDeposit = functions.httpsCallable('requestManualDeposit');
             const result = await requestDeposit({ amount: parseInt(amount) });
             
             depositModal.style.display = 'none';
-            alert(`${result.data.message}\n\nID Deposit Anda: ${result.data.depositId}\n\nSilakan transfer sejumlah Rp ${parseInt(amount).toLocaleString('id-ID')} ke rekening kami dan upload bukti pembayaran di halaman status pesanan/deposit.`);
+            alert(`${result.data.message}\n\nID Deposit Anda: ${result.data.depositId}\n\nSilakan transfer sejumlah Rp ${parseInt(amount).toLocaleString('id-ID')} ke rekening kami dan upload bukti pembayaran di halaman status.`);
             
         } catch (error) {
             alert(`Error: ${error.message}`);
         } finally {
-            btn.disabled = false;
-            btn.innerText = "Buat Tiket Deposit";
+            btn.disabled = false; btn.innerText = "Buat Tiket Deposit";
         }
-    });
-    
-    document.getElementById('purchaseBtn').addEventListener('click', async () => {
+    }
+
+    async function handlePurchase() {
         if (!currentUser || !produkTerpilihData) return;
         const nomorTujuan = document.getElementById('nomor').value;
         if (!nomorTujuan) { alert("Masukkan nomor tujuan."); return; }
@@ -175,24 +300,74 @@
         const productPrice = produkTerpilihData.harga_reseller || produkTerpilihData.harga_umum;
         if (!confirm(`Bayar ${produkTerpilihData.nama_produk} seharga Rp ${productPrice.toLocaleString('id-ID')} dengan saldo?`)) return;
 
-        const btn = document.getElementById('purchaseBtn');
-        btn.disabled = true;
-        btn.innerText = "Memproses...";
+        purchaseBtn.disabled = true; purchaseBtn.innerText = "Memproses...";
 
         try {
             const purchaseFunction = functions.httpsCallable('purchaseWithBalance');
             const result = await purchaseFunction({ productId: produkTerpilihData.id, nomorTujuan });
             alert(result.data.message);
-            document.getElementById('order-form-container').style.display = 'none';
+            orderFormContainer.style.display = 'none';
         } catch (error) {
             alert(`Error: ${error.message}`);
         } finally {
-            btn.disabled = false;
-            btn.innerText = "Bayar dengan Saldo";
+            purchaseBtn.disabled = false; purchaseBtn.innerText = "Bayar dengan Saldo";
         }
-    });
+    }
 
-    // ... Tempelkan fungsi loadAndDisplayCategories, handleCategoryClick, handleProductSelection dari kode sebelumnya di sini ...
+    // === FITUR LAMA YANG DIKEMBALIKAN ===
+    window.cekStatus = async () => {
+        const idCek = document.getElementById('idCek').value.trim();
+        if (!idCek) { alert("ID tidak boleh kosong."); return; }
+        // Arahkan ke halaman status, di sana akan ada logika untuk fetch data
+        window.location.href = `status.html?id=${idCek}`;
+    }
+
+    async function handleTestimoniSubmit(e) {
+        e.preventDefault();
+        const nama = document.getElementById('testiNama').value;
+        const pesan = document.getElementById('testiPesan').value;
+        if (!nama || !pesan) { alert("Nama dan pesan wajib diisi."); return; }
+        try {
+            await dbRT.ref('testimonials').push({ nama, isi: pesan, status: 'pending', createdAt: new Date().toISOString() });
+            alert("Terima kasih! Testimoni Anda akan kami review.");
+            e.target.reset();
+        } catch (error) {
+            alert("Gagal mengirim testimoni.");
+        }
+    }
+
+    function loadApprovedTestimonials() {
+        const container = document.getElementById('testimoniContainer');
+        dbRT.ref('testimonials').orderByChild('status').equalTo('disetujui').limitToLast(10).on('value', snap => {
+            container.innerHTML = '';
+            if (!snap.exists()) { container.innerHTML = `<p class="text-center text-muted">Belum ada testimoni.</p>`; return; }
+            snap.forEach(childSnap => {
+                const testi = childSnap.val();
+                const bubble = document.createElement('div');
+                bubble.className = 'alert alert-light';
+                bubble.innerHTML = `<strong>${testi.nama}</strong>: ${testi.isi}`;
+                container.prepend(bubble); // Tampilkan yang terbaru di atas
+            });
+        });
+    }
+
+    function loadAndRenderFaq() {
+        const faqContainer = document.getElementById('faq-container');
+        dbRT.ref('faq').once('value').then(snap => {
+            faqContainer.innerHTML = '';
+            if (!snap.exists()) { faqContainer.innerHTML = `<p class="text-center text-muted">FAQ tidak tersedia.</p>`; return; }
+            snap.forEach(itemSnap => {
+                const itemData = itemSnap.val();
+                const item = document.createElement('div');
+                item.className = 'faq-item';
+                item.innerHTML = `<div class="faq-question">${itemData.q}</div><div class="faq-answer" style="padding: 0 15px;">${itemData.a}</div>`;
+                faqContainer.appendChild(item);
+            });
+            document.querySelectorAll('.faq-question').forEach(item => {
+                item.addEventListener('click', () => item.parentElement.classList.toggle('active'));
+            });
+        });
+    }
 </script>
 </body>
 </html>
