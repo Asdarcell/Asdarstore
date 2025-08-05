@@ -20,331 +20,179 @@
       --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
       --muted-text: #8a93a2;
     }
-    body {
-      font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
-      transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
-    }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
     header {
-      position: sticky; top: 0; background: var(--card); padding: 15px 20px;
+      position: sticky; top: 0; background: var(--card); padding: 10px 15px;
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border); z-index: 999; box-shadow: 0 2px 5px var(--shadow);
+      border-bottom: 1px solid var(--border); z-index: 1000;
     }
-    header h1 { margin: 0; font-size: 22px; color: var(--primary); font-weight: 700; }
     main { max-width: 700px; margin: 20px auto; padding: 0 15px; }
-    label { font-weight: 600; margin-top: 15px; display: block; }
-    input, select, textarea {
-      width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px;
-      border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);
-    }
-    button {
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
-      border: none; background: var(--primary); color: white; cursor: pointer;
-      font-weight: bold; font-size: 16px; transition: all 0.2s ease;
-    }
-    .info {
-      background: var(--card); padding: 15px; margin-top: 1rem;
-      border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);
-    }
-    .section-container {
-      background: var(--card); padding: 25px; border-radius: 12px;
-      box-shadow: 0 4px 12px var(--shadow); margin-top: 20px;
-    }
-    hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
-    h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; }
+    .section-container { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); margin-top: 20px; }
+    h2 { color: var(--primary); margin-bottom: 20px; text-align: center; }
     
-    /* === TAMPILAN GRID KATEGORI BARU === */
-    #category-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-        margin-top: 20px;
-    }
-    .category-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: var(--card);
-        padding: 15px 5px;
-        border-radius: 12px;
-        text-align: center;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid var(--border);
-    }
-    .category-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px var(--shadow);
-    }
-    .category-item.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
-    .category-item.active .category-icon,
-    .category-item.active .category-name {
-        color: white;
-    }
-    .category-icon {
-        font-size: 24px;
-        color: var(--primary);
-        margin-bottom: 8px;
-    }
-    .category-name {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text);
-    }
-    /* === AKHIR TAMPILAN GRID KATEGORI BARU === */
+    /* Header Baru dengan Saldo */
+    .header-wallet { display: flex; align-items: center; gap: 15px; }
+    .wallet-balance { background: var(--bg); padding: 5px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .wallet-balance .fa-wallet { color: var(--primary); }
+    .deposit-btn { background: var(--success); color: white; padding: 5px 12px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 5px; }
     
-    #banner-container { width: 100%; margin-bottom: 20px; }
-    .banner-item { display: block; margin-bottom: 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
-    .banner-image { width: 100%; display: block; vertical-align: middle; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .all-products-btn { color: var(--text); text-decoration: none; font-size: 20px; }
+    /* Grid Kategori */
+    #category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .category-item { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; transition: transform 0.2s ease; border: 1px solid var(--border); }
+    .category-item.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .category-item.active .category-icon, .category-item.active .category-name { color: white; }
+    .category-icon { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
+    .category-name { font-size: 12px; font-weight: 600; }
+
+    /* Modal Deposit */
+    #deposit-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1001; }
+    #deposit-modal-content { background: var(--card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
   </style>
 </head>
 
-<body data-theme="dark">
+<body>
 <header id="header">
-    <div class="header-left">
-        <h1>Asdar Store</h1>
+    <div id="user-panel-left">
+        <a href="login.html" class="btn btn-primary btn-sm">Login/Daftar</a>
     </div>
-    <div class="header-right">
-        <a href="daftar-produk.html" class="all-products-btn">
-            <i class="fas fa-list"></i>
-        </a>
-        <div id="user-panel">
-            <a href="login.html" class="reseller-btn" style="padding: 6px 12px; font-size: 0.8em;"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
+    <div id="user-panel-right" class="header-wallet" style="display: none;">
+        <div class="wallet-balance">
+            <i class="fas fa-wallet"></i>
+            <span id="balance-amount">Rp 0</span>
         </div>
+        <a href="#" id="btn-show-deposit" class="deposit-btn"><i class="fas fa-plus"></i> Deposit</a>
     </div>
 </header>
   
 <main id="main-content">
-    <div id="banner-container" data-aos="fade-down"></div>
-    
-    <!-- Tampilan Kategori Grid Baru -->
     <div class="section-container" data-aos="fade-up">
-        <h2>Kategori</h2>
-        <div id="category-grid">
-            <!-- Ikon kategori akan dimuat di sini oleh JavaScript -->
-        </div>
+        <h2>Kategori Produk</h2>
+        <div id="category-grid"></div>
     </div>
     
-    <!-- Form Pemesanan, awalnya disembunyikan -->
     <div data-aos="fade-up" class="section-container" id="order-form-container" style="display: none;">
       <h2 id="form-title">Pilih Produk</h2>
-      <div id="existing-order-notification" style="display: none;"></div>
-      <form id="formPesanan">
-        <div id="formNotification" class="notification"></div>
-        
-        <!-- Dropdown produk, label, dan info akan muncul di sini -->
-        <div id="product-selection-area"></div>
-        
-        <div id="customer-data-area" style="display:none;">
-            <label for="nama">Nama Lengkap</label>
-            <input type="text" id="nama" placeholder="Cth: Budi Santoso" required />
+      <div id="product-selection-area"></div>
+      <div id="customer-data-area" style="display:none;">
             <label for="nomor">Nomor HP / ID Game</label>
-            <input type="text" id="nomor" placeholder="Cth: 081234567890 atau ID Anda" required />
-            <label for="waAktif">Nomor WhatsApp Aktif</label>
-            <input type="tel" id="waAktif" placeholder="Cth: 081234567890 (awali 08...)" pattern="^08[0-9]{8,15}$" required />
-        </div>
-        
-        <button type="button" id="nextToPaymentBtn" disabled>Lanjut ke Pembayaran</button>
-      </form>
+            <input type="text" id="nomor" class="form-control" placeholder="Cth: 081234567890" required />
+      </div>
+      <button type="button" id="purchaseBtn" class="btn btn-primary w-100 mt-3" disabled>Bayar dengan Saldo</button>
     </div>
-
-    <div id="payment-selection-container" class="section-container" style="display: none;" data-aos="fade-up"></div>
-
-    <hr>
-    <div data-aos="fade-up"><h2>Cek Status Pesanan Anda</h2><form onsubmit="event.preventDefault(); cekStatus();"><label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label><input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required /><button type="submit">Cek Status</button></form></div>
 </main>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
+<!-- Modal Deposit -->
+<div id="deposit-modal">
+    <div id="deposit-modal-content">
+        <h3>Isi Saldo Deposit</h3>
+        <p>Masukkan jumlah deposit (minimal Rp 10.000) dan lakukan transfer manual.</p>
+        <input type="number" id="deposit-amount" class="form-control" placeholder="10000" min="10000" />
+        <button id="btn-process-deposit" class="btn btn-success w-100 mt-2">Buat Tiket Deposit</button>
+        <button id="btn-close-deposit" class="btn btn-secondary w-100 mt-2">Batal</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
     AOS.init({ duration: 800, once: true, offset: 50 });
 
-    // === KONFIGURASI FIREBASE ===
-    const firebaseConfig = {
-      apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
-      authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
-      databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
-      projectId: "asdarstoredigitalll-d89c4",
-    };
+    const firebaseConfig = { /* ... Konfigurasi Firebase Anda ... */ };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const dbFS = firebase.firestore();
-    
-    // === VARIABEL GLOBAL & ELEMEN DOM ===
-    let produkTerpilihData = null;
-    const orderFormContainer = document.getElementById('order-form-container');
-    const productSelectionArea = document.getElementById('product-selection-area');
-    const customerDataArea = document.getElementById('customer-data-area');
-    const nextToPaymentBtn = document.getElementById('nextToPaymentBtn');
-    const formTitle = document.getElementById('form-title');
-    
-    // === PEMETAAN IKON UNTUK KATEGORI ===
-    const categoryIcons = {
-        'PULSA': 'fas fa-mobile-alt',
-        'TOKEN LISTRIK': 'fas fa-bolt',
-        'GAMES': 'fas fa-gamepad',
-        'E-MONEY': 'fas fa-wallet',
-        'VOUCHER DATA': 'fas fa-wifi',
-        'DEFAULT': 'fas fa-box' // Ikon default jika tidak ada yang cocok
-    };
+    const db = firebase.firestore();
+    const functions = firebase.functions();
 
-    // === FUNGSI UTAMA ===
-    document.addEventListener('DOMContentLoaded', () => {
-      loadAndDisplayCategories();
-      loadAndDisplayBanners();
+    const userPanelLeft = document.getElementById('user-panel-left');
+    const userPanelRight = document.getElementById('user-panel-right');
+    const balanceAmountEl = document.getElementById('balance-amount');
+    const depositModal = document.getElementById('deposit-modal');
+    
+    let currentUser = null;
+    let produkTerpilihData = null;
+    let unsubscribeWallet = null;
+
+    const categoryIcons = { /* ... Pemetaan ikon Anda ... */ };
+
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+            userPanelLeft.style.display = 'none';
+            userPanelRight.style.display = 'flex';
+            listenToWalletChanges(user.uid);
+        } else {
+            userPanelLeft.style.display = 'block';
+            userPanelRight.style.display = 'none';
+            balanceAmountEl.innerText = 'Rp 0';
+            if (unsubscribeWallet) unsubscribeWallet();
+        }
     });
 
-    async function loadAndDisplayCategories() {
-        const categoryGrid = document.getElementById('category-grid');
-        try {
-            const snapshot = await dbFS.collection('produk').get();
-            const categories = new Set();
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                if (data.kategori) {
-                    categories.add(data.kategori);
-                }
-            });
-            
-            categoryGrid.innerHTML = ''; // Kosongkan grid
-            categories.forEach(kategori => {
-                const item = document.createElement('div');
-                item.className = 'category-item';
-                item.dataset.kategori = kategori;
-                
-                const iconClass = categoryIcons[kategori.toUpperCase()] || categoryIcons['DEFAULT'];
-                item.innerHTML = `
-                    <i class="category-icon ${iconClass}"></i>
-                    <span class="category-name">${kategori}</span>
-                `;
-                item.addEventListener('click', () => handleCategoryClick(kategori, item));
-                categoryGrid.appendChild(item);
-            });
-        } catch (error) {
-            console.error("Gagal memuat kategori:", error);
-            categoryGrid.innerHTML = '<p>Gagal memuat kategori.</p>';
-        }
+    function listenToWalletChanges(userId) {
+        if (unsubscribeWallet) unsubscribeWallet();
+        unsubscribeWallet = db.collection('wallets').doc(userId)
+            .onSnapshot(doc => {
+                const balance = doc.exists ? (doc.data().balance || 0) : 0;
+                balanceAmountEl.innerText = `Rp ${balance.toLocaleString('id-ID')}`;
+            }, console.error);
     }
+
+    document.getElementById('btn-show-deposit').addEventListener('click', () => depositModal.style.display = 'flex');
+    document.getElementById('btn-close-deposit').addEventListener('click', () => depositModal.style.display = 'none');
     
-    async function handleCategoryClick(kategori, element) {
-        // Reset tampilan
-        document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        
-        orderFormContainer.style.display = 'block';
-        formTitle.innerText = `Kategori: ${kategori}`;
-        productSelectionArea.innerHTML = '<p>Memuat produk...</p>';
-        customerDataArea.style.display = 'none';
-        nextToPaymentBtn.disabled = true;
+    document.getElementById('btn-process-deposit').addEventListener('click', async () => {
+        const amount = document.getElementById('deposit-amount').value;
+        if (!currentUser) { alert("Silakan login terlebih dahulu."); return; }
+        if (!amount || amount < 10000) { alert("Jumlah deposit minimal Rp 10.000"); return; }
+
+        const btn = document.getElementById('btn-process-deposit');
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
 
         try {
-            const snapshot = await dbFS.collection('produk').where('kategori', '==', kategori).get();
-            let productsHTML = `
-                <label for="produk">Produk</label>
-                <select id="produk" required>
-                    <option value="">Pilih Produk</option>
-            `;
-            const products = [];
-            snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
-            products.sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
-            products.forEach(prod => {
-                productsHTML += `<option value="${prod.id}">${prod.nama_produk}</option>`;
-            });
-            productsHTML += `</select><div class="info" id="infoProduk">Pilih produk untuk melihat detail.</div>`;
+            const requestDeposit = functions.httpsCallable('requestManualDeposit');
+            const result = await requestDeposit({ amount: parseInt(amount) });
             
-            productSelectionArea.innerHTML = productsHTML;
-            document.getElementById('produk').addEventListener('change', handleProductSelection);
+            depositModal.style.display = 'none';
+            alert(`${result.data.message}\n\nID Deposit Anda: ${result.data.depositId}\n\nSilakan transfer sejumlah Rp ${parseInt(amount).toLocaleString('id-ID')} ke rekening kami dan upload bukti pembayaran di halaman status pesanan/deposit.`);
+            
         } catch (error) {
-            productSelectionArea.innerHTML = '<p class="text-danger">Gagal memuat produk.</p>';
+            alert(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Buat Tiket Deposit";
         }
-    }
+    });
+    
+    document.getElementById('purchaseBtn').addEventListener('click', async () => {
+        if (!currentUser || !produkTerpilihData) return;
+        const nomorTujuan = document.getElementById('nomor').value;
+        if (!nomorTujuan) { alert("Masukkan nomor tujuan."); return; }
+        
+        const productPrice = produkTerpilihData.harga_reseller || produkTerpilihData.harga_umum;
+        if (!confirm(`Bayar ${produkTerpilihData.nama_produk} seharga Rp ${productPrice.toLocaleString('id-ID')} dengan saldo?`)) return;
 
-    async function handleProductSelection() {
-        const produkId = document.getElementById('produk').value;
-        const infoProduk = document.getElementById('infoProduk');
-        
-        if (!produkId) {
-            infoProduk.innerHTML = 'Pilih produk untuk melihat detail.';
-            customerDataArea.style.display = 'none';
-            nextToPaymentBtn.disabled = true;
-            return;
-        }
-        
-        infoProduk.innerHTML = 'Memuat detail...';
+        const btn = document.getElementById('purchaseBtn');
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
+
         try {
-            const doc = await dbFS.collection('produk').doc(produkId).get();
-            if (!doc.exists) {
-                infoProduk.innerHTML = 'Produk tidak ditemukan.';
-                return;
-            }
-            produkTerpilihData = { id: doc.id, ...doc.data() };
-            
-            let harga = produkTerpilihData.harga_umum || 0;
-            let stok = produkTerpilihData.stok || 0;
-            
-            let jenisProdukLabel = ''; 
-            if (produkTerpilihData.jenis_produk === 'otomatis') {
-                jenisProdukLabel = `<span style="background-color: var(--success); color: white; padding: 3px 8px; font-size: 0.8em; border-radius: 20px; font-weight: bold;">⚡ Pengiriman Otomatis</span><br><br>`;
-            }
-
-            infoProduk.innerHTML = `
-                ${jenisProdukLabel}
-                <b style="font-size: 1.2em;">Harga: Rp${harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</b>
-                <hr style="margin: 10px 0; border-color: var(--border);">
-                <b>Deskripsi:</b> ${produkTerpilihData.deskripsi || '-'}
-            `;
-
-            if (stok > 0) {
-                customerDataArea.style.display = 'block';
-                nextToPaymentBtn.disabled = false;
-            } else {
-                infoProduk.innerHTML += `<br><b class="text-danger">Stok saat ini habis.</b>`;
-                customerDataArea.style.display = 'none';
-                nextToPaymentBtn.disabled = true;
-            }
+            const purchaseFunction = functions.httpsCallable('purchaseWithBalance');
+            const result = await purchaseFunction({ productId: produkTerpilihData.id, nomorTujuan });
+            alert(result.data.message);
+            document.getElementById('order-form-container').style.display = 'none';
         } catch (error) {
-            infoProduk.innerHTML = 'Gagal memuat detail produk.';
+            alert(`Error: ${error.message}`);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Bayar dengan Saldo";
         }
-    }
+    });
 
-    // Fungsi-fungsi lain seperti loadAndDisplayBanners, cekStatus, dll bisa diletakkan di sini.
-    // Kode untuk pembayaran dan logika lainnya tetap sama seperti sebelumnya.
-    // Disarankan untuk memisahkan logika ini ke file JS terpisah untuk kerapian.
-    async function loadAndDisplayBanners() { 
-        const bannerContainer = document.getElementById('banner-container'); 
-        if (!bannerContainer) return; 
-        try { 
-            const snapshot = await dbFS.collection('banners').orderBy('urutan').get(); 
-            if (snapshot.empty) { 
-                bannerContainer.style.display = 'none'; 
-                return; 
-            } 
-            let bannersHTML = ''; 
-            snapshot.forEach(doc => { 
-                const banner = doc.data(); 
-                const imgTag = `<img src="${banner.url}" alt="Banner Promosi" class="banner-image">`; 
-                if (banner.link) { 
-                    bannersHTML += `<a href="${banner.link}" target="_blank" class="banner-item">${imgTag}</a>`; 
-                } else { 
-                    bannersHTML += `<div class="banner-item">${imgTag}</div>`; 
-                } 
-            }); 
-            bannerContainer.innerHTML = bannersHTML; 
-        } catch (error) { 
-            console.error("Gagal memuat banner:", error); 
-        } 
-    }
-    // ... (Sisa kode JavaScript Anda untuk pembayaran, cek status, dll, bisa dimasukkan di sini) ...
-    // ... Namun, untuk contoh ini, saya fokus pada perubahan tampilan kategori.
-  </script>
+    // ... Tempelkan fungsi loadAndDisplayCategories, handleCategoryClick, handleProductSelection dari kode sebelumnya di sini ...
+</script>
 </body>
 </html>
