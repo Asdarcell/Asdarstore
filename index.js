@@ -26,11 +26,14 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
 
     const depositId = `DEP-${Date.now()}`;
 
+    // PERBAIKAN: Menangani kasus jika pengguna tidak memiliki email, gunakan UID sebagai fallback.
+    const userEmail = context.auth.token.email || `uid:${userId}`;
+
     // 3. Simpan permintaan deposit ke Firestore dengan status 'Menunggu Pembayaran'
     await db.collection('deposits').doc(depositId).set({
         id: depositId,
         userId: userId,
-        userEmail: context.auth.token.email,
+        userEmail: userEmail,
         amount: amount,
         status: 'Menunggu Pembayaran', // Pengguna harus transfer & upload bukti
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -46,12 +49,16 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
  * PENTING: Fungsi ini HANYA BOLEH dipanggil dari Halaman Admin Anda.
  */
 exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
-    // 4. Verifikasi apakah yang memanggil adalah admin (tambahkan email Anda)
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'Hanya admin yang bisa mengakses fungsi ini.');
+    // 4. Verifikasi apakah yang memanggil adalah admin (dan punya email)
+    if (!context.auth || !context.auth.token.email) {
+        throw new functions.https.HttpsError('unauthenticated', 'Hanya admin dengan email yang bisa mengakses fungsi ini.');
     }
-    const adminEmails = ['emailadmin@contoh.com', 'emailanda@gmail.com']; // <-- GANTI DENGAN EMAIL ADMIN ANDA
-    if (!adminEmails.includes(context.auth.token.email)) {
+    
+    // --> GANTI DENGAN EMAIL ADMIN ANDA <--
+    const adminEmails = ['emailadmin@contoh.com', 'emailanda@gmail.com']; 
+    const adminEmail = context.auth.token.email;
+
+    if (!adminEmails.includes(adminEmail)) {
          throw new functions.https.HttpsError('permission-denied', 'Anda bukan admin.');
     }
 
@@ -70,7 +77,7 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
             
             const depositData = depositDoc.data();
             if (depositData.status !== 'Menunggu Konfirmasi') {
-                throw new functions.https.HttpsError('failed-precondition', `Deposit ini sudah diproses atau belum ada bukti. Status: ${depositData.status}`);
+                throw new functions.https.HttpsError('failed-precondition', `Status deposit ini bukan 'Menunggu Konfirmasi'.`);
             }
 
             const userId = depositData.userId;
@@ -78,14 +85,11 @@ exports.confirmManualDeposit = functions.https.onCall(async (data, context) => {
             const userWalletRef = db.collection('wallets').doc(userId);
 
             const walletDoc = await t.get(userWalletRef);
-            let newBalance = amount;
-            if (walletDoc.exists) {
-                newBalance += (walletDoc.data().balance || 0);
-            }
+            let newBalance = amount + (walletDoc.exists ? (walletDoc.data().balance || 0) : 0);
 
             // 6. Update saldo pengguna dan status deposit
             t.set(userWalletRef, { balance: newBalance, lastUpdated: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
-            t.update(depositRef, { status: 'Selesai', confirmedBy: context.auth.token.email });
+            t.update(depositRef, { status: 'Selesai', confirmedBy: adminEmail });
 
             return { success: true, message: `Saldo untuk ${depositData.userEmail} berhasil ditambah sebesar Rp ${amount}.` };
         });
