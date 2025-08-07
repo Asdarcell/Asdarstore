@@ -13,111 +13,149 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #f9f9f9; --text: #2c3e50; --primary: #3498db;
-      --card: #ffffff; --border: #ddd; --shadow: rgba(0, 0, 0, 0.05);
-      --success: #28a745; --danger: #e74c3c;
-      --muted-text: #6c757d;
+      --bg: #f4f7fa; --text: #2c3e50; --primary: #3498db;
+      --card: #ffffff; --border: #e8eef3; --shadow: rgba(44, 62, 80, 0.08);
+      --success: #28a745; --danger: #e74c3c; --warning: #f39c12;
+      --muted-text: #7f8c8d;
     }
     [data-theme="dark"] {
-      --bg: #1a1a2e; --text: #e0e0e0; --primary: #1abc9c;
-      --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
+      --bg: #161828; --text: #e0e0e0; --primary: #1abc9c;
+      --card: #252840; --border: #363a55; --shadow: rgba(0, 0, 0, 0.15);
       --muted-text: #8a93a2;
     }
     body {
       font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
-      transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
+      margin: 0; line-height: 1.6;
+      /* Padding bawah agar konten tidak tertutup bottom nav */
+      padding-bottom: 100px;
     }
-    header {
-      position: sticky; top: 0; background: var(--card); padding: 15px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border); z-index: 999; transition: box-shadow 0.3s ease;
+    main { max-width: 700px; margin: 0 auto; padding: 20px; }
+
+    /* HEADER BARU */
+    #header-baru {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky; top: 0; z-index: 1000;
     }
-    header h1 { margin: 0; font-size: 24px; color: var(--primary); }
-    main { max-width: 700px; margin: 20px auto; padding: 0 20px; }
-    label { font-weight: 600; margin-top: 15px; display: block; }
-    input, select, textarea {
-      width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px;
-      border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);
+    #header-baru i { font-size: 20px; }
+    #header-baru span { font-size: 20px; font-weight: 600; }
+    #header-baru a { color: white; text-decoration: none; }
+    
+    /* KARTU INFORMASI PENGGUNA */
+    .info-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: -30px; /* Trik agar kartu sedikit menjorok ke atas header */
+      position: relative;
+      z-index: 999;
+      box-shadow: 0 10px 25px var(--shadow);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      text-align: center;
     }
-    button {
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
-      border: none; background: var(--primary); color: white; cursor: pointer;
-      font-weight: bold; font-size: 16px; transition: all 0.2s ease;
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
     }
-    button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-    .info {
-      background: var(--card); padding: 15px; margin-top: 1rem;
-      border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);
+    .info-item a { text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .info-item .icon-bg {
+      width: 45px; height: 45px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ecf0f1;
+      color: var(--primary);
+      font-size: 20px;
     }
-    .section-container {
-      background: var(--card); padding: 25px; border-radius: 12px;
-      box-shadow: 0 4px 12px var(--shadow); margin-top: 20px;
+    .info-item .icon-bg.primary { background-color: var(--primary); color: white; }
+    .info-item .icon-bg.warning { background-color: var(--warning); color: white; }
+    .info-label { font-size: 12px; color: var(--muted-text); }
+    .info-value { font-size: 16px; font-weight: 600; }
+    .info-action { font-size: 14px; font-weight: 500; }
+
+    /* BANNER PROMOSI */
+    .promo-banner {
+      background: linear-gradient(90deg, #3498db, #1abc9c);
+      border-radius: 12px;
+      margin-top: 25px;
+      color: white;
+      padding: 20px;
     }
-    hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
-    h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; }
-    .reseller-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--success); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
-    .reseller-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    .dashboard-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--primary); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
-    .dashboard-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    #testimoniContainer { background: var(--bg); border-radius: 12px; padding: 15px; height: 350px; overflow-y: auto; position: relative; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 1rem; }
-    .testimonial-bubble { background-color: var(--card); color: var(--text); padding: 12px 18px; border-radius: 20px; max-width: 85%; align-self: flex-start; box-shadow: 0 4px 8px rgba(0,0,0,0.07); opacity: 0; animation: slideInUp 0.6s ease-out forwards; border: 1px solid var(--border); }
-    .testimonial-header { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
-    .testimonial-header .fa-user-circle { font-size: 1.2em; color: var(--primary); }
-    .testimonial-name { font-weight: 700; font-size: 0.95em; color: var(--text); }
-    .testimonial-body { font-size: 0.9em; line-height: 1.5; color: var(--muted-text); padding-left: 2px; }
-    @keyframes slideInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .payment-methods-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .payment-method-item { background-color: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .payment-details { line-height: 1.4; }
-    .payment-method-name { font-weight: 600; font-size: 1.1em; color: var(--text); }
-    .payment-method-number { font-size: 1em; font-weight: 500; color: var(--primary); }
-    .payment-method-an { font-size: 0.85em; color: var(--muted-text); }
-    .copy-btn { background-color: transparent; border: 1px solid var(--border); color: var(--muted-text); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; font-size: 0.9em; margin-left: 1rem; white-space: nowrap; }
-    .copy-btn:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
-    .copy-btn:disabled { background-color: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-    .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; }
-    .faq-item:last-child { border-bottom: none; }
-    .faq-question { cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-    .faq-question::after { content: '▼'; font-size: 12px; transition: transform 0.3s ease; }
-    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding-top 0.3s ease; padding-top: 0; }
-    .faq-item.active .faq-answer { padding-top: 15px; max-height: 999px; }
-    .faq-item.active .faq-question::after { transform: rotate(180deg); }
-    .notification { padding: 15px; margin-bottom: 15px; border-radius: 8px; font-weight: 600; display: none; text-align: center; }
-    .notification.info { background-color: #d1ecf1; color: #0c5460; }
-    .notification.success { background-color: #d4edda; color: #155724; }
-    .notification.error { background-color: #f8d7da; color: #721c24; }
-    #banner-container { width: 100%; margin-bottom: 20px; }
-    .banner-item { display: block; margin-bottom: 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
-    .banner-image { width: 100%; display: block; vertical-align: middle; }
-    .header-right { display: flex; flex-direction: column; align-items: flex-end; }
-    .payment-option input[type="radio"] { display: none; }
-    .payment-option label { display: block; padding: 15px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s ease-in-out; font-weight: 600; margin-top: 10px; }
-    .payment-option label:hover { border-color: var(--primary); }
-    .payment-option input[type="radio"]:checked + label { background-color: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .payment-content { border: 1px solid var(--border); padding: 20px; margin-top: 15px; border-radius: 8px; background-color: var(--bg); }
-    .hidden { display: none; }
-    #existing-order-notification { padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e67e22; background-color: #f39c1233; color: #d35400; font-size: 0.95em; line-height: 1.6; }
-    #existing-order-notification button { background-color: var(--danger); color: white; padding: 8px 12px; font-size: 0.9em; margin-top: 10px; width: auto; }
-    .qris-details { text-align: center; padding: 15px; }
-    .qris-image { max-width: 250px; width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px; }
+    .banner-content h3 { margin: 0; font-size: 18px; }
+    .banner-content p { margin: 5px 0 0; opacity: 0.9; }
+
+    /* GRID KATEGORI */
+    .kategori-container { margin-top: 25px; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+    .kategori-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 4 kolom */
+      gap: 15px;
+    }
+    .kategori-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .kategori-icon {
+      width: 60px; height: 60px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 8px;
+      transition: transform 0.2s ease;
+    }
+    .kategori-item:hover .kategori-icon { transform: scale(1.1); }
+    .kategori-item span { font-size: 12px; font-weight: 500; }
+
+    /* NAVIGASI BAWAH */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      max-width: 700px; margin: 0 auto; /* agar center di layar lebar */
+      background: var(--card);
+      display: flex;
+      justify-content: space-around;
+      box-shadow: 0 -5px 20px var(--shadow);
+      border-top: 1px solid var(--border);
+      z-index: 1001;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--muted-text);
+      gap: 4px;
+      transition: color 0.2s ease;
+    }
+    .bottom-nav-item i { font-size: 20px; }
+    .bottom-nav-item span { font-size: 12px; }
+    .bottom-nav-item.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
   </style>
 </head>
-<body data-theme="dark">
-<header id="header">
-    <div class="header-left">
-        <h1>Asdar Store Digital</h1>
-    </div>
-    <div class="header-right">
-        <a href="daftar-produk.html" class="all-products-btn mb-2">
-            <i class="fas fa-list"></i> Lihat Semua Produk
-        </a>
-        <div id="user-panel">
-            <a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>
-        </div>
-    </div>
-</header>
+
 <body data-theme="dark">
 
   <header id="header-baru">
@@ -222,9 +260,12 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
+    // Inisialisasi AOS untuk animasi
     AOS.init({ duration: 800, once: true, offset: 50 });
-    // Kode JavaScript Anda yang lama untuk sementara bisa dihapus atau di-non-aktifkan
-    // karena form pemesanan sudah kita ganti dengan grid kategori.
+
+    // TODO: Tambahkan JavaScript baru di sini untuk membuat tombol-tombol berfungsi.
+    // Kode JavaScript Anda yang lama untuk form pemesanan tidak relevan lagi dengan UI ini.
+    
   </script>
   
   <script>
