@@ -1,418 +1,384 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Loka Bayar</title>
-  <link rel="icon" href="https://storage.googleapis.com/lokabayar/LOKABAYAR_1.png" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  
-  <style>
-    /* Penjelasan CSS:
-       - Kita menggunakan variabel (--primary, --bg, dll.) untuk tema, mirip dengan kode awalmu.
-       - 'body' diatur agar konten tidak melewati batas bawah navigasi.
-       - '.page' adalah kelas untuk setiap "halaman" virtual. Secara default disembunyikan.
-       - '.page.active' adalah kelas untuk halaman yang sedang ditampilkan.
-       - 'bottom-nav' adalah style untuk navigasi bawah yang tetap.
-       - 'category-grid' adalah style untuk petak ikon kategori di halaman beranda.
-       - 'skeleton' adalah style untuk efek loading (akan kita gunakan nanti).
-    */
-    :root {
-      --primary: #2980b9;
-      --secondary: #3498db;
-      --bg: #f0f2f5;
-      --card: #ffffff;
-      --text: #333;
-      --muted-text: #6c757d;
-      --border: #e0e0e0;
-      --shadow: rgba(0, 0, 0, 0.05);
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Loka Bayar</title>
+    <link rel="icon" href="https://storage.googleapis.com/lokabayar/LOKABAYAR_1.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding-bottom: 80px; /* Jarak untuk navigasi bawah */
-    }
+    <style>
+        :root {
+            --primary: #2980b9; --secondary: #3498db; --bg: #f0f2f5;
+            --card: #ffffff; --text: #333; --muted-text: #6c757d;
+            --border: #e0e0e0; --shadow: rgba(0, 0, 0, 0.05);
+            --success: #27ae60;
+        }
 
-    /* Struktur Halaman & Konten */
-    .page {
-      display: none; /* Sembunyikan semua halaman secara default */
-      padding: 15px;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    .page.active {
-      display: block; /* Tampilkan hanya halaman yang aktif */
-    }
+        body {
+            font-family: 'Poppins', sans-serif; background-color: var(--bg);
+            color: var(--text); margin: 0; padding-bottom: 80px;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .page {
+            display: none; padding: 0;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .page.active { display: block; }
 
-    /* Header Atas */
-    .top-header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 20px 15px;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-    }
-    .balance-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .balance-info .amount {
-      font-size: 1.8em;
-      font-weight: 700;
-    }
-    .header-actions {
-      display: flex;
-      justify-content: space-around;
-      background-color: rgba(255, 255, 255, 0.95);
-      margin: -40px 15px 10px 15px;
-      padding: 15px 0;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      position: relative;
-      z-index: 2;
-    }
-    .action-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: var(--text);
-      font-weight: 600;
-      font-size: 0.9em;
-      text-decoration: none;
-    }
-    .action-item i {
-      font-size: 1.5em;
-      color: var(--primary);
-    }
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -8px;
-      background-color: #e74c3c;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 0.7em;
-      font-weight: bold;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Universal Padding untuk Konten Halaman */
+        .page-content {
+            padding: 15px;
+        }
 
-    /* Grid Kategori di Beranda */
-    h2.section-title {
-        font-size: 1.2em;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-    }
-    .category-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      background-color: var(--card);
-      padding: 15px 5px;
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--text);
-      font-size: 0.8em;
-      font-weight: 500;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .category-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-    .category-item .icon-wrapper {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    .category-item img {
-      width: 32px;
-      height: 32px;
-    }
-    #more-categories {
-      display: none; /* Kategori tambahan disembunyikan */
-    }
+        /* Header Atas */
+        .top-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 20px 15px;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+        }
+        .balance-info {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px;
+        }
+        .balance-info .amount { font-size: 1.8em; font-weight: 700; }
+        .header-actions {
+            display: flex; justify-content: space-around;
+            background-color: rgba(255, 255, 255, 0.95);
+            margin: -40px 15px 10px 15px; padding: 15px 0;
+            border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative; z-index: 2;
+        }
+        .action-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 8px; color: var(--text); font-weight: 600;
+            font-size: 0.9em; text-decoration: none;
+        }
+        .action-item i { font-size: 1.5em; color: var(--primary); }
+        .notification-badge {
+            position: absolute; top: -5px; right: -8px;
+            background-color: #e74c3c; color: white; border-radius: 50%;
+            padding: 2px 6px; font-size: 0.7em; font-weight: bold;
+        }
 
-    /* Navigasi Bawah */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 70px;
-      background-color: var(--card);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-      z-index: 1000;
-      border-top: 1px solid var(--border);
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: var(--muted-text);
-      font-size: 0.8em;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-    .nav-item i {
-      font-size: 1.5em;
-      margin-bottom: 4px;
-    }
-    .nav-item.active {
-      color: var(--primary); /* Warna untuk item navigasi yang aktif */
-    }
-    
-    /* Efek Loading (akan kita pakai nanti) */
-    .skeleton {
-        animation: skeleton-loading 1s linear infinite alternate;
-        border-radius: 5px;
-    }
-    @keyframes skeleton-loading {
-        from { background-color: #e2e2e2; }
-        to { background-color: #f2f2f2; }
-    }
+        /* Grid Kategori */
+        h2.section-title {
+            font-size: 1.2em; font-weight: 600; margin-bottom: 15px;
+        }
+        .category-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+        }
+        .category-item {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; background-color: var(--card);
+            padding: 15px 5px; border-radius: 12px; text-decoration: none;
+            color: var(--text); font-size: 0.8em; font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .category-item:hover {
+            transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .category-item img { width: 32px; height: 32px; margin-bottom: 8px; }
+        #more-categories { display: none; }
 
-  </style>
+        /* Halaman Pemesanan (Order Page) */
+        .order-header {
+            display: flex; align-items: center; gap: 15px;
+            padding: 15px; background-color: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .order-header .back-btn { font-size: 1.5em; color: var(--text); }
+        .order-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; }
+        .input-container {
+            background-color: var(--card); padding: 15px;
+            border-radius: 12px; margin-top: 15px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        #nomor-input {
+            width: 100%; border: none; font-size: 1.2em;
+            outline: none; background: transparent;
+        }
+        .product-list-container { margin-top: 20px; }
+        .product-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--card); padding: 15px;
+            border-radius: 10px; margin-bottom: 10px; cursor: pointer;
+            border: 1px solid var(--border); transition: all 0.2s ease;
+        }
+        .product-item:hover {
+            border-color: var(--primary); transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .product-item .product-name { font-weight: 600; }
+        .product-item .product-price { font-weight: 700; color: var(--success); }
+        .operator-detected {
+            text-align: center; padding: 10px; font-weight: 600;
+            font-size: 1.1em; color: var(--primary);
+        }
+
+        /* Navigasi Bawah */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background-color: var(--card); display: flex; justify-content: space-around;
+            align-items: center; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 1000; border-top: 1px solid var(--border);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            text-decoration: none; color: var(--muted-text); font-size: 0.8em;
+            font-weight: 500; transition: color 0.2s ease;
+        }
+        .nav-item i { font-size: 1.5em; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+    </style>
 </head>
 
 <body>
-  <div id="app-container">
-    
-    <section id="home-page" class="page active">
-        <header class="top-header">
-            <div class="balance-info">
-                <div>
-                    <span style="opacity: 0.8;">Saldo Anda</span>
-                    <div class="amount">Rp 2.139</div>
+    <div id="app-container">
+        <section id="home-page" class="page active">
+            <header class="top-header">
+                <div class="balance-info">
+                    <div>
+                        <span style="opacity: 0.8;">Saldo Anda</span>
+                        <div class="amount">Rp 2.139</div>
+                    </div>
+                    <div style="position: relative;"><i class="fas fa-bell fa-lg"></i><span class="notification-badge">65</span></div>
                 </div>
-                <div style="position: relative;">
-                    <i class="fas fa-bell fa-lg"></i>
-                    <span class="notification-badge">65</span>
+            </header>
+            <div class="header-actions">
+                <a href="#" class="action-item"><i class="fas fa-wallet"></i><span>Deposit</span></a>
+                <a href="#" class="action-item"><i class="fas fa-paper-plane"></i><span>Transfer</span></a>
+                <a href="#" class="action-item"><i class="fas fa-history"></i><span>Riwayat</span></a>
+            </div>
+            <div class="page-content">
+                <h2 class="section-title">Kategori</h2>
+                <div id="category-grid-container" class="category-grid"></div>
+            </div>
+        </section>
+
+        <section id="transaksi-page" class="page"><div class="page-content"><h2>Riwayat Transaksi</h2></div></section>
+        <section id="saldo-page" class="page"><div class="page-content"><h2>Info Saldo</h2></div></section>
+        <section id="favorit-page" class="page"><div class="page-content"><h2>Produk Favorit</h2></div></section>
+        <section id="akun-page" class="page"><div class="page-content"><h2>Profil Saya</h2></div></section>
+
+        <section id="order-page" class="page">
+            <header class="order-header">
+                <a href="#" id="back-to-home" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h2 id="order-page-title">Isi Ulang Pulsa</h2>
+            </header>
+            <div class="page-content">
+                <div class="input-container">
+                    <input type="tel" id="nomor-input" placeholder="Masukkan Nomor HP">
+                </div>
+                <div id="operator-info" class="operator-detected" style="display: none;"></div>
+                <div id="product-list" class="product-list-container">
+                    <p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Daftar produk akan muncul di sini.</p>
                 </div>
             </div>
-        </header>
-
-        <div class="header-actions">
-            <a href="#" class="action-item">
-                <i class="fas fa-wallet"></i>
-                <span>Deposit</span>
-            </a>
-            <a href="#" class="action-item">
-                <i class="fas fa-paper-plane"></i>
-                <span>Transfer</span>
-            </a>
-            <a href="#" class="action-item">
-                <i class="fas fa-history"></i>
-                <span>Riwayat</span>
-            </a>
-        </div>
-        
-        <h2 class="section-title">Kategori</h2>
-        <div id="category-grid-container" class="category-grid">
-            </div>
-    </section>
-
-    <section id="transaksi-page" class="page">
-        <h2>Riwayat Transaksi</h2>
-        <p>Halaman ini akan menampilkan daftar transaksi Anda.</p>
         </section>
+    </div>
 
-    <section id="saldo-page" class="page">
-        <h2>Info Saldo</h2>
-        <p>Halaman ini akan menampilkan detail saldo, tambah saldo, dan transfer.</p>
-        </section>
-    
-    <section id="favorit-page" class="page">
-        <h2>Produk Favorit</h2>
-        <p>Halaman ini akan menampilkan produk yang sering Anda beli.</p>
-        </section>
+    <nav class="bottom-nav">
+        <a href="#home" data-page="home-page" class="nav-item active"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="#transaksi" data-page="transaksi-page" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transaksi</span></a>
+        <a href="#saldo" data-page="saldo-page" class="nav-item"><i class="fas fa-wallet"></i><span>Saldo</span></a>
+        <a href="#favorit" data-page="favorit-page" class="nav-item"><i class="fas fa-heart"></i><span>Favorit</span></a>
+        <a href="#akun" data-page="akun-page" class="nav-item"><i class="fas fa-user"></i><span>Akun</span></a>
+    </nav>
 
-    <section id="akun-page" class="page">
-        <h2>Profil Saya</h2>
-        <p>Halaman ini akan menampilkan detail akun dan pengaturan.</p>
-        </section>
-    
-    <section id="order-page" class="page">
-        </section>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        // === KONFIGURASI FIREBASE ===
+        // Pastikan konfigurasi ini sesuai dengan proyek Firebase kamu
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+            authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+            databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+            projectId: "asdarstoredigitalll-d89c4",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const dbFS = firebase.firestore();
 
-  </div>
+        // === DATA & ELEMEN DOM ===
+        const nomorInput = document.getElementById('nomor-input');
+        const productListContainer = document.getElementById('product-list');
+        const operatorInfo = document.getElementById('operator-info');
 
-  <nav class="bottom-nav">
-    <a href="#home" data-page="home-page" class="nav-item active">
-      <i class="fas fa-home"></i>
-      <span>Home</span>
-    </a>
-    <a href="#transaksi" data-page="transaksi-page" class="nav-item">
-      <i class="fas fa-exchange-alt"></i>
-      <span>Transaksi</span>
-    </a>
-    <a href="#saldo" data-page="saldo-page" class="nav-item">
-      <i class="fas fa-wallet"></i>
-      <span>Saldo</span>
-    </a>
-    <a href="#favorit" data-page="favorit-page" class="nav-item">
-      <i class="fas fa-heart"></i>
-      <span>Favorit</span>
-    </a>
-    <a href="#akun" data-page="akun-page" class="nav-item">
-      <i class="fas fa-user"></i>
-      <span>Akun</span>
-    </a>
-  </nav>
+        // Penjelasan: Ini adalah "kamus" prefix nomor HP.
+        // Kunci (key) adalah 4 digit awal, nilai (value) adalah nama operator (harus sama dengan nama di database).
+        const prefixMapping = {
+            '0811': 'Telkomsel', '0812': 'Telkomsel', '0813': 'Telkomsel', '0821': 'Telkomsel',
+            '0822': 'Telkomsel', '0823': 'Telkomsel', '0851': 'Telkomsel', '0852': 'Telkomsel', '0853': 'Telkomsel',
+            '0817': 'XL', '0818': 'XL', '0819': 'XL', '0859': 'XL', '0877': 'XL', '0878': 'XL',
+            '0814': 'Indosat', '0815': 'Indosat', '0816': 'Indosat', '0855': 'Indosat',
+            '0856': 'Indosat', '0857': 'Indosat', '0858': 'Indosat',
+            '0895': 'Tri', '0896': 'Tri', '0897': 'Tri', '0898': 'Tri', '0899': 'Tri',
+            '0881': 'Smartfren', '0882': 'Smartfren', '0883': 'Smartfren', '0884': 'Smartfren', '0889': 'Smartfren'
+            // Tambahkan prefix lain jika perlu
+        };
 
-  <script>
-    /* Penjelasan JavaScript:
-       - Kita akan fokus pada navigasi dan pembuatan grid kategori terlebih dahulu.
-       - Kode Firebase dan logika form yang lama sengaja saya hapus sementara agar kita bisa fokus pada struktur.
-         Kita akan mengintegrasikannya kembali di langkah berikutnya.
-    */
+        // === INISIALISASI APLIKASI ===
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            renderCategories();
+            showPage('home-page');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Fungsi Utama yang dijalankan saat halaman siap
-        setupNavigation();
-        renderCategories();
-        showPage('home-page'); // Tampilkan halaman beranda saat pertama kali dibuka
-    });
+            // Tambahkan event listener untuk input nomor dan tombol kembali
+            nomorInput.addEventListener('input', handleNumberInput);
+            document.getElementById('back-to-home').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home-page'); // Kembali ke halaman Beranda
+            });
+        });
 
-    // --- FUNGSI NAVIGASI ---
-    function setupNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', (event) => {
-                event.preventDefault(); // Mencegah pindah halaman standar
+        // --- FUNGSI NAVIGASI (Sama seperti sebelumnya) ---
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = item.dataset.page;
+                    showPage(pageId);
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+        }
+
+        // --- FUNGSI RENDER KATEGORI (Dimodifikasi untuk membuka halaman pemesanan) ---
+        function renderCategories() {
+            const categories = [
+                { id: 'pulsa', name: 'Pulsa', img: 'https://i.ibb.co/L8yv4z3/smartphone-call.png' },
+                { id: 'paket-data', name: 'Paket Data', img: 'https://i.ibb.co/nMSgC5T/transfer.png' },
+                { id: 'token-pln', name: 'Token PLN', img: 'https://i.ibb.co/mF9g9J3/lightning.png' },
+                // ... Tambahkan kategori lain
+            ];
+            const container = document.getElementById('category-grid-container');
+            container.innerHTML = '';
+            categories.forEach(cat => {
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'category-item';
+                item.innerHTML = `<img src="${cat.img}" alt="${cat.name}"><span>${cat.name}</span>`;
                 
-                const pageId = item.dataset.page;
-                showPage(pageId);
-
-                // Update tampilan aktif pada navigasi
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
+                // Saat kategori diklik, panggil fungsi untuk membuka halaman pemesanan
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openOrderPage(cat.name);
+                });
+                container.appendChild(item);
             });
-        });
-    }
-
-    function showPage(pageId) {
-        // Sembunyikan semua halaman
-        const pages = document.querySelectorAll('.page');
-        pages.forEach(page => {
-            page.classList.remove('active');
-        });
-
-        // Tampilkan halaman yang diminta
-        const targetPage = document.getElementById(pageId);
-        if (targetPage) {
-            targetPage.classList.add('active');
         }
-    }
+        
+        // --- FUNGSI HALAMAN PEMESANAN ---
+        
+        // Fungsi ini dipanggil saat kategori di Beranda diklik
+        function openOrderPage(categoryName) {
+            // Atur judul halaman sesuai kategori yang dipilih
+            document.getElementById('order-page-title').textContent = categoryName;
+            
+            // Reset input dan daftar produk
+            nomorInput.value = '';
+            operatorInfo.style.display = 'none';
+            productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Daftar produk akan muncul di sini.</p>`;
 
-    // --- FUNGSI RENDER KATEGORI DI BERANDA ---
-    function renderCategories() {
-        const categories = [
-            // Data ini meniru tampilan di video. Bisa diambil dari Firebase nanti.
-            { name: 'Pulsa', img: 'https://i.ibb.co/L8yv4z3/smartphone-call.png' },
-            { name: 'Transfer Pulsa', img: 'https://i.ibb.co/nMSgC5T/transfer.png' },
-            { name: 'Token PLN', img: 'https://i.ibb.co/mF9g9J3/lightning.png' },
-            { name: 'MAXIM', img: 'https://i.ibb.co/k2q2WkS/maxim.png' },
-            { name: 'Grab Driver', img: 'https://i.ibb.co/HCStCj8/grab.png' },
-            { name: 'inDrive', img: 'https://i.ibb.co/3kMv31z/indrive.png' },
-            { name: 'Gojek Driver', img: 'https://i.ibb.co/jvkYcf5/gojek.png' },
-            { name: 'Kuota Tri', img: 'https://i.ibb.co/wMdC7sD/3.png' },
-            { name: 'Kuota Indosat', img: 'https://i.ibb.co/q0tL17D/indosat.png' },
-            { name: 'Kuota Smartfren', img: 'https://i.ibb.co/yQWdFTh/sf.png' },
-            { name: 'by.U', img: 'https://i.ibb.co/7C96Tjx/byu.png' },
-            { name: 'Lainnya', img: 'https://i.ibb.co/GQLD5Z1/dots.png', isMore: true } // Tombol 'Lainnya'
-        ];
-        
-        const moreCategories = [
-            { name: 'Kuota Telkomsel', img: 'https://i.ibb.co/yBTb4F7/telkomsel.png' },
-            { name: 'Kuota AXIS', img: 'https://i.ibb.co/yF3mNKt/axis.png' },
-            { name: 'ShopeePay', img: 'https://i.ibb.co/pwnqgHx/shopeepay.png' },
-            { name: 'DANA', img: 'https://i.ibb.co/D9yP1hF/dana.png' },
-            // ... Tambahkan kategori "lainnya" di sini
-        ];
+            // Tampilkan halaman pemesanan
+            showPage('order-page');
+        }
 
-        const container = document.getElementById('category-grid-container');
-        container.innerHTML = ''; // Kosongkan kontainer
+        // Fungsi ini berjalan setiap kali ada ketikan di input nomor
+        let debounceTimer;
+        function handleNumberInput() {
+            clearTimeout(debounceTimer);
+            const number = nomorInput.value;
+            productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Mengecek nomor...</p>`;
+            
+            // Debounce untuk mencegah pencarian di setiap ketikan, tunggu 300ms
+            debounceTimer = setTimeout(() => {
+                if (number.length >= 4) {
+                    const prefix = number.substring(0, 4);
+                    const operator = prefixMapping[prefix];
 
-        // Tampilkan kategori utama
-        categories.forEach(cat => {
-            const item = createCategoryItem(cat);
-            container.appendChild(item);
-        });
-        
-        // Tampilkan kategori "Lainnya" yang tersembunyi
-        const moreGrid = document.createElement('div');
-        moreGrid.className = 'category-grid';
-        moreGrid.id = 'more-categories';
-        
-        moreCategories.forEach(cat => {
-            const item = createCategoryItem(cat);
-            moreGrid.appendChild(item);
-        });
-        container.appendChild(moreGrid);
-    }
-    
-    function createCategoryItem(category) {
-        const item = document.createElement('a');
-        item.href = '#';
-        item.className = 'category-item';
-        item.innerHTML = `
-            <div class="icon-wrapper">
-                <img src="${category.img}" alt="${category.name}">
-            </div>
-            <span>${category.name}</span>
-        `;
-        
-        // Tambahkan event listener khusus untuk tombol "Lainnya"
-        if (category.isMore) {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const moreCategoriesDiv = document.getElementById('more-categories');
-                // Toggle tampilan kategori tambahan
-                if (moreCategoriesDiv.style.display === 'grid') {
-                    moreCategoriesDiv.style.display = 'none';
+                    if (operator) {
+                        operatorInfo.textContent = `Operator Terdeteksi: ${operator}`;
+                        operatorInfo.style.display = 'block';
+                        fetchProducts(operator);
+                    } else {
+                        operatorInfo.style.display = 'none';
+                        productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Operator tidak dikenali.</p>`;
+                    }
                 } else {
-                    moreCategoriesDiv.style.display = 'grid';
+                    operatorInfo.style.display = 'none';
+                    productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Ketik minimal 4 digit nomor.</p>`;
                 }
-                item.style.display = 'none'; // Sembunyikan tombol "Lainnya" setelah diklik
-            });
-        } else {
-            // Logika untuk kategori lain (akan kita kembangkan)
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert(`Anda mengklik kategori: ${category.name}`);
-                // Nanti ini akan memanggil showPage('order-page') dan menyiapkan form
-            });
+            }, 300);
         }
-        
-        return item;
-    }
 
-  </script>
+        // Fungsi untuk mengambil data produk dari Firebase
+        async function fetchProducts(operatorName) {
+            productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Memuat produk untuk ${operatorName}...</p>`;
+            
+            try {
+                // Asumsi: Kamu punya koleksi 'produk' di Firestore
+                // dan setiap dokumen produk punya field 'kategori' (cth: 'Pulsa') & 'brand' (cth: 'Telkomsel')
+                const querySnapshot = await dbFS.collection('produk')
+                                                .where('brand', '==', operatorName) // Filter berdasarkan brand/operator
+                                                .where('kategori', '==', 'Pulsa') // Filter berdasarkan kategori
+                                                .get();
+
+                if (querySnapshot.empty) {
+                    productListContainer.innerHTML = `<p style="text-align: center; color: var(--muted-text); margin-top: 20px;">Tidak ada produk ditemukan untuk ${operatorName}.</p>`;
+                    return;
+                }
+                
+                // Kosongkan kontainer dan tampilkan produk yang ditemukan
+                productListContainer.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const product = doc.data();
+                    const productElement = document.createElement('div');
+                    productElement.className = 'product-item';
+                    
+                    // Format harga ke Rupiah
+                    const formattedPrice = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(product.harga_umum);
+
+                    productElement.innerHTML = `
+                        <div class="product-info">
+                            <div class="product-name">${product.nama_produk}</div>
+                        </div>
+                        <div class="product-price">${formattedPrice}</div>
+                    `;
+                    
+                    productElement.addEventListener('click', () => {
+                        // Logika selanjutnya, misal konfirmasi pembelian
+                        alert(`Anda memilih: ${product.nama_produk} seharga ${formattedPrice}`);
+                    });
+                    
+                    productListContainer.appendChild(productElement);
+                });
+
+            } catch (error) {
+                console.error("Gagal mengambil produk: ", error);
+                productListContainer.innerHTML = `<p style="text-align: center; color: #e74c3c; margin-top: 20px;">Terjadi kesalahan saat memuat produk.</p>`;
+            }
+        }
+    </script>
 </body>
 </html>
