@@ -31,34 +31,42 @@
         }
         #app-container { max-width: 700px; margin: 0 auto; padding: 20px; }
 
-        /* Gaya Navigasi, Header, Kartu, Grid, Form, dll. */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 700px; margin: 0 auto; background: var(--card); display: flex; justify-content: space-around; box-shadow: 0 -5px 20px var(--shadow); border-top: 1px solid var(--border); z-index: 1001; }
-        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; padding: 10px 12px; text-decoration: none; color: var(--muted-text); gap: 4px; transition: color 0.2s ease; border: none; background: none; cursor: pointer; }
-        .bottom-nav-item i { font-size: 20px; }
-        .bottom-nav-item span { font-size: 12px; }
-        .bottom-nav-item.active { color: var(--primary); font-weight: 600; }
+        /* Gaya Umum */
+        .section-container { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); margin-top: 20px; }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+        button, .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; text-align: center; text-decoration: none; display: inline-block; }
+        .btn-danger { background-color: var(--danger); }
 
+        /* Gaya Navigasi & Header */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 700px; margin: 0 auto; background: var(--card); display: flex; justify-content: space-around; box-shadow: 0 -5px 20px var(--shadow); border-top: 1px solid var(--border); z-index: 1001; }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; padding: 10px 12px; text-decoration: none; color: var(--muted-text); gap: 4px; border: none; background: none; cursor: pointer; }
+        .bottom-nav-item.active { color: var(--primary); font-weight: 600; }
         #header-dashboard, #header-pesanan { background-color: var(--primary); color: white; padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 1000; }
         #header-dashboard h1 { font-size: 20px; font-weight: 600; margin: 0; }
         #header-pesanan h1 { flex-grow: 1; text-align: center; font-size: 20px; margin: 0; }
         .back-btn { background: none; border: none; font-size: 22px; color: white; cursor: pointer; padding-right: 15px; }
 
+        /* Gaya Dashboard */
         .info-card { background: var(--card); border-radius: 12px; padding: 15px; margin-top: 20px; box-shadow: 0 10px 25px var(--shadow); display: flex; justify-content: space-around; align-items: center; text-align: center; }
-        .info-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .info-item a { text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .info-value { font-size: 16px; font-weight: 600; }
         .kategori-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .kategori-item { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: var(--text); }
-        .kategori-icon { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px; transition: transform 0.2s ease; background-color: var(--bg); }
+        .kategori-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text); }
+        .kategori-icon { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px; background-color: var(--bg); }
         
-        .section-container { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); margin-top: 20px; }
-        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+        /* Gaya Form Pesanan */
         label { font-weight: 600; margin-top: 15px; display: block; }
         input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text); }
-        button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.2s ease; }
-        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-        .info { background: var(--card); padding: 15px; margin-top: 1rem; border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow); }
-        .notification { padding: 15px; margin-bottom: 15px; border-radius: 8px; font-weight: 600; display: none; text-align: center; }
+        .info { background: var(--card); padding: 15px; margin-top: 1rem; border-left: 5px solid var(--primary); border-radius: 8px; }
+
+        /* Gaya Halaman Status */
+        .status-badge { padding: 8px 15px; border-radius: 50px; font-weight: 600; color: white; display: inline-block; margin: 10px 0; }
+        .status-menunggu-pembayaran, .status-menunggu-verifikasi { background-color: #f0ad4e; }
+        .status-diproses { background-color: #3498db; }
+        .status-selesai { background-color: #28a745; }
+        .status-dibatalkan, .status-ditolak { background-color: #e74c3c; }
+        .status-detail-item { background-color: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left; }
+        .payment-instruction-box { margin-top: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 10px; background-color: var(--bg); }
+        .promo-card { background: linear-gradient(145deg, #3498db, #1a1a2e); color: #ffffff; padding: 20px; border-radius: 18px; margin-top: 25px; text-align: center; }
+        .copy-btn { padding: 6px 12px; }
     </style>
 </head>
 <body data-theme="dark">
@@ -72,11 +80,7 @@
     
     <template id="template-dashboard">
         <header id="header-dashboard"><h1>Asdar Store</h1></header>
-        <div class="info-card" data-aos="fade-down">
-            <div class="info-item">
-                <span class="info-value" id="user-balance">Rp 0</span>
-            </div>
-        </div>
+        <div class="info-card" data-aos="fade-down"><div class="info-item"><span id="user-info">Silakan login</span></div></div>
         <div class="section-container" data-aos="fade-up">
             <h2 class="section-title">Kategori Populer</h2>
             <div class="kategori-grid">
@@ -89,17 +93,12 @@
     </template>
     
     <template id="template-order">
-        <header id="header-pesanan">
-            <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
-            <h1>Formulir Pesanan</h1>
-        </header>
+        <header id="header-pesanan"><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h1>Formulir Pesanan</h1></header>
         <div class="section-container" id="order-form-container">
-            <div id="existing-order-notification" style="display: none;"></div>
             <form id="formPesanan">
-                <div id="formNotification" class="notification"></div>
                 <label for="nama">Nama Lengkap</label><input type="text" id="nama" required />
                 <label for="nomor">Nomor HP / ID Game</label><input type="text" id="nomor" required />
-                <label for="waAktif">Nomor WhatsApp Aktif</label><input type="tel" id="waAktif" pattern="^08[0-9]{8,15}$" required />
+                <label for="waAktif">Nomor WhatsApp</label><input type="tel" id="waAktif" pattern="^08[0-9]{8,15}$" required />
                 <label for="kategori">Kategori</label><select id="kategori" required></select>
                 <label for="produk">Produk</label><select id="produk" required></select>
                 <div class="info" id="infoProduk"></div>
@@ -111,25 +110,34 @@
     
     <template id="template-account">
         <header id="header-pesanan"><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h1>Akun Saya</h1></header>
-        <div class="section-container" id="cek-status-container">
+        <div class="section-container">
             <h2>Cek Status Pesanan</h2>
-            <form id="cekStatusForm"><input type="text" id="idCek" required /><button type="submit">Cek</button></form>
+            <form id="cekStatusForm">
+                <label for="idCek">Masukkan ID Pesanan</label>
+                <input type="text" id="idCek" placeholder="Contoh: P123456789" required />
+                <button type="submit">Cek Status</button>
+            </form>
         </div>
         <div class="section-container" id="auth-buttons-container"></div>
     </template>
+    
+    <template id="template-status">
+        <header id="header-pesanan"><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h1>Status Pesanan</h1></header>
+        <div class="section-container" id="status-content">
+            <p>Memuat status...</p>
+        </div>
+    </template>
+    
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
     <script>
         // === KONFIGURASI FIREBASE ===
         const firebaseConfig = {
             apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
             authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
-            databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
             projectId: "asdarstoredigitalll-d89c4",
         };
         firebase.initializeApp(firebaseConfig);
@@ -140,31 +148,28 @@
         let currentUser = null;
         let allCategories = new Set();
         let allProducts = [];
+        let unsubscribeStatus; // Untuk listener real-time
 
         // === MANAJEMEN HALAMAN / ROUTER ===
         const appContainer = document.getElementById('app-container');
         
-        const loadPage = (pageName) => {
+        const loadPage = (pageName, payload = {}) => {
+            if (unsubscribeStatus) unsubscribeStatus(); // Hentikan listener lama saat pindah halaman
             const template = document.getElementById(`template-${pageName}`);
             if (!template) return;
-            
-            const content = template.content.cloneNode(true);
             appContainer.innerHTML = '';
-            appContainer.appendChild(content);
+            appContainer.appendChild(template.content.cloneNode(true));
             AOS.init({ duration: 600, once: true, offset: 20 });
             
-            // Jalankan fungsi inisialisasi untuk halaman yang sesuai
             if (pageName === 'dashboard') initDashboardPage();
             else if (pageName === 'order') initOrderPage();
             else if (pageName === 'account') initAccountPage();
+            else if (pageName === 'status') initStatusPage(payload.orderId);
         };
 
         const initDashboardPage = () => {
-            if (currentUser) {
-                document.getElementById('user-balance').textContent = currentUser.displayName || 'User';
-            } else {
-                document.getElementById('user-balance').textContent = 'Login';
-            }
+            const userInfoEl = document.getElementById('user-info');
+            userInfoEl.textContent = currentUser ? currentUser.displayName || 'Selamat Datang' : 'Silakan Login';
             document.querySelectorAll('.kategori-item').forEach(item => {
                 item.addEventListener('click', e => {
                     e.preventDefault();
@@ -175,114 +180,103 @@
         };
         
         const initOrderPage = () => {
-            const backBtn = appContainer.querySelector('.back-btn');
-            backBtn.addEventListener('click', () => loadPage('dashboard'));
-
-            const fields = {
-                kategori: document.getElementById('kategori'),
-                produk: document.getElementById('produk'),
-                nextBtn: document.getElementById('nextToPaymentBtn')
-            };
-
-            fields.kategori.addEventListener('change', () => handleCategoryChange(fields));
-            fields.produk.addEventListener('change', () => handleProductSelection(fields));
-            // Tambahkan event listener lain yang relevan di sini
-
-            // Isi dropdown kategori
-            fields.kategori.innerHTML = '<option value="">Pilih</option>';
-            allCategories.forEach(cat => {
-                fields.kategori.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
-
-            const selectedCategory = sessionStorage.getItem('selectedCategory');
-            if (selectedCategory) {
-                fields.kategori.value = selectedCategory;
-                handleCategoryChange(fields); // Panggil langsung untuk memuat produk
-            }
+            appContainer.querySelector('.back-btn').addEventListener('click', () => loadPage('dashboard'));
+            // (Logika form order akan di-attach di sini)
         };
 
         const initAccountPage = () => {
-            const backBtn = appContainer.querySelector('.back-btn');
-            backBtn.addEventListener('click', () => loadPage('dashboard'));
-
+            appContainer.querySelector('.back-btn').addEventListener('click', () => loadPage('dashboard'));
             const authContainer = document.getElementById('auth-buttons-container');
             if (currentUser) {
-                authContainer.innerHTML = `<button id="logout-btn">Logout</button>`;
+                authContainer.innerHTML = `<button id="logout-btn" class="btn-danger">Logout</button>`;
                 document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
             } else {
-                authContainer.innerHTML = `<p>Silakan login untuk mengakses fitur lengkap.</p>`;
+                authContainer.innerHTML = `<p>Login untuk pengalaman terbaik.</p>`;
             }
-            
-            const cekStatusForm = document.getElementById('cekStatusForm');
-            cekStatusForm.addEventListener('submit', event => {
+            document.getElementById('cekStatusForm').addEventListener('submit', event => {
                 event.preventDefault();
-                // Panggil fungsi cek status Anda di sini
-                // const idCek = document.getElementById('idCek').value;
-                // cekStatus(idCek);
-                alert("Fitur cek status belum dihubungkan di UI baru ini.");
+                const orderId = document.getElementById('idCek').value.trim();
+                if(orderId) loadPage('status', { orderId });
             });
         };
         
-        // === LOGIKA INTI APLIKASI (FUNGSI-FUNGSI LAMA) ===
-        const preloadData = async () => {
-            const querySnapshot = await dbFS.collection('produk').get();
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                allProducts.push({ id: doc.id, ...data });
-                if (data.kategori) allCategories.add(data.kategori.toUpperCase());
-            });
-        };
-
-        const handleCategoryChange = (fields) => {
-            const kategori = fields.kategori.value;
-            fields.produk.innerHTML = '<option value="">Pilih</option>';
-            if (!kategori) return;
-
-            const productsInCategory = allProducts
-                .filter(p => p.kategori.toUpperCase() === kategori)
-                .sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
-
-            productsInCategory.forEach(prod => {
-                fields.produk.innerHTML += `<option value="${prod.id}">${prod.nama_produk}</option>`;
-            });
-        };
-        
-        const handleProductSelection = (fields) => {
-            const produkId = fields.produk.value;
-            if (!produkId) return;
-            
-            const selectedProduct = allProducts.find(p => p.id === produkId);
-            const infoEl = document.getElementById('infoProduk');
-            const nextBtn = document.getElementById('nextToPaymentBtn');
-
-            if (selectedProduct) {
-                infoEl.innerHTML = `<b>Harga:</b> Rp ${selectedProduct.harga_umum}<br><b>Stok:</b> ${selectedProduct.stok}`;
-                nextBtn.disabled = !selectedProduct.stok || selectedProduct.stok <= 0;
+        // --- LOGIKA HALAMAN STATUS (TERINTEGRASI) ---
+        const initStatusPage = (orderId) => {
+            appContainer.querySelector('.back-btn').addEventListener('click', () => loadPage('account'));
+            if (!orderId) {
+                document.getElementById('status-content').innerHTML = `<h2>ID Pesanan tidak valid.</h2>`;
+                return;
             }
+
+            const docRef = dbFS.collection('pesananUmum').doc(orderId);
+            unsubscribeStatus = docRef.onSnapshot(async doc => {
+                if (doc.exists) {
+                    await renderStatus(orderId, doc.data());
+                } else {
+                    document.getElementById('status-content').innerHTML = `<h2>Pesanan tidak ditemukan.</h2>`;
+                }
+            }, err => {
+                console.error("Error listener status:", err);
+                document.getElementById('status-content').innerHTML = `<h2>Gagal memuat status.</h2>`;
+            });
         };
 
-        // (Salin fungsi-fungsi penting lainnya dari kode lama Anda ke sini jika diperlukan)
+        const renderStatus = async (orderId, data) => {
+            const statusContent = document.getElementById('status-content');
+            if (!statusContent) return; // Halaman sudah diganti
+            
+            const statusClass = (data.status || '').toLowerCase().replace(/ /g, '-');
+            let additionalInfo = '';
 
+            if (data.status === 'Menunggu Pembayaran') {
+                additionalInfo = await generatePaymentInstructions(data);
+            } else if (data.status === 'Selesai') {
+                const pesanPromo = encodeURIComponent(`Asli, aku baru nemu store digital favorit! Prosesnya cepet, aman, dan terpercaya banget. Kalau kamu butuh top-up atau lainnya, coba cek di sini deh!`);
+                additionalInfo = `<div class="promo-card"><h5>Terima Kasih!</h5><p>Bagikan pengalamanmu & dapatkan bonus di pesanan selanjutnya.</p><a href="https://wa.me/?text=${pesanPromo}" target="_blank" class="btn">Bagikan via WhatsApp</a></div>`;
+            }
+
+            statusContent.innerHTML = `
+                <h2>Status: <span class="status-badge ${statusClass}">${data.status}</span></h2>
+                <div class="status-detail-item"><strong>ID:</strong> <code>${orderId}</code></div>
+                <div class="status-detail-item"><strong>Produk:</strong> ${data.produk}</div>
+                <div class="status-detail-item"><strong>Total:</strong> Rp ${data.harga_final}</div>
+                ${additionalInfo}
+            `;
+        };
+
+        const generatePaymentInstructions = async (orderData) => {
+            // Logika untuk menampilkan instruksi pembayaran Anda yang canggih bisa diletakkan di sini
+            // Untuk demo, kita buat sederhana:
+            return `
+                <div class="payment-instruction-box">
+                    <h4>Lanjutkan Pembayaran</h4>
+                    <p>Silakan transfer sebesar <strong>Rp ${orderData.harga_final}</strong> ke metode pembayaran yang Anda pilih.</p>
+                    <a href="upload.html?id=${orderData.id}" class="btn">Upload Bukti Bayar</a>
+                </div>
+            `;
+        };
+        
         // === INISIALISASI APLIKASI ===
         document.querySelector('.bottom-nav').addEventListener('click', e => {
             const targetButton = e.target.closest('.bottom-nav-item');
             if (targetButton && !targetButton.classList.contains('active')) {
-                loadPage(targetButton.dataset.page);
                 document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
                 targetButton.classList.add('active');
+                loadPage(targetButton.dataset.page);
             }
         });
 
         auth.onAuthStateChanged(user => {
             currentUser = user;
-            // Muat ulang halaman saat status login berubah agar UI terupdate
-            loadPage('dashboard');
-        });
-
-        // Jalankan saat halaman pertama kali dibuka
-        document.addEventListener('DOMContentLoaded', async () => {
-            await preloadData();
-            loadPage('dashboard'); // Tampilkan halaman dashboard sebagai default
+            if (!appContainer.innerHTML) { // Hanya muat saat pertama kali
+                 preloadData().then(() => {
+                    loadPage('dashboard');
+                 });
+            } else { // Jika sudah ada halaman, cukup refresh dashboard untuk update UI
+                if(document.querySelector("#header-dashboard h1")) {
+                     initDashboardPage();
+                }
+            }
         });
     </script>
 </body>
