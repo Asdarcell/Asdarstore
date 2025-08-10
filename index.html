@@ -31,12 +31,12 @@
     }
     header h1 { margin: 0; font-size: 24px; color: var(--primary); }
     main { max-width: 700px; margin: 20px auto; padding: 0 20px; }
-    .header-right { display: flex; flex-direction: column; align-items: flex-end; }
+    .header-right { display: flex; align-items: center; }
     .reseller-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--success); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
     .reseller-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     .dashboard-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--primary); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
     .dashboard-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    .all-products-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9em; }
+    .shop-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9em; margin-right: 20px;}
 
     /* --- Grid Menu Styles --- */
     .grid-menu-container {
@@ -49,70 +49,27 @@
       box-shadow: 0 4px 12px var(--shadow);
     }
     .grid-menu-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 15px 10px;
-      background: var(--bg);
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--text);
-      border: 1px solid var(--border);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-      font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 15px 10px; background: var(--bg); border-radius: 10px; text-decoration: none; color: var(--text);
+      border: 1px solid var(--border); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      font-weight: 600; aspect-ratio: 1 / 1; /* Membuat item menjadi kotak */
     }
-    .grid-menu-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    .grid-menu-item i {
-      font-size: 2.2em;
-      margin-bottom: 12px;
-      color: var(--primary);
-      width: 50px;
-      height: 50px;
-      line-height: 50px;
-      transition: color 0.2s ease;
-    }
-    .grid-menu-item span {
-      font-size: 0.9em;
-    }
+    .grid-menu-item:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); border-color: var(--primary); color: var(--primary); }
+    .grid-menu-item i { font-size: 2.2em; margin-bottom: 12px; color: var(--primary); transition: color 0.2s ease; }
+    .grid-menu-item span { font-size: 0.9em; }
     
-    /* Welcome Banner */
     .welcome-banner {
-        padding: 25px;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, var(--primary), #2a7ab0);
-        color: white;
-        border-radius: 12px;
-        text-align: center;
+        padding: 25px; margin-bottom: 20px; background: linear-gradient(135deg, var(--primary), #2a7ab0);
+        color: white; border-radius: 12px; text-align: center;
     }
-    .welcome-banner h2 {
-        margin: 0 0 5px 0;
-        font-weight: 700;
-        color: white;
-    }
-    .welcome-banner p {
-        margin: 0;
-        opacity: 0.9;
-    }
-    .section-container {
-      background: var(--card);
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px var(--shadow);
-      margin-top: 20px;
-    }
-    h2 {
-      color: var(--primary);
-      margin-top: 30px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+    .welcome-banner h2 { margin: 0 0 5px 0; font-weight: 700; color: white; }
+    .welcome-banner p { margin: 0; opacity: 0.9; }
+
+    .section-container { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); margin-top: 20px; }
+    h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; }
+    label { font-weight: 600; margin-top: 15px; display: block; }
+    input { width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text); }
+    button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.2s ease; }
 
   </style>
 </head>
@@ -124,8 +81,8 @@
         <h1>Asdar Store</h1>
     </div>
     <div class="header-right">
-        <a href="index.html" class="all-products-btn mb-2">
-            <i class="fas fa-shopping-cart"></i> Mulai Belanja
+        <a href="index.html" class="shop-btn">
+            <i class="fas fa-shopping-cart"></i> Belanja
         </a>
         <div id="user-panel">
             <a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>
@@ -134,14 +91,13 @@
 </header>
   
 <main id="main-content">
-    
     <div class="welcome-banner" data-aos="fade-down">
         <h2 id="welcome-title">Selamat Datang!</h2>
         <p>Pilih layanan yang Anda butuhkan di bawah ini.</p>
     </div>
 
     <div class="grid-menu-container" data-aos="fade-up">
-        <a href="index.html?kategori=TOKEN%20LISTRIK" class="grid-menu-item">
+        <a href="index.html?kategori=TOKEN LISTRIK" class="grid-menu-item">
             <i class="fas fa-bolt"></i>
             <span>Token Listrik</span>
         </a>
@@ -149,7 +105,7 @@
             <i class="fas fa-mobile-alt"></i>
             <span>Pulsa</span>
         </a>
-        <a href="index.html?kategori=PAKET%20DATA" class="grid-menu-item">
+        <a href="index.html?kategori=PAKET DATA" class="grid-menu-item">
             <i class="fas fa-wifi"></i>
             <span>Paket Data</span>
         </a>
@@ -157,7 +113,7 @@
             <i class="fas fa-wallet"></i>
             <span>E-Wallet</span>
         </a>
-        <a href="index.html?kategori=VOUCHER%20GAME" class="grid-menu-item">
+        <a href="index.html?kategori=VOUCHER GAME" class="grid-menu-item">
             <i class="fas fa-gamepad"></i>
             <span>Voucher Game</span>
         </a>
@@ -169,7 +125,7 @@
             <i class="fas fa-question-circle"></i>
             <span>Bantuan</span>
         </a>
-        <a href="index.html#order-form-container" class="grid-menu-item">
+        <a href="index.html" class="grid-menu-item">
             <i class="fas fa-th-large"></i>
             <span>Semua Produk</span>
         </a>
@@ -178,12 +134,11 @@
     <div class="section-container" data-aos="fade-up">
         <h2>Cek Status Pesanan Anda</h2>
         <form onsubmit="event.preventDefault(); cekStatus();">
-            <label for="idCek" style="font-weight: 600; margin-top: 15px; display: block;">Masukkan ID Pesanan atau No. WhatsApp</label>
-            <input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required style="width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);" />
-            <button type="submit" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.2s ease;">Cek Status</button>
+            <label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label>
+            <input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required />
+            <button type="submit">Cek Status</button>
         </form>
     </div>
-
 </main>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -193,7 +148,6 @@
   <script>
     AOS.init({ duration: 800, once: true, offset: 50 });
 
-    // === KONFIGURASI FIREBASE ===
     const firebaseConfig = {
       apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
       authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
@@ -204,47 +158,35 @@
     const auth = firebase.auth();
     const dbFS = firebase.firestore();
 
-    // === ELEMEN DOM ===
     const userPanel = document.getElementById('user-panel');
     const welcomeTitle = document.getElementById('welcome-title');
     
-    // === AUTENTIKASI & UPDATE UI ===
     auth.onAuthStateChanged(async user => {
         if (user) {
-            // Pengguna Login
             welcomeTitle.textContent = `Hai, ${user.displayName || 'Pengguna'}!`;
             const resellerRef = dbFS.collection('resellers').doc(user.uid);
             try {
                 const resellerDoc = await resellerRef.get();
                 if (resellerDoc.exists && resellerDoc.data().status === 'active') {
-                    // Jika user adalah reseller aktif
                     userPanel.innerHTML = `
-                        <a href="reseller-dashboard.html" class="dashboard-btn mb-2"><i class="fas fa-tachometer-alt"></i><span>Dashboard Seller</span></a>
-                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                        <a href="reseller.html" class="dashboard-btn"><i class="fas fa-tachometer-alt"></i><span>Dasbor Seller</span></a>
+                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn ms-2" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i></a>
                     `;
                 } else {
-                    // Jika user adalah pengguna biasa
                     userPanel.innerHTML = `
-                        <a href="reseller.html" class="reseller-btn mb-2"><i class="fas fa-user-tie"></i><span>Jadi Seller</span></a>
-                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                        <a href="reseller.html" class="reseller-btn"><i class="fas fa-user-tie"></i><span>Jadi Seller</span></a>
+                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn ms-2" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i></a>
                     `;
                 }
             } catch (error) {
-                console.error("Gagal memeriksa status reseller:", error);
-                // Fallback jika terjadi error
-                 userPanel.innerHTML = `
-                    <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
-                `;
+                 userPanel.innerHTML = `<a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>`;
             }
         } else {
-            // Pengguna Logout
             welcomeTitle.textContent = 'Selamat Datang!';
             userPanel.innerHTML = `<a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>`;
         }
     });
 
-    // === FUNGSI CEK STATUS ===
-    // Fungsi ini akan mengarahkan pengguna ke halaman status.html dengan ID yang diinput
     function cekStatus() {
         const inputCek = document.getElementById('idCek').value.trim();
         if (inputCek) {
@@ -253,21 +195,6 @@
             alert('Silakan masukkan ID Pesanan atau Nomor WhatsApp Anda.');
         }
     }
-
-    // === Navigasi Berdasarkan URL Parameter ===
-    // Fungsi ini akan mengarahkan ke halaman index.html dan mencoba memilih kategori
-    // jika halaman dimuat dengan parameter `?kategori=NAMAKATEGORI`
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const kategori = params.get('kategori');
-        if (kategori) {
-            // Simpan di sessionStorage agar bisa diakses oleh index.html
-            sessionStorage.setItem('selectedCategory', kategori);
-            // Arahkan ke index.html
-            window.location.href = 'index.html';
-        }
-    });
-
   </script>
 </body>
 </html>
