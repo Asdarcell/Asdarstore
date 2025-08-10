@@ -63,7 +63,6 @@
     label {
       font-weight: 600;
       margin-top: 15px;
-      margin-bottom: 8px;
       display: block;
       color: var(--text-color);
     }
@@ -71,6 +70,7 @@
     input, select, textarea {
       width: 100%;
       padding: 12px;
+      margin-top: 8px;
       margin-bottom: 15px;
       border-radius: 10px;
       border: 1px solid var(--glass-border);
@@ -81,11 +81,9 @@
       transition: all 0.3s ease;
       box-sizing: border-box;
     }
-    
     input::placeholder, textarea::placeholder {
       color: var(--muted-text-color);
     }
-    
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--secondary-color);
@@ -110,7 +108,6 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    
     .all-products-btn, .reseller-btn { font-size: 0.9em; padding: 10px 16px; }
 
     button:hover, .reseller-btn:hover, .dashboard-btn:hover, .all-products-btn:hover {
@@ -118,7 +115,6 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       filter: brightness(1.1);
     }
-    
     button:disabled {
       background: #95a5a6;
       cursor: not-allowed;
@@ -160,57 +156,7 @@
       font-weight: 700;
       text-shadow: 0 1px 3px var(--shadow);
     }
-    
-    .kategori-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .kategori-item {
-      text-align: center;
-      background: var(--glass-bg);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      border-radius: 12px;
-      padding: 10px;
-      border: 2px solid transparent;
-      box-shadow: 0 2px 4px var(--shadow);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .kategori-item:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
-    .kategori-item.active {
-      border-color: var(--primary-color);
-      transform: scale(1.05);
-      box-shadow: 0 0 10px rgba(142, 68, 173, 0.7);
-    }
-
-    .kategori-item img, .kategori-item p {
-      pointer-events: none; /* Penting agar klik tetap terdeteksi di parent-nya */
-    }
-    
-    .kategori-item img {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
-    }
-
-    .kategori-item p {
-      margin-top: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
     /* Sisa CSS tidak berubah */
-
   </style>
 </head>
 
@@ -245,22 +191,69 @@
         <label for="waAktif">Nomor WhatsApp Aktif</label>
         <input type="tel" id="waAktif" placeholder="Cth: 081234567890 (awali 08...)" pattern="^08[0-9]{8,15}$" required />
         
-        <label>Kategori Produk</label>
-        <div id="kategori-grid-form" class="kategori-container">
-            </div>
-        <input type="hidden" id="kategori-terpilih" required>
+        <div id="pesan-bonus-diterapkan" style="display: none; font-weight: bold; text-align: center; margin-top: 15px;">
+            🎉 Selamat! Bonus Pendaftaran Rp 5.000 telah diterapkan.
+        </div>
+        
+        <div id="pesan-info-bonus" style="display: none; font-size: 0.9em; text-align: center; margin-top: 15px;"></div>
+        
+        <div id="claim-discount-section" style="display: none; background-color: var(--glass-bg); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+            <h3 style="color: var(--success-color); margin: 0 0 10px 0;">🎉 Selamat! Anda Punya Diskon!</h3>
+            <p>Anda berhak mendapatkan potongan <strong>Rp 5.000</strong> untuk pesanan kali ini.</p>
+            <button id="claim-button" type="button" onclick="gunakanPromoDiskon()" style="background:var(--success-color);">✅ Ya, Gunakan Diskon</button>
+        </div>
 
+        <label for="kategori">Kategori Produk</label>
+        <select id="kategori" required><option value="">Pilih Kategori</option></select>
+        
         <label for="produk">Produk</label>
-        <select id="produk" required>
-            <option value="">Pilih Kategori Terlebih Dahulu</option>
-        </select>
+        <select id="produk" required><option value="">Pilih Produk</option></select>
+
         <div id="product-promo-container"></div>
-        <div class="info" id="infoProduk" style="min-height: 80px;">Pilih kategori dan produk untuk melihat detail.</div>
+        <div class="info" id="infoProduk" style="min-height: 80px;">Harga dan deskripsi akan muncul di sini.</div>
         <button type="button" id="nextToPaymentBtn" disabled>Lanjut ke Pembayaran</button>
       </form>
     </div>
 
-    </main>
+    <div id="payment-selection-container" class="section-container" style="display: none;" data-aos="fade-up"></div>
+
+    <hr>
+    
+    <div data-aos="fade-up">
+        <h2>Testimoni Pelanggan</h2>
+        <div class="section-container" id="testimoniContainer"></div>
+    </div>
+    
+    <div data-aos="fade-up" class="section-container">
+        <h2>Beri Kami Testimoni</h2>
+        <form id="formTestimoni">
+            <label for="testiNama">Nama Anda</label>
+            <input type="text" id="testiNama" placeholder="Nama Anda" required>
+            <label for="testiPesan">Pesan Anda</label>
+            <textarea id="testiPesan" rows="4" placeholder="Pengalaman Anda berbelanja di sini?" required></textarea>
+            <button type="submit">Kirim Testimoni</button>
+            <p id="testiStatus" style="text-align:center; margin-top:10px;"></p>
+        </form>
+    </div>
+
+    <hr>
+    
+    <div data-aos="fade-up">
+        <h2>Ada Pertanyaan?</h2>
+        <div class="section-container" id="faq-container"></div>
+    </div>
+    
+    <hr>
+    
+    <div data-aos="fade-up" class="section-container">
+        <h2>Cek Status Pesanan Anda</h2>
+        <form onsubmit="event.preventDefault(); cekStatus();">
+            <label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label>
+            <input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required />
+            <button type="submit">Cek Status</button>
+        </form>
+    </div>
+</main>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -288,58 +281,61 @@
     let diskonPromoTerpakai = false; 
     let pendingOrderData = {}; 
     
-    // [PERBAIKAN] Menghapus referensi ke `kategori` yang sudah tidak ada
     const orderFormFields = {
         nama: document.getElementById('nama'),
         nomor: document.getElementById('nomor'),
         waAktif: document.getElementById('waAktif'),
+        kategori: document.getElementById('kategori'),
         produk: document.getElementById('produk'),
         nextBtn: document.getElementById('nextToPaymentBtn')
     };
-    // Sisa variabel global tidak berubah
-
-    // [FUNGSI HELPER TIDAK BERUBAH]
+    const existingOrderNotification = document.getElementById('existing-order-notification');
+    const infoProduk = document.getElementById('infoProduk');
+    const formNotification = document.getElementById('formNotification');
+    
+    let bonusPendaftaranDiterapkan = false;
+    const POTONGAN_BONUS_PENDAFTARAN = 5000;
+    const POTONGAN_DISKON_PROMO = 5000;
+    const KATEGORI_TERKECUALI_BONUS = ['PULSA', 'TOKEN LISTRIK'];
+    
     const formatRupiah = (angka) => `Rp${(angka || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-    // ...dan fungsi helper lainnya
+    const normalizePhone = (num) => {
+      let n = String(num).trim().replace(/[^0-9]/g, '');
+      if (n.startsWith('0')) return '62' + n.slice(1);
+      if (n.startsWith('62')) return n;
+      return `62${n}`;
+    };
+    const showNotification = (message, type = 'error') => {
+        formNotification.textContent = message;
+        formNotification.className = `notification ${type}`;
+        formNotification.style.display = 'block';
+    };
+    const hideNotification = () => { formNotification.style.display = 'none'; };
     
     document.addEventListener('DOMContentLoaded', () => {
       loadInitialData();
-      // ...sisa fungsi DOMContentLoaded...
-
-      // [BARU] Event listener untuk grid kategori
-      document.getElementById('kategori-grid-form').addEventListener('click', function(e) {
-          const selectedItem = e.target.closest('.kategori-item');
-          if (!selectedItem) return;
-
-          this.querySelectorAll('.kategori-item').forEach(item => item.classList.remove('active'));
-          selectedItem.classList.add('active');
-          const kategoriNama = selectedItem.dataset.kategori;
-          handleCategoryChange(kategoriNama);
-      });
+      // ... (fungsi lain yang perlu dijalankan saat load)
     });
 
     auth.onAuthStateChanged(async user => {
         currentUser = user; 
         if (user) {
-            // ... (logika login tidak berubah)
+            // ... (logika saat user login)
         } else {
-            // ... (logika logout tidak berubah)
+            // ... (logika saat user logout)
         }
-        
-        // [PERBAIKAN] Menghapus listener untuk dropdown kategori yang sudah tidak ada
+
         document.getElementById('formTestimoni').addEventListener('submit', handleTestimoniSubmit);
+        orderFormFields.kategori.addEventListener('change', handleCategoryChange);
         orderFormFields.produk.addEventListener('change', handleProductSelection);
         orderFormFields.waAktif.addEventListener('blur', handleWaInputChange);
         orderFormFields.nextBtn.addEventListener('click', handleNextToPayment);
     });
     
-    // ... (Fungsi-fungsi lain seperti cekDanTerapkanDiskonOtomatis, dll tidak perlu diubah) ...
-    
-    // [MODIFIKASI] Fungsi loadInitialData
-    function loadInitialData() {
-        const kategoriGridContainer = document.getElementById('kategori-grid-form');
-        kategoriGridContainer.innerHTML = '<p style="text-align:center; width:100%;">Memuat kategori...</p>';
+    // ... (Semua fungsi JavaScript Anda yang lain ada di sini) ...
+    // seperti `cekDanTerapkanDiskonOtomatis`, `handleNextToPayment`, `buatPesanan`, dll.
 
+    function loadInitialData() {
         dbFS.collection('produk').orderBy('kategori').get().then(snapshot => {
             const categories = new Set();
             snapshot.forEach(doc => {
@@ -348,57 +344,87 @@
                     categories.add(data.kategori);
                 }
             });
-
-            let gridHTML = '';
+            
+            const kategoriSelect = document.getElementById('kategori');
+            kategoriSelect.innerHTML = '<option value="">Pilih Kategori</option>';
             categories.forEach(kategori => {
-                const ikonHuruf = kategori.charAt(0).toUpperCase();
-                gridHTML += `
-                    <div class="kategori-item" data-kategori="${kategori}">
-                        <img src="https://via.placeholder.com/50/FFFFFF/2c3e50?text=${ikonHuruf}" alt="${kategori}">
-                        <p>${kategori}</p>
-                    </div>
-                `;
+                kategoriSelect.innerHTML += `<option value="${kategori}">${kategori}</option>`;
             });
-            kategoriGridContainer.innerHTML = gridHTML;
         });
-        
-        // Fungsi lain tetap dipanggil seperti biasa
+
         // loadAndDisplayBanners();
         // loadAndRenderFaq();
         // loadApprovedTestimonials();
     }
-    
-    // [MODIFIKASI] Fungsi handleCategoryChange
-    function handleCategoryChange(kategoriNama) {
-        resetFormState(); // Fungsi ini tetap berguna untuk mereset info produk
-        const produkSelect = document.getElementById('produk');
-        const kategoriTerpilihInput = document.getElementById('kategori-terpilih');
 
-        if (!kategoriNama) {
-            produkSelect.innerHTML = '<option value="">Pilih Kategori Terlebih Dahulu</option>';
-            kategoriTerpilihInput.value = '';
+    function handleCategoryChange() {
+        resetFormState();
+        const kategori = orderFormFields.kategori.value;
+        const produkSelect = orderFormFields.produk;
+        
+        if (!kategori) {
+            produkSelect.innerHTML = '<option value="">Pilih Produk</option>';
             return;
         }
         
-        kategoriTerpilihInput.value = kategoriNama;
         produkSelect.innerHTML = '<option value="">Memuat produk...</option>';
-        produkSelect.disabled = false;
-
-        dbFS.collection('produk').where('kategori', '==', kategoriNama).orderBy('urutan').get().then(snapshot => {
-            const products = [];
-            snapshot.forEach(doc => {
-                products.push({ id: doc.id, ...doc.data() });
-            });
-            
+        dbFS.collection('produk').where('kategori', '==', kategori).orderBy('urutan').get().then(snapshot => {
             produkSelect.innerHTML = '<option value="">Pilih Produk</option>';
-            products.forEach(prod => {
-                produkSelect.innerHTML += `<option value="${prod.id}">${prod.nama_produk}</option>`;
+            snapshot.forEach(doc => {
+                const prod = doc.data();
+                produkSelect.innerHTML += `<option value="${doc.id}">${prod.nama_produk}</option>`;
             });
         });
     }
 
-    // Sisa fungsi JavaScript Anda (handleProductSelection, resetFormState, dll) tidak perlu diubah.
-    // Pastikan semua fungsi tersebut masih ada di sini.
+    function handleProductSelection() {
+        const produkId = orderFormFields.produk.value;
+        if (!produkId) {
+            resetFormState();
+            return;
+        }
+
+        infoProduk.innerHTML = 'Memuat detail produk...';
+        dbFS.collection('produk').doc(produkId).get().then(doc => {
+            if (!doc.exists) {
+                infoProduk.innerHTML = 'Produk tidak ditemukan.';
+                return;
+            }
+            produkTerpilihData = { id: doc.id, ...doc.data() };
+            updateTotalHarga(); // Fungsi untuk update tampilan harga
+            
+            if (!produkTerpilihData.stok || produkTerpilihData.stok <= 0) {
+                orderFormFields.nextBtn.textContent = 'Stok Habis';
+                orderFormFields.nextBtn.disabled = true;
+            } else {
+                orderFormFields.nextBtn.textContent = 'Lanjut ke Pembayaran';
+                orderFormFields.nextBtn.disabled = false;
+            }
+        });
+    }
+
+    function resetFormState() {
+        produkTerpilihData = null;
+        infoProduk.innerHTML = 'Harga dan deskripsi akan muncul di sini.';
+        orderFormFields.nextBtn.disabled = true;
+        orderFormFields.nextBtn.textContent = 'Lanjut ke Pembayaran';
+    }
+
+    function updateTotalHarga() {
+        // Fungsi ini akan menampilkan detail produkTerpilihData ke elemen infoProduk
+        if (!produkTerpilihData) return;
+        
+        let hargaTampil = formatRupiah(produkTerpilihData.harga_umum);
+        let deskripsi = produkTerpilihData.deskripsi || '-';
+        let stok = produkTerpilihData.stok || '0';
+
+        infoProduk.innerHTML = `
+            <b style="font-size: 1.2em;">Harga: ${hargaTampil}</b>
+            <hr style="margin: 10px 0; border-color: var(--glass-border);">
+            <b>Deskripsi:</b> ${deskripsi}<br>
+            <b>Stok Tersedia:</b> ${stok}
+        `;
+    }
 
   </script>
 </body>
