@@ -1,430 +1,418 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Loka Bayar</title>
-    <link rel="icon" href="https://storage.googleapis.com/lokabayar/LOKABAYAR_1.png" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Loka Bayar</title>
+  <link rel="icon" href="https://storage.googleapis.com/lokabayar/LOKABAYAR_1.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    /* Penjelasan CSS:
+       - Kita menggunakan variabel (--primary, --bg, dll.) untuk tema, mirip dengan kode awalmu.
+       - 'body' diatur agar konten tidak melewati batas bawah navigasi.
+       - '.page' adalah kelas untuk setiap "halaman" virtual. Secara default disembunyikan.
+       - '.page.active' adalah kelas untuk halaman yang sedang ditampilkan.
+       - 'bottom-nav' adalah style untuk navigasi bawah yang tetap.
+       - 'category-grid' adalah style untuk petak ikon kategori di halaman beranda.
+       - 'skeleton' adalah style untuk efek loading (akan kita gunakan nanti).
+    */
+    :root {
+      --primary: #2980b9;
+      --secondary: #3498db;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #333;
+      --muted-text: #6c757d;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.05);
+    }
 
-    <style>
-        /* Penjelasan: Ini adalah gabungan CSS dari kedua versi untuk mendukung semua komponen */
-        :root {
-            --primary: #2980b9; --secondary: #3498db; --bg: #f0f2f5;
-            --card: #ffffff; --text: #333; --muted-text: #6c757d;
-            --border: #e0e0e0; --shadow: rgba(0, 0, 0, 0.05);
-            --success: #27ae60; --danger: #e74c3c;
-        }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
-        .page { display: none; padding: 0; animation: fadeIn 0.3s ease-in-out; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .page-content { padding: 15px; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding-bottom: 80px; /* Jarak untuk navigasi bawah */
+    }
 
-        /* Komponen UI Baru */
-        .top-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .balance-info { display: flex; justify-content: space-between; align-items: center; }
-        .balance-info .amount { font-size: 1.8em; font-weight: 700; }
-        .header-actions { display: flex; justify-content: space-around; background-color: var(--card); margin: -40px 15px 10px 15px; padding: 15px 0; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); position: relative; z-index: 2; }
-        .action-item { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text); font-weight: 600; font-size: 0.9em; text-decoration: none; }
-        .action-item i { font-size: 1.5em; color: var(--primary); }
-        h2.section-title { font-size: 1.2em; font-weight: 600; margin: 20px 0 15px 0; }
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; text-align: center; background-color: var(--card); padding: 15px 5px; border-radius: 12px; text-decoration: none; color: var(--text); font-size: 0.8em; font-weight: 500; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .category-item img { width: 32px; height: 32px; margin-bottom: 8px; }
+    /* Struktur Halaman & Konten */
+    .page {
+      display: none; /* Sembunyikan semua halaman secara default */
+      padding: 15px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .page.active {
+      display: block; /* Tampilkan hanya halaman yang aktif */
+    }
 
-        /* Halaman Order & Produk */
-        .order-header { display: flex; align-items: center; gap: 15px; padding: 15px; background-color: var(--card); border-bottom: 1px solid var(--border); }
-        .order-header .back-btn { font-size: 1.5em; color: var(--text); }
-        .order-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; }
-        .input-container { background-color: var(--card); padding: 15px; border-radius: 12px; margin-top: 15px; box-shadow: 0 2px 8px var(--shadow); }
-        #nomor-input { width: 100%; border: none; font-size: 1.2em; outline: none; background: transparent; }
-        .product-list-container { margin-top: 20px; }
-        .product-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border); }
-        .product-item .product-name { font-weight: 600; }
-        .product-item .product-price { font-weight: 700; color: var(--success); }
-        .operator-detected { text-align: center; padding: 10px; font-weight: 600; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Halaman Akun */
-        #akun-page .profile-header { text-align: center; padding: 30px 15px; background: var(--secondary); color: white; }
-        #akun-page .profile-header .fa-user-circle { font-size: 5em; }
-        #akun-page .profile-header h3 { margin: 10px 0 5px 0; }
-        .menu-list { list-style: none; padding: 0; margin: 0; }
-        .menu-list-item { display: flex; align-items: center; gap: 15px; padding: 18px 15px; border-bottom: 1px solid var(--border); background-color: var(--card); color: var(--text); text-decoration: none; }
-        .menu-list-item i { width: 20px; text-align: center; color: var(--muted-text); }
-        #logout-btn { color: var(--danger); font-weight: 600; }
+    /* Header Atas */
+    .top-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 20px 15px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    .balance-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .balance-info .amount {
+      font-size: 1.8em;
+      font-weight: 700;
+    }
+    .header-actions {
+      display: flex;
+      justify-content: space-around;
+      background-color: rgba(255, 255, 255, 0.95);
+      margin: -40px 15px 10px 15px;
+      padding: 15px 0;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9em;
+      text-decoration: none;
+    }
+    .action-item i {
+      font-size: 1.5em;
+      color: var(--primary);
+    }
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -8px;
+      background-color: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.7em;
+      font-weight: bold;
+    }
 
-        /* Modal Konfirmasi Pesanan */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
-        .modal-content h3 { text-align: center; margin-top: 0; }
-        .modal-content input { width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--bg); }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
-        #confirm-order-btn { background-color: var(--primary); color: white; }
-        #cancel-order-btn { background-color: var(--border); color: var(--text); }
-        #payment-ui-container { display: none; }
+    /* Grid Kategori di Beranda */
+    h2.section-title {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    .category-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background-color: var(--card);
+      padding: 15px 5px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.8em;
+      font-weight: 500;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .category-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+    .category-item .icon-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .category-item img {
+      width: 32px;
+      height: 32px;
+    }
+    #more-categories {
+      display: none; /* Kategori tambahan disembunyikan */
+    }
 
-        /* Navigasi Bawah */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background-color: var(--card); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08); z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--muted-text); font-size: 0.8em; font-weight: 500; }
-        .nav-item i { font-size: 1.5em; margin-bottom: 4px; }
-        .nav-item.active { color: var(--primary); }
+    /* Navigasi Bawah */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background-color: var(--card);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+      z-index: 1000;
+      border-top: 1px solid var(--border);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--muted-text);
+      font-size: 0.8em;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav-item i {
+      font-size: 1.5em;
+      margin-bottom: 4px;
+    }
+    .nav-item.active {
+      color: var(--primary); /* Warna untuk item navigasi yang aktif */
+    }
+    
+    /* Efek Loading (akan kita pakai nanti) */
+    .skeleton {
+        animation: skeleton-loading 1s linear infinite alternate;
+        border-radius: 5px;
+    }
+    @keyframes skeleton-loading {
+        from { background-color: #e2e2e2; }
+        to { background-color: #f2f2f2; }
+    }
 
-        /* Komponen dari Kode Lama (Testimoni, FAQ) */
-        .old-section-container { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); margin-top: 20px; }
-        #testimoniContainer { background: var(--bg); border-radius: 12px; padding: 15px; height: 250px; overflow-y: auto; border: 1px solid var(--border); }
-        .testimonial-bubble { background-color: var(--card); padding: 10px 15px; border-radius: 20px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.07); animation: slideInUp 0.6s forwards; }
-        @keyframes slideInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; }
-        .faq-question { cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .faq-question::after { content: '▼'; transition: transform 0.3s ease; }
-        .faq-item.active .faq-question::after { transform: rotate(180deg); }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-        .faq-item.active .faq-answer { padding-top: 15px; max-height: 500px; }
-        .copy-btn:disabled { background-color: var(--success) !important; color: white !important; }
-    </style>
+  </style>
 </head>
 
 <body>
-    <div id="app-container">
-        <section id="home-page" class="page active">
-            <header class="top-header">
-                <div class="balance-info">
-                    <div>
-                        <span style="opacity: 0.8;">Saldo Anda</span>
-                        <div id="user-balance" class="amount">Rp 0</div>
-                    </div>
-                    <a href="#notifikasi" class="action-item" style="color:white; position:relative;"><i class="fas fa-bell fa-lg"></i></a>
-                </div>
-            </header>
-             <div class="header-actions">
-                <a href="#deposit" class="action-item"><i class="fas fa-wallet"></i><span>Deposit</span></a>
-                <a href="#transfer" class="action-item"><i class="fas fa-paper-plane"></i><span>Transfer</span></a>
-                <a href="#riwayat" class="action-item" onclick="showPage('transaksi-page')"><i class="fas fa-history"></i><span>Riwayat</span></a>
-            </div>
-            <div class="page-content">
-                <div id="banner-container"></div>
-                <h2 class="section-title">Kategori</h2>
-                <div id="category-grid-container" class="category-grid"></div>
-
-                <div id="cek-status-section" class="old-section-container">
-                    <h2 class="section-title" style="text-align:left; margin-top:0;">Cek Status Pesanan</h2>
-                    <form onsubmit="event.preventDefault(); window.cekStatus();">
-                        <input type="text" id="idCek" placeholder="Masukkan ID Pesanan atau No. WhatsApp" required style="margin:0;"/>
-                        <button type="submit" style="width:100%; padding:10px; margin-top:10px;">Cek Status</button>
-                    </form>
-                </div>
-                <div id="faq-section" class="old-section-container"><h2 class="section-title" style="text-align:left; margin-top:0;">Ada Pertanyaan?</h2><div id="faq-container"></div></div>
-                <div id="testimoni-section" class="old-section-container"><h2 class="section-title" style="text-align:left; margin-top:0;">Testimoni Pelanggan</h2><div id="testimoniContainer"></div></div>
-            </div>
-        </section>
-
-        <section id="transaksi-page" class="page"><div class="page-content"><h2>Riwayat Transaksi</h2><p>Segera hadir...</p></div></section>
-        
-        <section id="akun-page" class="page">
-            <div id="akun-content-logged-in" style="display:none;">
-                <div class="profile-header">
-                    <i class="fas fa-user-circle"></i>
-                    <h3 id="akun-nama">Nama Pengguna</h3>
-                    <p id="akun-email">email@pengguna.com</p>
-                </div>
-                <div class="menu-list">
-                    <a href="#" class="menu-list-item"><i class="fas fa-user-edit"></i><span>Edit Profil</span></a>
-                    <a href="#" class="menu-list-item"><i class="fas fa-shield-alt"></i><span>Keamanan Akun</span></a>
-                    <a href="#" class="menu-list-item"><i class="fas fa-headset"></i><span>Pusat Bantuan</span></a>
-                    <a href="#" id="logout-btn" class="menu-list-item"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
-                </div>
-            </div>
-            <div id="akun-content-logged-out" class="page-content" style="text-align:center; padding-top: 50px;">
-                <h3>Anda Belum Login</h3>
-                <p>Silakan login untuk melihat halaman akun Anda.</p>
-                <button onclick="window.location.href='login.html'" style="max-width:200px; margin: 20px auto;">Login / Daftar</button>
-            </div>
-        </section>
-
-        <section id="order-page" class="page">
-            <header class="order-header">
-                <a href="#" id="back-to-home" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-                <h2 id="order-page-title"></h2>
-            </header>
-            <div class="page-content">
-                <div class="input-container">
-                    <input type="tel" id="nomor-input" placeholder="Masukkan Nomor Tujuan">
-                </div>
-                <div id="operator-info" class="operator-detected" style="display: none;"></div>
-                <div id="product-list" class="product-list-container"></div>
-            </div>
-        </section>
-
-        <section id="payment-ui-container" class="page"></section>
-    </div>
-
-    <div id="order-confirmation-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Konfirmasi Pesanan</h3>
-            <div id="modal-product-info"></div>
-            <hr style="margin: 15px 0;">
-            <label for="modal-nama-input">Nama Lengkap</label>
-            <input type="text" id="modal-nama-input" placeholder="Masukkan nama Anda">
-            <label for="modal-wa-input">Nomor WhatsApp Aktif</label>
-            <input type="tel" id="modal-wa-input" placeholder="cth: 08123456789">
-            <div class="modal-actions">
-                <button id="cancel-order-btn">Batal</button>
-                <button id="confirm-order-btn">Lanjut ke Pembayaran</button>
-            </div>
-        </div>
-    </div>
-
-    <nav class="bottom-nav">
-        <a href="#home" data-page="home-page" class="nav-item active"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="#transaksi" data-page="transaksi-page" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transaksi</span></a>
-        <a href="#akun" data-page="akun-page" class="nav-item"><i class="fas fa-user"></i><span>Akun</span></a>
-    </nav>
+  <div id="app-container">
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <section id="home-page" class="page active">
+        <header class="top-header">
+            <div class="balance-info">
+                <div>
+                    <span style="opacity: 0.8;">Saldo Anda</span>
+                    <div class="amount">Rp 2.139</div>
+                </div>
+                <div style="position: relative;">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <span class="notification-badge">65</span>
+                </div>
+            </div>
+        </header>
 
-    <script>
-        // === KONFIGURASI FIREBASE (dari kode lama) ===
-        const firebaseConfig = { apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210", authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com", databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com", projectId: "asdarstoredigitalll-d89c4" };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const dbFS = firebase.firestore();
-        const dbRT = firebase.database();
+        <div class="header-actions">
+            <a href="#" class="action-item">
+                <i class="fas fa-wallet"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="#" class="action-item">
+                <i class="fas fa-paper-plane"></i>
+                <span>Transfer</span>
+            </a>
+            <a href="#" class="action-item">
+                <i class="fas fa-history"></i>
+                <span>Riwayat</span>
+            </a>
+        </div>
+        
+        <h2 class="section-title">Kategori</h2>
+        <div id="category-grid-container" class="category-grid">
+            </div>
+    </section>
 
-        // === VARIABEL GLOBAL & ELEMEN DOM ===
-        let currentUser = null;
-        let produkTerpilihData = null; // Data produk yang diklik
-        let pendingOrderData = {}; // Data untuk dikirim ke fungsi `buatPesanan`
-        const formatRupiah = (angka) => `Rp${(angka || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+    <section id="transaksi-page" class="page">
+        <h2>Riwayat Transaksi</h2>
+        <p>Halaman ini akan menampilkan daftar transaksi Anda.</p>
+        </section>
 
-        // === INISIALISASI APLIKASI ===
-        document.addEventListener('DOMContentLoaded', () => {
-            // Setup UI baru
-            setupNavigation();
-            renderCategories();
-            showPage('home-page');
-            
-            // Muat data untuk fitur lama
-            loadAndDisplayBanners();
-            loadAndRenderFaq();
-            loadApprovedTestimonials();
-            
-            // Setup event listener
-            document.getElementById('back-to-home').addEventListener('click', (e) => { e.preventDefault(); showPage('home-page'); });
-            document.getElementById('nomor-input').addEventListener('input', handleNumberInput);
-            document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
-            
-            // Modal listeners
-            document.getElementById('cancel-order-btn').addEventListener('click', () => document.getElementById('order-confirmation-modal').style.display = 'none');
-            document.getElementById('confirm-order-btn').addEventListener('click', processOrderConfirmation);
+    <section id="saldo-page" class="page">
+        <h2>Info Saldo</h2>
+        <p>Halaman ini akan menampilkan detail saldo, tambah saldo, dan transfer.</p>
+        </section>
+    
+    <section id="favorit-page" class="page">
+        <h2>Produk Favorit</h2>
+        <p>Halaman ini akan menampilkan produk yang sering Anda beli.</p>
+        </section>
+
+    <section id="akun-page" class="page">
+        <h2>Profil Saya</h2>
+        <p>Halaman ini akan menampilkan detail akun dan pengaturan.</p>
+        </section>
+    
+    <section id="order-page" class="page">
+        </section>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#home" data-page="home-page" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="#transaksi" data-page="transaksi-page" class="nav-item">
+      <i class="fas fa-exchange-alt"></i>
+      <span>Transaksi</span>
+    </a>
+    <a href="#saldo" data-page="saldo-page" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Saldo</span>
+    </a>
+    <a href="#favorit" data-page="favorit-page" class="nav-item">
+      <i class="fas fa-heart"></i>
+      <span>Favorit</span>
+    </a>
+    <a href="#akun" data-page="akun-page" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Akun</span>
+    </a>
+  </nav>
+
+  <script>
+    /* Penjelasan JavaScript:
+       - Kita akan fokus pada navigasi dan pembuatan grid kategori terlebih dahulu.
+       - Kode Firebase dan logika form yang lama sengaja saya hapus sementara agar kita bisa fokus pada struktur.
+         Kita akan mengintegrasikannya kembali di langkah berikutnya.
+    */
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Fungsi Utama yang dijalankan saat halaman siap
+        setupNavigation();
+        renderCategories();
+        showPage('home-page'); // Tampilkan halaman beranda saat pertama kali dibuka
+    });
+
+    // --- FUNGSI NAVIGASI ---
+    function setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                event.preventDefault(); // Mencegah pindah halaman standar
+                
+                const pageId = item.dataset.page;
+                showPage(pageId);
+
+                // Update tampilan aktif pada navigasi
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    }
+
+    function showPage(pageId) {
+        // Sembunyikan semua halaman
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => {
+            page.classList.remove('active');
         });
 
-        // === FUNGSI AUTENTIKASI (Diadaptasi dari kode lama) ===
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-            if (user) {
-                // Pengguna Login
-                document.getElementById('akun-content-logged-in').style.display = 'block';
-                document.getElementById('akun-content-logged-out').style.display = 'none';
-                document.getElementById('akun-nama').textContent = user.displayName || 'Nama Belum Diatur';
-                document.getElementById('akun-email').textContent = user.email;
-                // Pre-fill nama & WA di modal jika sudah login
-                document.getElementById('modal-nama-input').value = user.displayName || '';
-                // Anda mungkin perlu menyimpan no WA di profil pengguna untuk pre-fill di sini
-            } else {
-                // Pengguna Logout
-                document.getElementById('akun-content-logged-in').style.display = 'none';
-                document.getElementById('akun-content-logged-out').style.display = 'block';
-            }
+        // Tampilkan halaman yang diminta
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+    }
+
+    // --- FUNGSI RENDER KATEGORI DI BERANDA ---
+    function renderCategories() {
+        const categories = [
+            // Data ini meniru tampilan di video. Bisa diambil dari Firebase nanti.
+            { name: 'Pulsa', img: 'https://i.ibb.co/L8yv4z3/smartphone-call.png' },
+            { name: 'Transfer Pulsa', img: 'https://i.ibb.co/nMSgC5T/transfer.png' },
+            { name: 'Token PLN', img: 'https://i.ibb.co/mF9g9J3/lightning.png' },
+            { name: 'MAXIM', img: 'https://i.ibb.co/k2q2WkS/maxim.png' },
+            { name: 'Grab Driver', img: 'https://i.ibb.co/HCStCj8/grab.png' },
+            { name: 'inDrive', img: 'https://i.ibb.co/3kMv31z/indrive.png' },
+            { name: 'Gojek Driver', img: 'https://i.ibb.co/jvkYcf5/gojek.png' },
+            { name: 'Kuota Tri', img: 'https://i.ibb.co/wMdC7sD/3.png' },
+            { name: 'Kuota Indosat', img: 'https://i.ibb.co/q0tL17D/indosat.png' },
+            { name: 'Kuota Smartfren', img: 'https://i.ibb.co/yQWdFTh/sf.png' },
+            { name: 'by.U', img: 'https://i.ibb.co/7C96Tjx/byu.png' },
+            { name: 'Lainnya', img: 'https://i.ibb.co/GQLD5Z1/dots.png', isMore: true } // Tombol 'Lainnya'
+        ];
+        
+        const moreCategories = [
+            { name: 'Kuota Telkomsel', img: 'https://i.ibb.co/yBTb4F7/telkomsel.png' },
+            { name: 'Kuota AXIS', img: 'https://i.ibb.co/yF3mNKt/axis.png' },
+            { name: 'ShopeePay', img: 'https://i.ibb.co/pwnqgHx/shopeepay.png' },
+            { name: 'DANA', img: 'https://i.ibb.co/D9yP1hF/dana.png' },
+            // ... Tambahkan kategori "lainnya" di sini
+        ];
+
+        const container = document.getElementById('category-grid-container');
+        container.innerHTML = ''; // Kosongkan kontainer
+
+        // Tampilkan kategori utama
+        categories.forEach(cat => {
+            const item = createCategoryItem(cat);
+            container.appendChild(item);
         });
-
-        // === FUNGSI-FUNGSI UI BARU (Navigasi, Kategori, Order) ===
-        function setupNavigation() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showPage(item.dataset.page);
-                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-                });
-            });
-        }
-
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.style.display = 'block';
-                targetPage.classList.add('active'); // Tambahkan kelas active
-            } else {
-                console.warn(`Halaman dengan ID '${pageId}' tidak ditemukan.`);
-            }
-             // Khusus untuk halaman non-beranda, sembunyikan navigasi bawah jika perlu, misal halaman pembayaran
-            const bottomNav = document.querySelector('.bottom-nav');
-            if (pageId === 'payment-ui-container') {
-                bottomNav.style.display = 'none';
-            } else {
-                bottomNav.style.display = 'flex';
-            }
-        }
         
-        function renderCategories() {
-            const categories = [
-                { id: 'pulsa', name: 'Pulsa', img: 'https://i.ibb.co/L8yv4z3/smartphone-call.png' },
-                { id: 'paket-data', name: 'Paket Data', img: 'https://i.ibb.co/nMSgC5T/transfer.png' },
-                { id: 'token-pln', name: 'Token PLN', img: 'https://i.ibb.co/mF9g9J3/lightning.png' },
-            ];
-            const container = document.getElementById('category-grid-container');
-            container.innerHTML = '';
-            categories.forEach(cat => {
-                const item = document.createElement('a');
-                item.href = '#';
-                item.className = 'category-item';
-                item.innerHTML = `<img src="${cat.img}" alt="${cat.name}"><span>${cat.name}</span>`;
-                item.addEventListener('click', (e) => { e.preventDefault(); openOrderPage(cat); });
-                container.appendChild(item);
-            });
-        }
+        // Tampilkan kategori "Lainnya" yang tersembunyi
+        const moreGrid = document.createElement('div');
+        moreGrid.className = 'category-grid';
+        moreGrid.id = 'more-categories';
         
-        function openOrderPage(category) {
-            document.getElementById('order-page-title').textContent = category.name;
-            document.getElementById('nomor-input').value = '';
-            document.getElementById('operator-info').style.display = 'none';
-            document.getElementById('product-list').innerHTML = '';
-            // Simpan kategori yang dipilih untuk query produk nanti
-            document.getElementById('order-page').dataset.category = category.name;
-            showPage('order-page');
-        }
-
-        let debounceTimer;
-        function handleNumberInput() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                const number = document.getElementById('nomor-input').value;
-                const prefix = number.substring(0, 4);
-                const prefixMapping = { '0812': 'Telkomsel', '0878': 'XL', /* ...etc */ };
-                const operator = prefixMapping[prefix];
-                if (operator) {
-                    document.getElementById('operator-info').textContent = `Operator: ${operator}`;
-                    document.getElementById('operator-info').style.display = 'block';
-                    fetchProducts(operator, document.getElementById('order-page').dataset.category);
+        moreCategories.forEach(cat => {
+            const item = createCategoryItem(cat);
+            moreGrid.appendChild(item);
+        });
+        container.appendChild(moreGrid);
+    }
+    
+    function createCategoryItem(category) {
+        const item = document.createElement('a');
+        item.href = '#';
+        item.className = 'category-item';
+        item.innerHTML = `
+            <div class="icon-wrapper">
+                <img src="${category.img}" alt="${category.name}">
+            </div>
+            <span>${category.name}</span>
+        `;
+        
+        // Tambahkan event listener khusus untuk tombol "Lainnya"
+        if (category.isMore) {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const moreCategoriesDiv = document.getElementById('more-categories');
+                // Toggle tampilan kategori tambahan
+                if (moreCategoriesDiv.style.display === 'grid') {
+                    moreCategoriesDiv.style.display = 'none';
                 } else {
-                    document.getElementById('operator-info').style.display = 'none';
+                    moreCategoriesDiv.style.display = 'grid';
                 }
-            }, 300);
-        }
-
-        async function fetchProducts(operator, category) {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = `<p>Memuat produk...</p>`;
-            try {
-                const querySnapshot = await dbFS.collection('produk')
-                    .where('brand', '==', operator)
-                    .where('kategori', '==', category)
-                    .get();
-                productList.innerHTML = '';
-                if (querySnapshot.empty) { productList.innerHTML = `<p>Produk tidak ditemukan.</p>`; return; }
-                querySnapshot.forEach(doc => {
-                    const product = { id: doc.id, ...doc.data() };
-                    const item = document.createElement('div');
-                    item.className = 'product-item';
-                    item.innerHTML = `<div><div class="product-name">${product.nama_produk}</div></div><div class="product-price">${formatRupiah(product.harga_umum)}</div>`;
-                    item.addEventListener('click', () => showConfirmationModal(product));
-                    productList.appendChild(item);
-                });
-            } catch (error) { console.error("Error fetching products: ", error); }
-        }
-
-        // === ALUR KONFIRMASI & PEMBAYARAN (JEMBATAN KE LOGIKA LAMA) ===
-        function showConfirmationModal(product) {
-            produkTerpilihData = product; // Simpan data produk yang dipilih
-            const modalInfo = document.getElementById('modal-product-info');
-            modalInfo.innerHTML = `<p><strong>Produk:</strong> ${product.nama_produk}</p><p><strong>Harga:</strong> ${formatRupiah(product.harga_umum)}</p>`;
-            document.getElementById('order-confirmation-modal').style.display = 'flex';
-        }
-
-        async function processOrderConfirmation() {
-            // Ambil data dari modal
-            const nama = document.getElementById('modal-nama-input').value.trim();
-            const wa = document.getElementById('modal-wa-input').value.trim();
-            const nomorTujuan = document.getElementById('nomor-input').value.trim();
-            if (!nama || !wa || !nomorTujuan) { alert('Harap isi semua data.'); return; }
-
-            // Siapkan data untuk fungsi `buatPesanan` dari logika lama
-            pendingOrderData = {
-                nama_pelanggan: nama,
-                nomor_pelanggan: nomorTujuan,
-                no_whatsap_aktif: wa,
-                kategori: produkTerpilihData.kategori,
-                produk: produkTerpilihData.nama_produk,
-                harga_final: produkTerpilihData.harga_umum // Nanti bisa ditambahkan logika diskon di sini
-            };
-            
-            // Sembunyikan modal
-            document.getElementById('order-confirmation-modal').style.display = 'none';
-
-            // Panggil fungsi untuk menampilkan UI pembayaran dari logika lama
-            await tampilkanUiPembayaran(pendingOrderData, 'Lanjutkan Pembayaran');
-        }
-        
-        // === FUNGSI-FUNGSI DARI KODE LAMA (Diadaptasi) ===
-        const normalizePhone = (num) => {
-            let n = String(num).trim().replace(/[^0-9]/g, '');
-            if (n.startsWith('0')) return '62' + n.slice(1); if (n.startsWith('62')) return n; return `62${n}`;
-        };
-
-        async function tampilkanUiPembayaran(dataPesanan, judul) {
-            const paymentContainer = document.getElementById('payment-ui-container');
-            paymentContainer.innerHTML = `<p class="text-center">Memuat metode pembayaran...</p>`;
-            showPage('payment-ui-container'); // Tampilkan halaman pembayaran
-            
-            // Logika untuk render metode pembayaran dari kode lama (disalin langsung)
-            const paymentSnapshot = await dbFS.collection('infoPembayaran').get();
-            let paymentMethods = [];
-            paymentSnapshot.forEach(doc => paymentMethods.push({ id: doc.id, ...doc.data() }));
-            let radioButtonsHTML = '', contentDivsHTML = '';
-            paymentMethods.forEach(metode => {
-                const metodeId = metode.metode.replace(/\s+/g, '-').toLowerCase();
-                radioButtonsHTML += `...`; // (Salin HTML dari kode lama)
+                item.style.display = 'none'; // Sembunyikan tombol "Lainnya" setelah diklik
             });
-            const orderIdHtml = dataPesanan.id ? `<p>ID: ${dataPesanan.id}</p>` : '';
-            paymentContainer.innerHTML = `<div class="page-content"><h2>${judul}</h2>...</div>`; // (Salin sisa HTML dari kode lama dan sesuaikan)
-            // ... panggil `setupPaymentEventListeners()` dan `buatPesanan()` dari sini
-             paymentContainer.innerHTML = `<div class="page-content"> <a href="#" onclick="showPage('home-page')">Kembali ke Home</a> <br> UI Pembayaran akan muncul di sini persis seperti kode lama. Proses selanjutnya (buatPesanan) tinggal dipanggil dari tombol di sini. </div>`;
+        } else {
+            // Logika untuk kategori lain (akan kita kembangkan)
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert(`Anda mengklik kategori: ${category.name}`);
+                // Nanti ini akan memanggil showPage('order-page') dan menyiapkan form
+            });
         }
         
-        // Fungsi cekStatus (dari kode lama, sedikit disesuaikan)
-        window.cekStatus = async () => {
-            const inputCek = document.getElementById('idCek').value.trim();
-            if (!inputCek) { alert('Masukkan ID Pesanan atau No. WhatsApp.'); return; }
-            alert(`Mencari pesanan untuk: ${inputCek}... Logika lengkap dari kode lama akan berjalan di sini.`);
-            // ... (tempel sisa logika dari fungsi cekStatus di kode lama)
-        };
+        return item;
+    }
 
-        // Fungsi-fungsi lain dari kode lama (Testimoni, FAQ, Banner)
-        function loadApprovedTestimonials() {
-             const container = document.getElementById('testimoniContainer');
-             if(!container) return;
-             container.innerHTML = 'Memuat testimoni...';
-             // ... sisa logika dari kode lama
-        }
-        function loadAndRenderFaq() { 
-            const container = document.getElementById('faq-container');
-            if(!container) return;
-            container.innerHTML = 'Memuat FAQ...';
-            // ... sisa logika dari kode lama
-        }
-        async function loadAndDisplayBanners() {
-            const container = document.getElementById('banner-container');
-            if(!container) return;
-            // ... sisa logika dari kode lama
-        }
-    </script>
+  </script>
 </body>
 </html>
