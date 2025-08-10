@@ -1,170 +1,273 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Asdar Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #1abc9c; /* Teal */
-            --secondary: #1a1a2e; /* Dark Blue */
-            --card: #2c2c40; /* Lighter Blue/Grey */
-            --text: #e0e0e0;
-            --muted-text: #8a93a2;
-            --border: #444;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--secondary);
-            color: var(--text);
-        }
-        .icon-bg {
-            background-color: rgba(26, 188, 156, 0.1); /* Light teal background for icons */
-        }
-        .bottom-nav-item.active i,
-        .bottom-nav-item.active span {
-            color: var(--primary);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home - Asdar Store Digital</title>
+  <link rel="icon" href="favicon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f9f9; --text: #2c3e50; --primary: #3498db;
+      --card: #ffffff; --border: #ddd; --shadow: rgba(0, 0, 0, 0.05);
+      --success: #28a745; --danger: #e74c3c;
+      --muted-text: #6c757d;
+    }
+    [data-theme="dark"] {
+      --bg: #1a1a2e; --text: #e0e0e0; --primary: #1abc9c;
+      --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
+    }
+    body {
+      font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
+    }
+    header {
+      position: sticky; top: 0; background: var(--card); padding: 15px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); z-index: 999;
+    }
+    header h1 { margin: 0; font-size: 24px; color: var(--primary); }
+    main { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; }
+    .reseller-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--success); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
+    .reseller-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .dashboard-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--primary); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
+    .dashboard-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .all-products-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9em; }
+
+    /* --- Grid Menu Styles --- */
+    .grid-menu-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    .grid-menu-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 15px 10px;
+      background: var(--bg);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      font-weight: 600;
+    }
+    .grid-menu-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .grid-menu-item i {
+      font-size: 2.2em;
+      margin-bottom: 12px;
+      color: var(--primary);
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      transition: color 0.2s ease;
+    }
+    .grid-menu-item span {
+      font-size: 0.9em;
+    }
+    
+    /* Welcome Banner */
+    .welcome-banner {
+        padding: 25px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--primary), #2a7ab0);
+        color: white;
+        border-radius: 12px;
+        text-align: center;
+    }
+    .welcome-banner h2 {
+        margin: 0 0 5px 0;
+        font-weight: 700;
+        color: white;
+    }
+    .welcome-banner p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    .section-container {
+      background: var(--card);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      margin-top: 20px;
+    }
+    h2 {
+      color: var(--primary);
+      margin-top: 30px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+  </style>
 </head>
-<body class="antialiased">
 
-    <div class="container mx-auto max-w-lg min-h-screen flex flex-col">
+<body data-theme="dark">
 
-        <!-- Header -->
-        <header class="p-4 flex justify-between items-center">
-            <div>
-                <p class="text-sm text-[var(--muted-text)]">Selamat Datang,</p>
-                <h1 class="text-xl font-bold">Budi Santoso</h1>
-            </div>
-            <div class="w-12 h-12 bg-[var(--card)] rounded-full flex items-center justify-center border-2 border-[var(--primary)]">
-                <i class="fas fa-user text-xl text-[var(--primary)]"></i>
-            </div>
-        </header>
-
-        <!-- Balance Card -->
-        <section class="p-4">
-            <div class="bg-[var(--card)] rounded-xl p-5 shadow-lg">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-[var(--muted-text)]">Saldo Anda</p>
-                        <p class="text-3xl font-bold">Rp120.500</p>
-                    </div>
-                    <button class="bg-[var(--primary)] text-white font-semibold py-2 px-4 rounded-full text-sm inline-flex items-center gap-2 hover:bg-opacity-80 transition-colors">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Isi Saldo</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Grid Menu -->
-        <section class="p-4 mt-2">
-            <div class="grid grid-cols-4 gap-4 text-center">
-                
-                <!-- Menu Item: Pulsa -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-mobile-alt text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">Pulsa</span>
-                </a>
-
-                <!-- Menu Item: Paket Data -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-wifi text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">Paket Data</span>
-                </a>
-
-                <!-- Menu Item: Game -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-gamepad text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">Voucher Game</span>
-                </a>
-
-                <!-- Menu Item: Token Listrik -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-bolt text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">Token Listrik</span>
-                </a>
-
-                <!-- Menu Item: E-Wallet -->
-                 <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-wallet text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">E-Wallet</span>
-                </a>
-
-                <!-- Menu Item: BPJS -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-heartbeat text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">BPJS</span>
-                </a>
-
-                <!-- Menu Item: PDAM -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-tint text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">PDAM</span>
-                </a>
-
-                <!-- Menu Item: Lainnya -->
-                <a href="#" class="menu-item flex flex-col items-center p-2 rounded-lg hover:bg-[var(--card)] transition-colors">
-                    <div class="w-14 h-14 icon-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-th-large text-2xl text-[var(--primary)]"></i>
-                    </div>
-                    <span class="text-xs mt-2 font-medium">Lainnya</span>
-                </a>
-
-            </div>
-        </section>
-
-        <!-- Promo Banner -->
-        <section class="p-4 mt-2">
-            <div class="promo-banner rounded-xl overflow-hidden shadow-lg">
-                <img src="https://placehold.co/600x250/1ABC9C/FFFFFF?text=Promo+Spesial!" alt="Promo Banner" class="w-full h-auto">
-            </div>
-        </section>
-
-        <!-- Spacer to push nav to bottom -->
-        <div class="flex-grow"></div>
-
-        <!-- Bottom Navigation -->
-        <footer class="bg-[var(--card)] sticky bottom-0 w-full max-w-lg mx-auto rounded-t-2xl shadow-t-lg border-t border-[var(--border)]">
-            <nav class="flex justify-around p-3">
-                <a href="#" class="bottom-nav-item flex flex-col items-center text-[var(--muted-text)] active">
-                    <i class="fas fa-home text-xl"></i>
-                    <span class="text-xs mt-1">Home</span>
-                </a>
-                <a href="#" class="bottom-nav-item flex flex-col items-center text-[var(--muted-text)]">
-                    <i class="fas fa-history text-xl"></i>
-                    <span class="text-xs mt-1">Riwayat</span>
-                </a>
-                <a href="#" class="bottom-nav-item flex flex-col items-center text-[var(--muted-text)]">
-                    <i class="fas fa-comment-dots text-xl"></i>
-                    <span class="text-xs mt-1">Bantuan</span>
-                </a>
-                <a href="#" class="bottom-nav-item flex flex-col items-center text-[var(--muted-text)]">
-                    <i class="fas fa-user-circle text-xl"></i>
-                    <span class="text-xs mt-1">Akun</span>
-                </a>
-            </nav>
-        </footer>
-
+<header id="header">
+    <div class="header-left">
+        <h1>Asdar Store</h1>
+    </div>
+    <div class="header-right">
+        <a href="index.html" class="all-products-btn mb-2">
+            <i class="fas fa-shopping-cart"></i> Mulai Belanja
+        </a>
+        <div id="user-panel">
+            <a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>
+        </div>
+    </div>
+</header>
+  
+<main id="main-content">
+    
+    <div class="welcome-banner" data-aos="fade-down">
+        <h2 id="welcome-title">Selamat Datang!</h2>
+        <p>Pilih layanan yang Anda butuhkan di bawah ini.</p>
     </div>
 
+    <div class="grid-menu-container" data-aos="fade-up">
+        <a href="index.html?kategori=TOKEN%20LISTRIK" class="grid-menu-item">
+            <i class="fas fa-bolt"></i>
+            <span>Token Listrik</span>
+        </a>
+        <a href="index.html?kategori=PULSA" class="grid-menu-item">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Pulsa</span>
+        </a>
+        <a href="index.html?kategori=PAKET%20DATA" class="grid-menu-item">
+            <i class="fas fa-wifi"></i>
+            <span>Paket Data</span>
+        </a>
+        <a href="index.html?kategori=E-WALLET" class="grid-menu-item">
+            <i class="fas fa-wallet"></i>
+            <span>E-Wallet</span>
+        </a>
+        <a href="index.html?kategori=VOUCHER%20GAME" class="grid-menu-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Voucher Game</span>
+        </a>
+        <a href="reseller.html" class="grid-menu-item">
+            <i class="fas fa-users"></i>
+            <span>Area Reseller</span>
+        </a>
+         <a href="index.html#faq-container" class="grid-menu-item">
+            <i class="fas fa-question-circle"></i>
+            <span>Bantuan</span>
+        </a>
+        <a href="index.html#order-form-container" class="grid-menu-item">
+            <i class="fas fa-th-large"></i>
+            <span>Semua Produk</span>
+        </a>
+    </div>
+
+    <div class="section-container" data-aos="fade-up">
+        <h2>Cek Status Pesanan Anda</h2>
+        <form onsubmit="event.preventDefault(); cekStatus();">
+            <label for="idCek" style="font-weight: 600; margin-top: 15px; display: block;">Masukkan ID Pesanan atau No. WhatsApp</label>
+            <input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required style="width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);" />
+            <button type="submit" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: all 0.2s ease;">Cek Status</button>
+        </form>
+    </div>
+
+</main>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true, offset: 50 });
+
+    // === KONFIGURASI FIREBASE ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+      authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+      databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+      projectId: "asdarstoredigitalll-d89c4",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const dbFS = firebase.firestore();
+
+    // === ELEMEN DOM ===
+    const userPanel = document.getElementById('user-panel');
+    const welcomeTitle = document.getElementById('welcome-title');
+    
+    // === AUTENTIKASI & UPDATE UI ===
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            // Pengguna Login
+            welcomeTitle.textContent = `Hai, ${user.displayName || 'Pengguna'}!`;
+            const resellerRef = dbFS.collection('resellers').doc(user.uid);
+            try {
+                const resellerDoc = await resellerRef.get();
+                if (resellerDoc.exists && resellerDoc.data().status === 'active') {
+                    // Jika user adalah reseller aktif
+                    userPanel.innerHTML = `
+                        <a href="reseller-dashboard.html" class="dashboard-btn mb-2"><i class="fas fa-tachometer-alt"></i><span>Dashboard Seller</span></a>
+                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    `;
+                } else {
+                    // Jika user adalah pengguna biasa
+                    userPanel.innerHTML = `
+                        <a href="reseller.html" class="reseller-btn mb-2"><i class="fas fa-user-tie"></i><span>Jadi Seller</span></a>
+                        <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    `;
+                }
+            } catch (error) {
+                console.error("Gagal memeriksa status reseller:", error);
+                // Fallback jika terjadi error
+                 userPanel.innerHTML = `
+                    <a href="#" onclick="event.preventDefault(); auth.signOut();" class="reseller-btn" style="background-color: var(--danger);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                `;
+            }
+        } else {
+            // Pengguna Logout
+            welcomeTitle.textContent = 'Selamat Datang!';
+            userPanel.innerHTML = `<a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>`;
+        }
+    });
+
+    // === FUNGSI CEK STATUS ===
+    // Fungsi ini akan mengarahkan pengguna ke halaman status.html dengan ID yang diinput
+    function cekStatus() {
+        const inputCek = document.getElementById('idCek').value.trim();
+        if (inputCek) {
+            window.location.href = `status.html?id=${inputCek}`;
+        } else {
+            alert('Silakan masukkan ID Pesanan atau Nomor WhatsApp Anda.');
+        }
+    }
+
+    // === Navigasi Berdasarkan URL Parameter ===
+    // Fungsi ini akan mengarahkan ke halaman index.html dan mencoba memilih kategori
+    // jika halaman dimuat dengan parameter `?kategori=NAMAKATEGORI`
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const kategori = params.get('kategori');
+        if (kategori) {
+            // Simpan di sessionStorage agar bisa diakses oleh index.html
+            sessionStorage.setItem('selectedCategory', kategori);
+            // Arahkan ke index.html
+            window.location.href = 'index.html';
+        }
+    });
+
+  </script>
 </body>
 </html>
