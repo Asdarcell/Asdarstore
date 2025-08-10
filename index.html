@@ -24,6 +24,8 @@
     body {
       font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
       transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
+      /* BARU: Memberi ruang di bagian bawah agar tidak tertutup nav bar */
+      padding-bottom: 80px; 
     }
     header {
       position: sticky; top: 0; background: var(--card); padding: 15px 20px;
@@ -98,6 +100,44 @@
     #existing-order-notification button { background-color: var(--danger); color: white; padding: 8px 12px; font-size: 0.9em; margin-top: 10px; width: auto; }
     .qris-details { text-align: center; padding: 15px; }
     .qris-image { max-width: 250px; width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px; }
+
+    /* ========== STYLE BARU UNTUK NAVIGASI BAWAH ========== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background-color: var(--card);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px var(--shadow);
+      border-top: 1px solid var(--border);
+      z-index: 1000;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--muted-text);
+      flex-grow: 1;
+    }
+    .nav-item i {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .nav-item span {
+      font-size: 12px;
+    }
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    /* ======================================================= */
+
   </style>
 </head>
 
@@ -164,7 +204,25 @@
     <div data-aos="fade-up" class="section-container"><h2>Cek Status Pesanan Anda</h2><form onsubmit="event.preventDefault(); cekStatus();"><label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label><input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required /><button type="submit">Cek Status</button></form></div>
 </main>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<footer class="bottom-nav">
+    <a href="#" class="nav-item active">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-exchange-alt"></i>
+        <span>Transaksi</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-wallet"></i>
+        <span>Saldo</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>Akun</span>
+    </a>
+</footer>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -310,7 +368,6 @@
     });
     
     // === FUNGSI DISKON & BONUS OTOMATIS ===
-    // MODIFIKASI: Fungsi ini sekarang memeriksa kategori produk
     async function cekDanTerapkanDiskonOtomatis() {
       resetSemuaDiskon(); 
       if (!currentUser || promoProdukTerpakai || !produkTerpilihData) {
@@ -324,19 +381,16 @@
       if (pelangganDoc.exists && pelangganDoc.data().punyaBonusPendaftaran === true) {
         const kategoriProduk = produkTerpilihData.kategori.toUpperCase();
         
-        // Cek apakah kategori produk termasuk yang dikecualikan
         if (KATEGORI_TERKECUALI_BONUS.includes(kategoriProduk)) {
             const pesanInfoBonus = document.getElementById('pesan-info-bonus');
             pesanInfoBonus.textContent = 'Bonus pendaftaran tidak berlaku untuk kategori produk ini.';
             pesanInfoBonus.style.display = 'block';
-            bonusPendaftaranDiterapkan = false; // Pastikan bonus tidak diterapkan
+            bonusPendaftaranDiterapkan = false;
         } else {
-            // Jika kategori valid, terapkan bonus
             bonusPendaftaranDiterapkan = true;
             document.getElementById('pesan-bonus-diterapkan').style.display = 'block';
         }
       } else {
-        // Jika tidak punya bonus, cek diskon promo manual
         const diskonRef = dbFS.collection('hakDiskonOtomatis').doc(currentUser.email);
         const diskonDoc = await diskonRef.get();
         if (diskonDoc.exists) {
@@ -347,12 +401,11 @@
       updateTotalHarga();
     }
     
-    // MODIFIKASI: Fungsi reset sekarang juga menyembunyikan pesan info
     function resetSemuaDiskon() {
         bonusPendaftaranDiterapkan = false;
         diskonPromoTerpakai = false;
         document.getElementById('pesan-bonus-diterapkan').style.display = 'none';
-        document.getElementById('pesan-info-bonus').style.display = 'none'; // Sembunyikan pesan info
+        document.getElementById('pesan-info-bonus').style.display = 'none';
         document.getElementById('claim-discount-section').style.display = 'none';
         const claimButton = document.getElementById('claim-button');
         claimButton.disabled = false;
@@ -534,7 +587,6 @@
         const finalOrderData = { 
             id, 
             ...pendingOrderData,
-            // PERUBAHAN 1: Menyimpan jenis produk ke dalam pesanan
             jenis_produk: produkTerpilihData.jenis_produk || 'manual',
             metode_pembayaran: metode, 
             status: 'Menunggu Pembayaran', 
@@ -598,11 +650,9 @@
       } else if (diskonPromoTerpakai) { 
         hargaFinal = Math.max(0, hargaAwal - POTONGAN_DISKON_PROMO); 
         deskripsiHargaHTML = `Harga Normal: <del>${formatRupiah(hargaAwal)}</del>`; 
-        // === PERBAIKAN DI SINI ===
         diskonDeskripsiTambahan = `<br><b style="color:var(--success); font-size: 1.2em;">Harga Diskon: ${formatRupiah(hargaFinal)}</b>`; 
       }
       
-      // PERUBAHAN 2: Menambahkan label pengiriman otomatis
       let jenisProdukLabel = ''; 
       if (produkTerpilihData.jenis_produk === 'otomatis') {
         jenisProdukLabel = `<span style="background-color: var(--success); color: white; padding: 3px 8px; font-size: 0.8em; border-radius: 20px; font-weight: bold;">⚡ Pengiriman Otomatis</span><br><br>`;
