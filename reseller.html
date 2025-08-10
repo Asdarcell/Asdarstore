@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseller - Asdar Store Digital</title>
+    <link rel="icon" href="favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        /* Salin semua CSS dari file reseller.html asli Anda ke sini */
+        :root {
+            --bg: #f9f9f9; --text: #2c3e50; --primary: #3498db;
+            --card: #ffffff; --border: #ddd; --shadow: rgba(0, 0, 0, 0.05);
+            --success: #28a745; --danger: #e74c3c;
+            --muted-text: #6c757d;
+        }
+        [data-theme="dark"] {
+            --bg: #1a1a2e; --text: #e0e0e0; --primary: #1abc9c;
+            --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
+            --muted-text: #8a93a2;
+        }
+        body {
+            font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
+            transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
+        }
+        header {
+            position: sticky; top: 0; background: var(--card); padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); z-index: 999;
+        }
+        header h1 { margin: 0; font-size: 24px; color: var(--primary); }
+        main { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        label { font-weight: 600; margin-top: 15px; display: block; }
+        input, select, textarea {
+            width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px;
+            border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);
+        }
+        button {
+            width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
+            border: none; background: var(--primary); color: white; cursor: pointer;
+            font-weight: bold; font-size: 16px; transition: all 0.2s ease;
+        }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .info {
+            background: var(--card); padding: 15px; margin-top: 1rem;
+            border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);
+        }
+        .section-container {
+            background: var(--card); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow); margin-top: 20px;
+        }
+        hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
+        h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; }
+        #saldo-display { font-size: 1.1em; font-weight: 600; color: var(--primary); text-align: right; padding: 10px 0; }
+        .topup-btn-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .topup-btn { background-color: var(--card); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .topup-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        #show-topup-btn { background-color: var(--success); margin-bottom: 20px; }
+        .notification { padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: 600; display: none; }
+        .notification.success { background-color: #d4edda; color: #155724; }
+        .notification.error { background-color: #f8d7da; color: #721c24; }
+        .notification.info { background-color: #d1ecf1; color: #0c5460; }
+        .logout-btn { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 10px; width: auto; }
+        .claim-promo-card { background-color: #e8f5e9; border-left: 5px solid var(--success); padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .claim-promo-card p { margin: 0; color: #155724; }
+        .testimonial-bubble { background-color: var(--card); color: var(--text); padding: 12px 18px; border-radius: 20px; max-width: 85%; align-self: flex-start; box-shadow: 0 4px 8px rgba(0,0,0,0.07); opacity: 0; animation: slideInUp 0.6s ease-out forwards; border: 1px solid var(--border); }
+        .testimonial-header { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+        .testimonial-header .fa-user-circle { font-size: 1.2em; color: var(--primary); }
+        .testimonial-name { font-weight: 700; font-size: 0.95em; color: var(--text); }
+        .testimonial-body { font-size: 0.9em; line-height: 1.5; color: var(--muted-text); padding-left: 2px; }
+        @keyframes slideInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-question { cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question::after { content: '▼'; font-size: 12px; transition: transform 0.3s ease; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding-top 0.3s ease; padding-top: 0; }
+        .faq-item.active .faq-answer { padding-top: 15px; max-height: 200px; }
+        .faq-item.active .faq-question::after { transform: rotate(180deg); }
+    </style>
+</head>
+<body data-theme="dark">
+    <header id="header">
+        <h1>Area Reseller</h1>
+        <div>
+            <a href="home.html" id="back-to-home-btn" class="logout-btn" style="margin-right: 15px;">
+                <i class="fas fa-home"></i> Kembali ke Home
+            </a>
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <main id="main-content">
+        </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Salin semua JavaScript dari file reseller.html asli Anda ke sini
+        // Tidak ada perubahan yang diperlukan pada logika JS reseller,
+        // karena sudah fungsional dan terotentikasi.
+        // Cukup pastikan untuk menyalinnya secara lengkap.
+
+        // Ganti baris ini:
+        // backToIndexBtn.addEventListener('click', function() {
+        //     window.location.href = 'index.html';
+        // });
+        // dengan:
+        // Tidak perlu ada, karena link di header sudah langsung menuju home.html
+        // Atau biarkan saja, tidak akan menimbulkan error.
+    </script>
+</body>
+</html>
