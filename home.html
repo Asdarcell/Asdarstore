@@ -39,15 +39,15 @@
     hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
     h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; font-weight: 700; }
     
-    /* Grid Menu Styles */
-    .grid-menu-container {
+    /* Category Grid Menu Styles */
+    .kategori-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 15px;
       margin-top: 25px;
       text-align: center;
     }
-    .grid-item {
+    .kategori-item {
       background: var(--card);
       border-radius: 12px;
       padding: 20px 10px;
@@ -61,12 +61,12 @@
       justify-content: center;
       border: 1px solid var(--border);
     }
-    .grid-item:hover {
+    .kategori-item:hover {
       transform: translateY(-5px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
       color: var(--primary);
     }
-    .grid-item i {
+    .kategori-item i {
       font-size: 2.2em;
       margin-bottom: 12px;
       color: var(--primary);
@@ -76,7 +76,7 @@
       border-radius: 50%;
       background: var(--bg);
     }
-    .grid-item span {
+    .kategori-item span {
       font-weight: 600;
       font-size: 0.95em;
     }
@@ -88,54 +88,22 @@
         gap: 20px;
     }
     .product-card {
-        background-color: var(--card);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px var(--shadow);
-        display: flex;
-        flex-direction: column;
+        background-color: var(--card); border-radius: 12px; overflow: hidden;
+        box-shadow: 0 4px 12px var(--shadow); display: flex; flex-direction: column;
         transition: transform 0.2s ease;
     }
-    .product-card:hover {
-        transform: translateY(-5px);
-    }
-    .product-card-content {
-        padding: 15px;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    .product-card-title {
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-    .product-card-price {
-        color: var(--success);
-        font-weight: 700;
-        font-size: 1.1em;
-        margin-top: auto;
-    }
-    .product-card-button {
-        display: block;
-        background-color: var(--primary);
-        color: white;
-        text-align: center;
-        padding: 10px;
-        text-decoration: none;
-        font-weight: bold;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        transition: background-color 0.2s;
-    }
-    .product-card-button:hover {
-        background-color: #2980b9;
-        color: white;
-    }
+    .product-card:hover { transform: translateY(-5px); }
+    .product-card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+    .product-card-title { font-weight: 600; margin-bottom: 5px; }
+    .product-card-price { color: var(--success); font-weight: 700; font-size: 1.1em; margin-top: auto; }
+    .product-card-button { display: block; background-color: var(--primary); color: white !important; text-align: center; padding: 10px; text-decoration: none; font-weight: bold; transition: background-color 0.2s; }
+    .product-card-button:hover { background-color: #2980b9; }
 
     /* Banner & User Panel */
     #banner-container { width: 100%; margin-bottom: 20px; }
     .banner-item { display: block; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
     .banner-image { width: 100%; display: block; vertical-align: middle; }
+    .header-right { display: flex; gap: 10px; }
     .header-right a { display: inline-flex; align-items: center; gap: 8px; color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
     .header-right a:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     .login-btn { background-color: var(--success); }
@@ -170,25 +138,9 @@
     <div id="banner-container" data-aos="fade-down"></div>
     
     <div data-aos="fade-up">
-        <h2>Menu Utama</h2>
-        <div class="grid-menu-container">
-            <a href="order.html" class="grid-item">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Pesan Sekarang</span>
-            </a>
-            <a href="#cek-status-section" class="grid-item">
-                <i class="fas fa-receipt"></i>
-                <span>Cek Pesanan</span>
-            </a>
-            <a href="reseller.html" class="grid-item">
-                <i class="fas fa-user-tie"></i>
-                <span>Jadi Reseller</span>
-            </a>
-            <a href="#faq-section" class="grid-item">
-                <i class="fas fa-question-circle"></i>
-                <span>Bantuan</span>
-            </a>
-        </div>
+        <h2>Kategori Produk</h2>
+        <div id="kategori-container" class="kategori-container">
+            </div>
     </div>
     
     <hr>
@@ -197,6 +149,9 @@
         <h2>Produk Populer</h2>
         <div id="produk-populer-container" class="produk-populer-container">
             </div>
+        <div class="text-center mt-4">
+            <a href="order.html" class="btn btn-outline-primary">Lihat Semua Produk</a>
+        </div>
     </div>
 
     <hr>
@@ -217,9 +172,9 @@
     
     <div data-aos="fade-up" class="section-container">
         <h2>Cek Status Pesanan Anda</h2>
-        <form onsubmit="event.preventDefault(); cekStatus();">
-            <label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label>
-            <input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required />
+        <form onsubmit="event.preventDefault(); window.location.href = `status.html?id=${document.getElementById('idCek').value.trim()}`;">
+            <label for="idCek">Masukkan ID Pesanan Anda</label>
+            <input type="text" id="idCek" placeholder="Cth: P16789..." required />
             <button type="submit">Cek Status</button>
         </form>
     </div>
@@ -245,37 +200,27 @@
     const dbFS = firebase.firestore();
     const dbRT = firebase.database();
     
-    // === ELEMEN DOM ===
     const userPanel = document.getElementById('user-panel');
-    
-    // === FUNGSI UTILITAS ===
     const formatRupiah = (angka) => `Rp${(angka || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-    const normalizePhone = (num) => {
-      let n = String(num).trim().replace(/[^0-9]/g, '');
-      if (n.startsWith('0')) return '62' + n.slice(1);
-      if (n.startsWith('62')) return n;
-      return `62${n}`;
-    };
 
     // === EVENT LISTENER & AUTENTIKASI ===
     document.addEventListener('DOMContentLoaded', () => {
       loadInitialData();
-      setupSmoothScrolling();
     });
 
     auth.onAuthStateChanged(async user => {
         if (user) {
             const resellerRef = dbFS.collection('resellers').doc(user.uid);
+            userPanel.innerHTML = ''; // Clear previous buttons
             try {
                 const resellerDoc = await resellerRef.get();
                 if (resellerDoc.exists && resellerDoc.data().status === 'active') {
-                    userPanel.innerHTML = `<a href="reseller-dashboard.html" class="dashboard-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
+                    userPanel.innerHTML += `<a href="reseller-dashboard.html" class="dashboard-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
                 } else {
-                    userPanel.innerHTML = `<a href="reseller.html" class="dashboard-btn"><i class="fas fa-user-tie"></i> Jadi Seller</a>`;
+                    userPanel.innerHTML += `<a href="reseller.html" class="dashboard-btn"><i class="fas fa-user-tie"></i> Jadi Seller</a>`;
                 }
                 userPanel.innerHTML += `<a href="#" onclick="event.preventDefault(); auth.signOut();" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
             } catch (error) {
-                console.error("Gagal cek status reseller:", error);
                 userPanel.innerHTML = `<a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login/Daftar</a>`;
             }
         } else {
@@ -286,9 +231,55 @@
     // === FUNGSI PEMUATAN DATA AWAL ===
     function loadInitialData() {
         loadAndDisplayBanners();
+        loadProductCategories(); // **BARU**
         loadPopularProducts();
         loadAndRenderFaq();
         loadApprovedTestimonials();
+    }
+
+    async function loadProductCategories() {
+        const container = document.getElementById('kategori-container');
+        container.innerHTML = '<p class="text-center w-100">Memuat kategori...</p>';
+        try {
+            const snapshot = await dbFS.collection('produk').get();
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="text-center w-100">Kategori tidak ditemukan.</p>';
+                return;
+            }
+
+            const categoryIcons = {
+                'TOPUP GAME': 'fa-gamepad',
+                'PULSA': 'fa-mobile-alt',
+                'PAKET DATA': 'fa-wifi',
+                'TOKEN LISTRIK': 'fa-bolt',
+                'E-WALLET': 'fa-wallet',
+                'VOUCHER': 'fa-ticket-alt',
+                'AKUN PREMIUM': 'fa-star',
+                'DEFAULT': 'fa-tags'
+            };
+
+            const categories = new Set();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.kategori) categories.add(data.kategori);
+            });
+
+            let categoriesHTML = '';
+            categories.forEach(category => {
+                const encodedCategory = encodeURIComponent(category);
+                const iconClass = categoryIcons[category.toUpperCase()] || categoryIcons['DEFAULT'];
+                categoriesHTML += `
+                    <a href="order.html?kategori=${encodedCategory}" class="kategori-item">
+                        <i class="fas ${iconClass}"></i>
+                        <span>${category}</span>
+                    </a>
+                `;
+            });
+            container.innerHTML = categoriesHTML || '<p class="text-center w-100">Tidak ada kategori untuk ditampilkan.</p>';
+        } catch (error) {
+            console.error("Gagal memuat kategori:", error);
+            container.innerHTML = '<p class="text-center w-100 text-danger">Gagal memuat kategori produk.</p>';
+        }
     }
 
     async function loadAndDisplayBanners() {
@@ -310,36 +301,26 @@
         const container = document.getElementById('produk-populer-container');
         container.innerHTML = '<p>Memuat produk...</p>';
         try {
-            // Contoh: Ambil produk dari kategori TOPUP GAME yang stoknya > 0, batasi 4
-            const snapshot = await dbFS.collection('produk')
-                .where('kategori', '==', 'TOPUP GAME')
-                .where('stok', '>', 0)
-                .orderBy('stok')
-                .limit(4)
-                .get();
-
-            if (snapshot.empty) {
-                container.innerHTML = '<p>Produk populer belum tersedia.</p>';
-                return;
-            }
+            const snapshot = await dbFS.collection('produk').where('stok', '>', 0).orderBy('stok').limit(4).get();
+            if (snapshot.empty) { container.innerHTML = '<p>Produk populer belum tersedia.</p>'; return; }
             
             let productsHTML = '';
             snapshot.forEach(doc => {
                 const product = doc.data();
                 productsHTML += `
-                    <div class="product-card">
+                    <a href="order.html?produk=${doc.id}" class="product-card text-decoration-none">
                         <div class="product-card-content">
-                            <h3 class="product-card-title">${product.nama_produk}</h3>
+                            <h3 class="product-card-title text-body">${product.nama_produk}</h3>
                             <p class="product-card-price">${formatRupiah(product.harga_umum)}</p>
                         </div>
-                        <a href="order.html?produk=${doc.id}" class="product-card-button">Beli Sekarang</a>
-                    </div>
+                        <div class="product-card-button">Beli Sekarang</div>
+                    </a>
                 `;
             });
             container.innerHTML = productsHTML;
         } catch (error) {
             console.error("Gagal memuat produk populer:", error);
-            container.innerHTML = '<p>Gagal memuat produk.</p>';
+            container.innerHTML = '<p class="text-danger">Gagal memuat produk.</p>';
         }
     }
 
@@ -354,9 +335,7 @@
                 item.className = 'faq-item';
                 item.innerHTML = `<div class="faq-question">${itemData.q}</div><div class="faq-answer">${itemData.a}</div>`;
                 faqContainer.appendChild(item);
-            });
-            document.querySelectorAll('.faq-question').forEach(item => {
-                item.addEventListener('click', () => item.parentElement.classList.toggle('active'));
+                item.querySelector('.faq-question').addEventListener('click', () => item.classList.toggle('active'));
             });
         }).catch(err => { console.error("Gagal memuat FAQ:", err); });
     }
@@ -373,33 +352,6 @@
                 bubble.className = 'testimonial-bubble';
                 bubble.innerHTML = `<div class="testimonial-header"><i class="fas fa-user-circle"></i><span class="testimonial-name">${testi.nama || 'Anonim'}</span></div><div class="testimonial-body">${testi.isi || ''}</div>`;
                 container.appendChild(bubble);
-            });
-        });
-    }
-    
-    // === FUNGSI LAINNYA ===
-    window.cekStatus = async () => {
-        const inputCek = document.getElementById('idCek').value.trim();
-        if (!inputCek) { alert('Masukkan ID Pesanan atau No. WhatsApp.'); return; }
-        // Logika untuk mencari pesanan berdasarkan ID atau nomor WA, lalu redirect ke halaman status.
-        // Ini adalah contoh sederhana, logika pencarian lengkap bisa lebih kompleks.
-        if (inputCek.toUpperCase().startsWith('P')) {
-            window.location.href = `status.html?id=${inputCek}`;
-        } else {
-            alert("Pencarian via No. WA akan dialihkan ke halaman status. Mohon tunggu fitur selanjutnya.");
-            // Untuk implementasi penuh, Anda perlu query Firestore di sini
-            // const querySnapshot = await dbFS.collection('pesananUmum').where('no_whatsap_aktif', '==', normalizePhone(inputCek))...
-            // Lalu ambil ID dari hasil query dan redirect.
-        }
-    };
-    
-    function setupSmoothScrolling() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
             });
         });
     }
