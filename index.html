@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asdar Store Digital</title>
+  <link rel="icon" href="favicon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f9f9; --text: #2c3e50; --primary: #3498db;
+      --card: #ffffff; --border: #ddd; --shadow: rgba(0, 0, 0, 0.05);
+      --success: #28a745; --danger: #e74c3c;
+      --muted-text: #6c757d;
+    }
+    [data-theme="dark"] {
+      --bg: #1a1a2e; --text: #e0e0e0; --primary: #1abc9c;
+      --card: #2c2c40; --border: #444; --shadow: rgba(0, 0, 0, 0.15);
+      --muted-text: #8a93a2;
+    }
+    body {
+      font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease; margin: 0; line-height: 1.6;
+    }
+    header {
+      position: sticky; top: 0; background: var(--card); padding: 15px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); z-index: 999; transition: box-shadow 0.3s ease;
+    }
+    header h1 { margin: 0; font-size: 24px; color: var(--primary); }
+    main { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+    label { font-weight: 600; margin-top: 15px; display: block; }
+    input, select, textarea {
+      width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px;
+      border-radius: 8px; border: 1px solid var(--border); background-color: var(--card); color: var(--text);
+    }
+    button {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px;
+      border: none; background: var(--primary); color: white; cursor: pointer;
+      font-weight: bold; font-size: 16px; transition: all 0.2s ease;
+    }
+    button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+    .info {
+      background: var(--card); padding: 15px; margin-top: 1rem;
+      border-left: 5px solid var(--primary); border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);
+    }
+    .section-container {
+      background: var(--card); padding: 25px; border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow); margin-top: 20px;
+    }
+    hr { margin: 40px 0; border: 0; border-top: 1px solid var(--border); }
+    h2 { color: var(--primary); margin-top: 30px; margin-bottom: 20px; text-align: center; }
+    .reseller-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--success); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
+    .reseller-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .dashboard-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--primary); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all 0.2s ease-in-out; }
+    .dashboard-btn:hover { color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    #testimoniContainer { background: var(--bg); border-radius: 12px; padding: 15px; height: 350px; overflow-y: auto; position: relative; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 1rem; }
+    .testimonial-bubble { background-color: var(--card); color: var(--text); padding: 12px 18px; border-radius: 20px; max-width: 85%; align-self: flex-start; box-shadow: 0 4px 8px rgba(0,0,0,0.07); opacity: 0; animation: slideInUp 0.6s ease-out forwards; border: 1px solid var(--border); }
+    .testimonial-header { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+    .testimonial-header .fa-user-circle { font-size: 1.2em; color: var(--primary); }
+    .testimonial-name { font-weight: 700; font-size: 0.95em; color: var(--text); }
+    .testimonial-body { font-size: 0.9em; line-height: 1.5; color: var(--muted-text); padding-left: 2px; }
+    @keyframes slideInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .payment-methods-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .payment-method-item { background-color: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .payment-details { line-height: 1.4; }
+    .payment-method-name { font-weight: 600; font-size: 1.1em; color: var(--text); }
+    .payment-method-number { font-size: 1em; font-weight: 500; color: var(--primary); }
+    .payment-method-an { font-size: 0.85em; color: var(--muted-text); }
+    .copy-btn { background-color: transparent; border: 1px solid var(--border); color: var(--muted-text); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; font-size: 0.9em; margin-left: 1rem; white-space: nowrap; }
+    .copy-btn:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
+    .copy-btn:disabled { background-color: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-question { cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .faq-question::after { content: '▼'; font-size: 12px; transition: transform 0.3s ease; }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding-top 0.3s ease; padding-top: 0; }
+    .faq-item.active .faq-answer { padding-top: 15px; max-height: 999px; }
+    .faq-item.active .faq-question::after { transform: rotate(180deg); }
+    .notification { padding: 15px; margin-bottom: 15px; border-radius: 8px; font-weight: 600; display: none; text-align: center; }
+    .notification.info { background-color: #d1ecf1; color: #0c5460; }
+    .notification.success { background-color: #d4edda; color: #155724; }
+    .notification.error { background-color: #f8d7da; color: #721c24; }
+    #banner-container { width: 100%; margin-bottom: 20px; }
+    .banner-item { display: block; margin-bottom: 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
+    .banner-image { width: 100%; display: block; vertical-align: middle; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; }
+    .payment-option input[type="radio"] { display: none; }
+    .payment-option label { display: block; padding: 15px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s ease-in-out; font-weight: 600; margin-top: 10px; }
+    .payment-option label:hover { border-color: var(--primary); }
+    .payment-option input[type="radio"]:checked + label { background-color: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .payment-content { border: 1px solid var(--border); padding: 20px; margin-top: 15px; border-radius: 8px; background-color: var(--bg); }
+    .hidden { display: none; }
+    #existing-order-notification { padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e67e22; background-color: #f39c1233; color: #d35400; font-size: 0.95em; line-height: 1.6; }
+    #existing-order-notification button { background-color: var(--danger); color: white; padding: 8px 12px; font-size: 0.9em; margin-top: 10px; width: auto; }
+    .qris-details { text-align: center; padding: 15px; }
+    .qris-image { max-width: 250px; width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px; }
+  </style>
+</head>
+
+<body data-theme="dark">
+<header id="header">
+    <div class="header-left">
+        <h1>Asdar Store Digital</h1>
+    </div>
+    <div class="header-right">
+        <a href="home.html" class="all-products-btn mb-2">
+            <i class="fas fa-home"></i> Kembali ke Home
+        </a>
+        <div id="user-panel">
+            <a href="login.html" class="reseller-btn"><i class="fas fa-sign-in-alt"></i><span>Login/Daftar</span></a>
+        </div>
+    </div>
+</header>
+  
+<main id="main-content">
+    <div id="banner-container" data-aos="fade-down"></div>
+    <div id="custom-html-container"></div>
+    
+    <div data-aos="fade-up" class="section-container" id="order-form-container">
+      <div id="existing-order-notification" style="display: none;"></div>
+      <form id="formPesanan">
+        <div id="formNotification" class="notification"></div>
+        <label for="nama">Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Cth: Budi Santoso" required />
+        <label for="nomor">Nomor HP / ID Game/ [SN/ID]DIGITAL</label>
+        <input type="text" id="nomor" placeholder="Cth: 081234567890 atau ID Anda" required />
+        <label for="waAktif">Nomor WhatsApp Aktif</label>
+        <input type="tel" id="waAktif" placeholder="Cth: 081234567890 (awali 08...)" pattern="^08[0-9]{8,15}$" required />
+        
+        <div id="pesan-bonus-diterapkan" class="alert alert-success" style="display: none; font-weight: bold; text-align: center; margin-top: 15px;">
+            🎉 Selamat! Bonus Pendaftaran Rp 5.000 telah diterapkan.
+        </div>
+        
+        <div id="pesan-info-bonus" class="alert alert-info" style="display: none; font-size: 0.9em; text-align: center; margin-top: 15px;"></div>
+        
+        <div id="claim-discount-section" style="display: none; background-color: var(--bg); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+            <h3 style="color: var(--success); margin: 0 0 10px 0;">🎉 Selamat! Anda Punya Diskon!</h3>
+            <p>Anda berhak mendapatkan potongan <strong>Rp 5.000</strong> untuk pesanan kali ini.</p>
+            <button id="claim-button" type="button" onclick="gunakanPromoDiskon()">✅ Ya, Gunakan Diskon</button>
+        </div>
+
+        <label for="kategori">Kategori Produk</label>
+        <select id="kategori" required><option value="">Pilih Kategori</option></select>
+        <label for="produk">Produk</label>
+        <select id="produk" required><option value="">Pilih Produk</option></select>
+        <div id="product-promo-container"></div>
+        <div class="info" id="infoProduk">Harga dan deskripsi akan muncul di sini.</div>
+        <button type="button" id="nextToPaymentBtn" disabled>Lanjut ke Pembayaran</button>
+      </form>
+    </div>
+
+    <div id="payment-selection-container" class="section-container" style="display: none;" data-aos="fade-up"></div>
+
+    <hr>
+    <div data-aos="fade-up"><h2>Testimoni Pelanggan Kami</h2><div id="testimoniContainer"></div></div>
+    <div data-aos="fade-up" class="section-container"><h2>Beri Kami Testimoni</h2><form id="formTestimoni"><label for="testiNama">Nama Anda</label><input type="text" id="testiNama" placeholder="Nama Anda" required><label for="testiPesan">Pesan Anda</label><textarea id="testiPesan" rows="4" placeholder="Pengalaman Anda berbelanja di sini?" required></textarea><button type="submit">Kirim Testimoni</button><p id="testiStatus" style="text-align:center; margin-top:10px;"></p></form></div>
+    <hr>
+    <div data-aos="fade-up"><h2>Ada Pertanyaan?</h2><div class="section-container" id="faq-container"></div></div>
+    <hr>
+    <div data-aos="fade-up" class="section-container"><h2>Cek Status Pesanan Anda</h2><form onsubmit="event.preventDefault(); cekStatus();"><label for="idCek">Masukkan ID Pesanan atau No. WhatsApp</label><input type="text" id="idCek" placeholder="Cth: P16789... atau 08123..." required /><button type="submit">Cek Status</button></form></div>
+</main>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true, offset: 50 });
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+      authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+      databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+      projectId: "asdarstoredigitalll-d89c4",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const dbFS = firebase.firestore();
+    const dbRT = firebase.database();
+    
+    // === Salin semua kode JavaScript dari file index.html asli Anda ke sini ===
+    // ... (mulai dari `let currentUser = null;` sampai akhir)
+    //
+    // >>> PENAMBAHAN: Letakkan kode ini di dalam event listener DOMContentLoaded
+    // yang sudah ada, atau buat yang baru jika belum ada.
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // Kode yang sudah ada di dalam DOMContentLoaded...
+      loadInitialData();
+      checkForLostId();
+
+      // --- KODE BARU UNTUK NAVIGASI DARI HOME.HTML ---
+      // Fungsi ini akan secara otomatis memilih kategori berdasarkan parameter URL
+      const params = new URLSearchParams(window.location.search);
+      const kategoriFromUrl = params.get('kategori');
+      if (kategoriFromUrl) {
+        const kategoriSelect = document.getElementById('kategori');
+        // Tunggu sebentar agar daftar kategori selesai dimuat
+        setTimeout(() => {
+          kategoriSelect.value = decodeURIComponent(kategoriFromUrl);
+          // Periksa apakah kategori tersebut ada di dalam <select>
+          if (kategoriSelect.value === decodeURIComponent(kategoriFromUrl)) {
+            // Picu event 'change' untuk memuat produk yang sesuai
+            kategoriSelect.dispatchEvent(new Event('change'));
+            // Scroll ke form pemesanan
+            document.getElementById('order-form-container').scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 1000); // Penundaan 1 detik untuk memastikan data kategori sudah ada
+      }
+      // --- AKHIR KODE BARU ---
+    });
+
+    // ... (Semua sisa kode JavaScript Anda yang lain) ...
+
+    // Catatan: Pastikan Anda menyalin SELURUH blok JavaScript dari file index.html
+    // yang Anda berikan di awal ke bagian ini agar semua fungsinya berjalan.
+    // Kode di atas hanyalah penambahannya.
+    // Kode lengkap JS Anda sudah sangat baik, cukup tambahkan potongan di atas.
+  </script>
+</body>
+</html>
