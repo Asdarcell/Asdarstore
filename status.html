@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Pesanan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary:#007BFF; --bg:#f0f4f8; --card:#fff; --text:#333; --muted:#6c757d; --border:#e9ecef; }
+    body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); margin:0; }
+    .container { max-width:700px; margin: 0 auto; padding: 1rem; }
+    .card { background:var(--card); border-radius: 16px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.07); margin-top: 1rem; }
+    h1 { color: var(--primary); font-size: 1.6rem; }
+    label { font-weight:600; }
+    input { width:100%; padding:0.8rem; border-radius:8px; border:1px solid var(--border); margin-top:0.4rem; }
+    button { width:100%; padding:0.8rem; border:none; background: var(--primary); color:#fff; border-radius:8px; font-weight:600; cursor:pointer; margin-top:0.6rem; }
+    .row { display:flex; gap:1rem; align-items:center; }
+    .row input { flex:1; }
+    .muted { color: var(--muted); font-size:0.9rem; }
+    .value { font-weight:600; }
+    .status { display:inline-block; padding:6px 12px; border-radius:999px; font-weight:700; font-size:0.85rem; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Status Pesanan</h1>
+    <div class="card">
+      <div class="row">
+        <input id="order-id-input" type="text" placeholder="Masukkan ID Pesanan, contoh: ORD-173..." />
+        <button id="check-btn">Cek</button>
+      </div>
+      <p class="muted">Tip: Jika Anda diarahkan dari halaman pesanan, ID sudah terisi otomatis.</p>
+    </div>
+
+    <div id="result" class="card" style="display:none">
+      <p>ID Pesanan: <span class="value" id="r-id"></span></p>
+      <p>Produk: <span class="value" id="r-produk"></span></p>
+      <p>Tujuan/ID Pelanggan: <span class="value" id="r-nomor"></span></p>
+      <p>Harga: <span class="value" id="r-harga"></span></p>
+      <p>Status: <span class="status" id="r-status"></span></p>
+      <p>Bukti: <a id="r-bukti" href="#" target="_blank">Lihat Bukti</a></p>
+      <p class="muted" id="r-time"></p>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      FIREBASE_CONFIG: {
+        apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+        authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+        databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+        projectId: "asdarstoredigitalll-d89c4"
+      }
+    };
+    firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+    const db = firebase.firestore();
+
+    function getParam(name) { return new URLSearchParams(location.search).get(name); }
+    function formatRp(num){ return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(num||0); }
+    const el = {
+      orderIdInput: document.getElementById('order-id-input'),
+      checkBtn: document.getElementById('check-btn'),
+      box: document.getElementById('result'),
+      id: document.getElementById('r-id'),
+      produk: document.getElementById('r-produk'),
+      nomor: document.getElementById('r-nomor'),
+      harga: document.getElementById('r-harga'),
+      status: document.getElementById('r-status'),
+      bukti: document.getElementById('r-bukti'),
+      time: document.getElementById('r-time')
+    };
+
+    let unsubscribe = null;
+    async function loadOrder(id){
+      if (!id) return;
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      el.box.style.display = 'none';
+      try {
+        unsubscribe = db.collection('pesananUmum').doc(id).onSnapshot(doc=>{
+          if (!doc.exists) { alert('Pesanan tidak ditemukan.'); return; }
+          const d = doc.data();
+          el.id.textContent = d.id || id;
+          el.produk.textContent = d.produk || '-';
+          el.nomor.textContent = d.nomor_pelanggan || d.nama_pelanggan || '-';
+          el.harga.textContent = formatRp(d.harga_final || d.harga || 0);
+          el.status.textContent = d.status || '-';
+          el.status.style.background = '#e6f2ff';
+          el.status.style.color = '#007BFF';
+          el.bukti.href = d.bukti_url || '#';
+          el.time.textContent = d.waktu?.toDate ? ('Diperbarui: ' + d.waktu.toDate().toLocaleString('id-ID')) : '';
+          el.box.style.display = 'block';
+        }, err => { console.error(err); alert('Gagal memuat status pesanan.'); });
+      } catch(e){ console.error(e); alert('Terjadi kesalahan.'); }
+    }
+
+    el.checkBtn.addEventListener('click', () => loadOrder(el.orderIdInput.value.trim()));
+    const initial = getParam('id');
+    if (initial) { el.orderIdInput.value = initial; loadOrder(initial); }
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Pesanan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary:#007BFF; --bg:#f0f4f8; --card:#fff; --text:#333; --muted:#6c757d; --border:#e9ecef; }
+    body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); margin:0; }
+    .container { max-width:700px; margin: 0 auto; padding: 1rem; }
+    .card { background:var(--card); border-radius: 16px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.07); margin-top: 1rem; }
+    h1 { color: var(--primary); font-size: 1.6rem; }
+    label { font-weight:600; }
+    input { width:100%; padding:0.8rem; border-radius:8px; border:1px solid var(--border); margin-top:0.4rem; }
+    button { width:100%; padding:0.8rem; border:none; background: var(--primary); color:#fff; border-radius:8px; font-weight:600; cursor:pointer; margin-top:0.6rem; }
+    .row { display:flex; gap:1rem; align-items:center; }
+    .row input { flex:1; }
+    .muted { color: var(--muted); font-size:0.9rem; }
+    .value { font-weight:600; }
+    .status { display:inline-block; padding:6px 12px; border-radius:999px; font-weight:700; font-size:0.85rem; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Status Pesanan</h1>
+    <div class="card">
+      <div class="row">
+        <input id="order-id-input" type="text" placeholder="Masukkan ID Pesanan, contoh: ORD-173..." />
+        <button id="check-btn">Cek</button>
+      </div>
+      <p class="muted">Tip: Jika Anda diarahkan dari halaman pesanan, ID sudah terisi otomatis.</p>
+    </div>
+
+    <div id="result" class="card" style="display:none">
+      <p>ID Pesanan: <span class="value" id="r-id"></span></p>
+      <p>Produk: <span class="value" id="r-produk"></span></p>
+      <p>Tujuan/ID Pelanggan: <span class="value" id="r-nomor"></span></p>
+      <p>Harga: <span class="value" id="r-harga"></span></p>
+      <p>Status: <span class="status" id="r-status"></span></p>
+      <p>Bukti: <a id="r-bukti" href="#" target="_blank">Lihat Bukti</a></p>
+      <p class="muted" id="r-time"></p>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      FIREBASE_CONFIG: {
+        apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+        authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+        databaseURL: "https://asdarstoredigitalll-d89c4-default-rtdb.firebaseio.com",
+        projectId: "asdarstoredigitalll-d89c4"
+      }
+    };
+    firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+    const db = firebase.firestore();
+
+    function getParam(name) { return new URLSearchParams(location.search).get(name); }
+    function formatRp(num){ return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(num||0); }
+    const el = {
+      orderIdInput: document.getElementById('order-id-input'),
+      checkBtn: document.getElementById('check-btn'),
+      box: document.getElementById('result'),
+      id: document.getElementById('r-id'),
+      produk: document.getElementById('r-produk'),
+      nomor: document.getElementById('r-nomor'),
+      harga: document.getElementById('r-harga'),
+      status: document.getElementById('r-status'),
+      bukti: document.getElementById('r-bukti'),
+      time: document.getElementById('r-time')
+    };
+
+    let unsubscribe = null;
+    async function loadOrder(id){
+      if (!id) return;
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      el.box.style.display = 'none';
+      try {
+        unsubscribe = db.collection('pesananUmum').doc(id).onSnapshot(doc=>{
+          if (!doc.exists) { alert('Pesanan tidak ditemukan.'); return; }
+          const d = doc.data();
+          el.id.textContent = d.id || id;
+          el.produk.textContent = d.produk || '-';
+          el.nomor.textContent = d.nomor_pelanggan || d.nama_pelanggan || '-';
+          el.harga.textContent = formatRp(d.harga_final || d.harga || 0);
+          el.status.textContent = d.status || '-';
+          el.status.style.background = '#e6f2ff';
+          el.status.style.color = '#007BFF';
+          el.bukti.href = d.bukti_url || '#';
+          el.time.textContent = d.waktu?.toDate ? ('Diperbarui: ' + d.waktu.toDate().toLocaleString('id-ID')) : '';
+          el.box.style.display = 'block';
+        }, err => { console.error(err); alert('Gagal memuat status pesanan.'); });
+      } catch(e){ console.error(e); alert('Terjadi kesalahan.'); }
+    }
+
+    el.checkBtn.addEventListener('click', () => loadOrder(el.orderIdInput.value.trim()));
+    const initial = getParam('id');
+    if (initial) { el.orderIdInput.value = initial; loadOrder(initial); }
+  </script>
+</body>
+</html>
+
