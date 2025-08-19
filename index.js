@@ -20,7 +20,7 @@ exports.requestManualDeposit = functions.https.onCall(async (data, context) => {
     }
     console.log(`User authenticated with UID: ${context.auth.uid}`);
 
-    try {w
+    try {
         const userId = context.auth.uid;
         const amount = parseInt(data.amount);
 
