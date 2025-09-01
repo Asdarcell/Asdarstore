@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asdar Store Kuota Kilat Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; }
+        .popup.active { display: flex; align-items: center; justify-content: center; }
+        .popup-content { background: white; padding: 1.5rem; border-radius: 1rem; width: 90%; max-width: 800px; max-height: 90%; overflow-y: auto; }
+        .stock-available { color: #10b981; }
+        .stock-unavailable { color: #ef4444; }
+        #productInfo ul { list-style: none; padding: 0; }
+        #productInfo li { padding: 4px 0; border-bottom: 1px solid #e5e7eb; }
+        #productInfo li:last-child { border-bottom: none; }
+        #productInfo strong { color: #4f46e5; min-width: 100px; display: inline-block;}
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4 text-center"><h1 class="text-3xl md:text-4xl font-bold mb-2">🚀 Asdar Store Kuota Kilat Premium</h1><p class="text-blue-100">Terpercaya • Cepat • Berkualitas</p></div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <section class="bg-white rounded-2xl shadow-xl p-8 mb-8 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">🔥 Isi Ulang Paket Data Internet XL/Axis Super Cepat!</h2>
+            <p class="text-lg text-gray-600 mb-6">Kuota ngebut, harga bersahabat! Nikmati koneksi tak terbatas dan aplikasi premium favoritmu hanya di Asdar Store!</p>
+            <div class="bg-green-100 border border-green-300 rounded-lg p-4 mb-6"><p class="text-green-800 font-semibold">✅ Garansi 100% • ⚡ Proses Instan • 💬 Support 24/7</p></div>
+        </section>
+        <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
+            <button onclick="openPopup('produk30')" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg">📦 Produk 30 Hari</button>
+            <button onclick="openPopup('paketTV')" class="bg-gradient-to-r from-pink-500 to-pink-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg">📺 Paket TV Digital</button>
+            <button onclick="openPopup('stokBekasan')" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg">📋 Stok Bekasan</button>
+            <button onclick="openPopup('cekArea')" class="bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-lg">🗺️ Cek Area</button>
+            <button onclick="openPopup('caraUnreg')" class="bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg">❌ Cara Unreg</button>
+            <button onclick="openPopup('joinGroup')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg">👥 Join Grup</button>
+            <button onclick="openPopup('akunPremium')" class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-lg">⭐ Akun Premium</button>
+            <button onclick="openPopup('lainnya')" class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg">🔧 Lainnya</button>
+        </section>
+        <section id="orderForm" class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">📝 FORM PEMESANAN</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Produk:</label><select id="productSelect" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500"><option value="">-- Pilih Produk --</option></select></div>
+                <div><label id="phoneNumberLabel" class="block text-sm font-semibold text-gray-700 mb-2">Nomor Tujuan:</label><input type="tel" id="phoneNumber" placeholder="Pilih produk terlebih dahulu" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500" disabled></div>
+            </div>
+            <div id="productDetails" class="mt-6 p-4 bg-blue-50 rounded-lg hidden">
+                <h4 class="font-semibold text-blue-800 mb-3">Detail Produk:</h4>
+                <div id="productInfo" class="text-sm text-gray-800"></div>
+            </div>
+            <button onclick="orderNow()" class="w-full mt-6 bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg">🛒 Pesan Via WhatsApp</button>
+        </section>
+        <section class="bg-white rounded-2xl shadow-xl p-6 mt-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">🟣 PAYMENT 🟣</h3>
+            <div class="text-center space-y-2 text-lg">
+                <p><strong>ShopeePay:</strong> <span class="text-indigo-600 font-semibold">081803004607</span></p>
+                <p><strong>DANA:</strong> <span class="text-indigo-600 font-semibold">087755432880</span></p>
+                <p><strong>QRIS (All Payment):</strong> <a href="https://iili.io/FgTQZNa.png" target="_blank" class="text-blue-500 font-semibold underline hover:text-blue-700">Lihat QRIS</a></p>
+            </div>
+        </section>
+        <section class="bg-white rounded-2xl shadow-xl p-8 my-8">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">📊 Statistik Real-Time</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center p-4 bg-blue-50 rounded-xl"><div class="text-3xl font-bold text-blue-600" id="totalCustomers">...</div><div class="text-sm text-gray-600">Pelanggan Puas</div></div>
+                <div class="text-center p-4 bg-green-50 rounded-xl"><div class="text-3xl font-bold text-green-600" id="todayOrders">...</div><div class="text-sm text-gray-600">Pesanan Hari Ini</div></div>
+                <div class="text-center p-4 bg-purple-50 rounded-xl"><div class="text-3xl font-bold text-purple-600" id="successRate">...%</div><div class="text-sm text-gray-600">Tingkat Keberhasilan</div></div>
+                <div class="text-center p-4 bg-orange-50 rounded-xl"><div class="text-3xl font-bold text-orange-600" id="avgProcessTime">...</div><div class="text-sm text-gray-600">Detik Rata-rata</div></div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Popups -->
+    <div id="produk30Popup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">📦 Produk 30 Hari</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr class="bg-gray-50"><th class="border p-3 text-left font-semibold">PRODUK</th><th class="border p-3 text-center font-semibold">STOK</th><th class="border p-3 text-center font-semibold">AKSI</th></tr></thead><tbody id="productTablePopup-internet"></tbody></table></div></div></div>
+    <div id="paketTVPopup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">📺 Paket TV Digital</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div id="tvProviderSelection" class="mb-6"><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><button onclick="showTVProducts('kvision')" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl font-semibold">📡 K-Vision</button><button onclick="showTVProducts('nexparabola')" class="bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl font-semibold">🛰️ Nex Parabola</button><button onclick="showTVProducts('mncvision')" class="bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-xl font-semibold">📺 MNC Vision</button></div></div><div id="tvProductTable" class="hidden"><div class="flex justify-between items-center mb-4"><div><h4 id="selectedProvider" class="text-lg font-bold"></h4><button onclick="backToProviderSelection()" class="text-blue-500 hover:text-blue-700 text-sm">← Kembali</button></div></div><div class="overflow-x-auto"><table class="w-full border-collapse text-sm"><thead><tr class="bg-gray-50"><th class="border p-3 text-left font-semibold">PAKET</th><th class="border p-3 text-center font-semibold">STOK</th><th class="border p-3 text-center font-semibold">AKSI</th></tr></thead><tbody id="tvProductTableBody"></tbody></table></div></div></div></div>
+    <div id="stokBekasanPopup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">📋 Stok Bekasan</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr class="bg-gray-50"><th class="border p-3 text-left font-semibold">PRODUK</th><th class="border p-3 text-center font-semibold">STOK</th><th class="border p-3 text-center font-semibold">AKSI</th></tr></thead><tbody id="productTablePopup-stokBekasan"></tbody></table></div></div></div>
+    <div id="akunPremiumPopup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">⭐ Akun Premium</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr class="bg-gray-50"><th class="border p-3 text-left font-semibold">PRODUK</th><th class="border p-3 text-center font-semibold">STOK</th><th class="border p-3 text-center font-semibold">AKSI</th></tr></thead><tbody id="productTablePopup-akunPremium"></tbody></table></div></div></div>
+    <div id="lainnyaPopup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">🔧 Layanan Lainnya</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div id="otherServicesGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div></div></div>
+    <div id="serviceDetailPopup" class="popup"><div class="popup-content max-w-4xl"><div class="flex justify-between items-center mb-4"><h3 id="serviceDetailTitle" class="text-xl font-bold"></h3><button onclick="closeServiceDetail()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr class="bg-gray-50"><th class="border p-3 text-left font-semibold">PRODUK</th><th class="border p-3 text-center font-semibold">STOK</th><th class="border p-3 text-center font-semibold">AKSI</th></tr></thead><tbody id="serviceDetailTableBody"></tbody></table></div></div></div>
+    <div id="cekAreaPopup" class="popup"><div class="popup-content"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">🗺️ Cek Area Kuota</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><input type="text" id="areaSearch" placeholder="Ketik provinsi atau kota..." class="w-full border p-2 rounded mb-4" onkeyup="searchArea()"><div class="overflow-auto" style="max-height: 60vh;"><table class="w-full text-sm" id="areaTable"><thead><tr class="bg-gray-50 sticky top-0"><th class="p-2 text-left">Provinsi</th><th class="p-2 text-left">Kota/Kabupaten</th><th class="p-2 text-center">Area</th></tr></thead><tbody></tbody></table></div></div></div>
+    <div id="caraUnregPopup" class="popup"><div class="popup-content"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">❌ Cara Unreg Paket</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="space-y-4"><div class="bg-red-50 p-4 rounded-lg"><h4 class="font-semibold text-red-800 mb-2">Menggunakan MYXL:</h4><ol class="list-decimal list-inside text-sm text-gray-700 space-y-1"><li>Buka aplikasi MYXL di smartphone Anda</li><li>Login dengan nomor XL/Axis Anda</li><li>Pilih menu "Paket Saya" atau "My Package"</li><li>Cari paket yang ingin di-unreg</li><li>Klik "Berhenti Berlangganan" atau "Unsubscribe"</li><li>Konfirmasi pemberhentian paket</li></ol></div><div class="bg-blue-50 p-4 rounded-lg"><h4 class="font-semibold text-blue-800 mb-2">Menggunakan AXISNET (*123#):</h4><ol class="list-decimal list-inside text-sm text-gray-700 space-y-1"><li>Ketik *123# di ponsel Anda</li><li>Pilih menu "Paket Internet"</li><li>Pilih "Berhenti Paket"</li><li>Pilih paket yang ingin dihentikan</li><li>Konfirmasi dengan menekan "Ya"</li></ol></div></div></div></div>
+    <div id="joinGroupPopup" class="popup"><div class="popup-content max-w-md"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">👥 Pilih Grup</h3><button onclick="closeAllPopups()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="space-y-4"><a href="URL_GRUP_TV_DIGITAL" target="_blank" class="block w-full text-center bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-lg font-semibold transition-all">Grup TV Digital</a><a href="URL_GRUP_PAKET_INTERNET" target="_blank" class="block w-full text-center bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold transition-all">Grup Paket Internet</a></div></div></div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCuCxBcYv0IhhqYPlim2muMRzIt-_Gth4w",
+          authDomain: "pusatdigital-36b0b.firebaseapp.com",
+          databaseURL: "https://pusatdigital-36b0b-default-rtdb.firebaseio.com",
+          projectId: "pusatdigital-36b0b",
+          storageBucket: "pusatdigital-36b0b.firebasestorage.app",
+          messagingSenderId: "241234236110",
+          appId: "1:241234236110:web:c7a3ccab6260407c92769f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let allProductsCache = {};
+        const areaData = `Banten	Kota Tangerang Selatan, Kota Tangerang, Kab. Tangerang, Kab. Pandeglang, Kab. Lebak, Kab. Serang, Kota Serang, Kota Cilegon	Area 2\nDI Yogyakarta	Kab. Kulon Progo, Kota Yogyakarta, Kab. Sleman, Kab. Bantul, Kab. Gunungkidul	Area 1\nDKI Jakarta	Kota Jakarta Pusat, Kota Jakarta Selatan, Kota Jakarta Barat, Kota Jakarta Timur, Kota Jakarta Utara	Area 2\nDKI Jakarta	Kab. Kepulauan Seribu	Area 3\nJawa Barat	Kab. Bandung, Kab. Kuningan, Kab. Purwakarta, Kota Bandung	Area 1\nJawa Barat	Kab. Bandung Barat, Kota Cimahi, Kab. Cirebon, Kota Cirebon, Kab. Indramayu, Kab. Subang	Area 2\nJawa Barat	Kab. Bogor, Kota Bogor, Kota Depok, Kota Bekasi, Kota Banjar, Kab. Ciamis, Kota Tasikmalaya, Kab. Majalengka, Kab. Sumedang, Kab. Bekasi, Kab. Tasikmalaya, Kab. Garut	Area 3\nJawa Barat	Kab. Cianjur, Kab. Pangandaran, Kab. Karawang, Kota Sukabumi, Kab. Sukabumi	Area 4\nJawa Tengah	Kab. Tegal, Kota Surakarta, Kota Tegal, Kab. Brebes, Kab. Kebumen, Kab. Pemalang, Kota Semarang	Area 2\nJawa Tengah	Kab. Boyolali, Kota Salatiga, Kab. Semarang, Kab. Cilacap, Kab. Grobogan, Kab. Kendal, Kab. Rembang	Area 3\nJawa Tengah	Kota Pekalongan, Kab. Pekalongan, Kab. Batang, Kab. Purbalingga, Kab. Kudus, Kab. Sukoharjo, Kab. Klaten, Kota Magelang, Kab. Banyumas, Kab. Banyumas, Kab. Magelang, Kab. Temanggung, Kab. Sragen, Kab. Banjarnegara, Kab. Karanganyar, Kab. Wonosobo, Kab. Jepara, Kab. Demak, Kab. Purworejo, Kab. Blora, Kab. Wonogiri, Kab. Pati	Area 4\nJawa Timur	Kota Probolinggo, Kab. Bangkalan, Kab. Sidoarjo, Kab. Banyuwangi, Kota Surabaya, Kab. Sampang, Kab. Pamekasan, Kab. Sumenep, Kab. Pacitan	Area 2\nJawa Timur	Kab. Lumajang, Kab. Probolinggo	Area 3\nJawa Timur	Kab. Jombang, Kota Blitar, Kab. Blitar, Kota Kediri, Kab. Lamongan, Kab. Kediri, Kab. Ngawi, Kab. Mojokerto, Kota Mojokerto, Kab. Magetan, Kab. Gresik, Kab. Tulungagung, Kab. Nganjuk, Kab. Pasuruan, Kota Pasuruan, Kab. Bojonegoro, Kab. Madiun, Kab. Bondowoso, Kab. Tuban, Kota Madiun, Kab. Situbondo, Kab. Jember, Kota Malang, Kab. Malang, Kab. Ponorogo, Kota Batu, Kab. Trenggalek	Area 4\nBengkulu	Kab. Seluma	Area 3\nBengkulu	Kab. Bengkulu Selatan, Kab. Kaur, Kab. Lebong, Kab. Rejang Lebong, Kab. Bengkulu Tengah, Kota Bengkulu, Kab. Bengkulu Utara, Kab. Kepahiang, Kab. Muko Muko	Area 4\nJambi	Kab. Batanghari, Kota Jambi, Kab. Tanjung Jabung Barat, Kab. Muaro Jambi, Kab. Sarolangun	Area 3\nJambi	Kab. Tanjung Jabung Timur, Kab. Kerinci, Kab. Bungo, Kab. Tebo, Kab. Merangin, Kota Sungai Penuh	Area 4\nKepulauan Bangka Belitung	Kab. Bangka Selatan, Kota Pangkal Pinang, Kab. Belitung, Kab. Belitung Timur	Area 2\nKepulauan Bangka Belitung	Kab. Bangka, Kab. Bangka Tengah, Kab. Bangka Barat	Area 3\nKepulauan Riau	Kota Batam	Area 2\nKepulauan Riau	Kab. Karimun, Kab. Bintan, Kota Tanjung Pinang	Area 3\nKepulauan Riau	Kab. Lingga, Kab. Kepulauan Anambas, Kab. Natuna	Area 4\nLampung	Kab. Lampung Tengah, Kab. Pringsewu, Kota Metro, Kab. Pesawaran, Kab. Lampung Selatan, Kota Bandar Lampung	Area 3\nLampung	Kab. Lampung Barat, Kab. Lampung Timur, Kab. Tulang Bawang Barat, Kab. Way Kanan, Kab. Tulang Bawang, Kab. Tanggamus, Kab. Pesisir Barat, Kab. Lampung Utara, Kab. Mesuji	Area 4\nNanggroe Aceh Darussalam	Kab. Aceh Barat Daya, Kab. Aceh Besar, Kota Sabang, Kab. Gayo Lues	Area 2\nNanggroe Aceh Darussalam	Kab. Aceh Jaya, Kab. Aceh Selatan, Kab. Aceh Tenggara, Kab. Nagan Raya, Kota Banda Aceh	Area 3\nNanggroe Aceh Darussalam	Kab. Aceh Barat, Kab. Aceh Singkil, Kab. Aceh Tamiang, Kab. Aceh Tengah, Kota Subulussalam, Kab. Bener Meriah, Kab. Aceh Utara, Kota Lhokseumawe, Kab. Pidie, Kab. Aceh Timur, Kab. Simeulue, Kota Langsa, Kab. Bireuen, Kab. Pidie Jaya	Area 4\nRiau	Kota Pekanbaru	Area 2\nRiau	Kab. Kuantan Singingi, Kab. Pelalawan, Kab. Kampar, Kab. Siak, Kota Dumai, Kab. Rokan Hilir, Kab. Indragiri Hulu, Kab. Kepulauan Meranti, Kab. Bengkalis	Area 3\nRiau	Kab. Rokan Hulu, Kab. Indragiri Hilir	Area 4\nSumatera Barat	Kab. Kepulauan Mentawai	Area 2\nSumatera Barat	Kota Payakumbuh, Kota Padang Panjang, Kab. Sijunjung, Kab. Padang Pariaman, Kota Padang, Kab. Solok Selatan	Area 3\nSumatera Barat	Kab. Pasaman Barat, Kab. Pasaman, Kab. Lima Puluh Kota, Kab. Tanah Datar, Kab. Dharmasraya, Kota Solok, Kab. Agam, Kab. Solok, Kota Bukittinggi, Kota Pariaman, Kota Sawahlunto, Kab. Pesisir Selatan	Area 4\nSumatera Selatan	Kab. Ogan Komering Ilir, Kab. Penukal Abab Lematang Ilir, Kab. Banyuasin, Kota Palembang, Kab. Ogan Ilir	Area 3\nSumatera Selatan	Kab. Ogan Komering Ulu Timur, Kab. Ogan Komering Ulu Selatan, Kab. Ogan Komering Ulu, Kab. Musi Rawas, Kab. Musi Rawas Utara, Kab. Empat Lawang, Kota Pagar Alam, Kota Lubuk Linggau, Kab. Musi Banyuasin, Kab. Muara Enim, Kab. Lahat, Kota Prabumulih	Area 4\nSumatera Utara	Kab. Karo, Kota Medan, Kab. Dairi	Area 2\nSumatera Utara	Kota Binjai, Kota Tebing Tinggi, Kab. Serdang Bedagai, Kab. Langkat, Kab. Deli Serdang, Kab. Batu Bara, Kota Tanjung Balai, Kab. Asahan, Kota Gunungsitoli, Kab. Nias Barat, Kab. Nias Selatan, Kab. Nias Utara	Area 3\nSumatera Utara	Kab. Pakpak Bharat, Kab. Mandailing Natal, Kab. Padang Lawas, Kab. Labuhanbatu Utara, Kota Padangsidimpuan, Kab. Tapanuli Selatan, Kab. Labuhanbatu Selatan, Kab. Labuhanbatu, Kab. Tapanuli Utara, Kab. Padang Lawas Utara, Kab. Humbang Hasundutan, Kab. Simalungun, Kab. Toba Samosir, Kota Pematangsiantar, Kab. Tapanuli Tengah, Kab. Samosir, Kota Sibolga, Kab. Nias	Area 4\nKalimantan Barat	Kab. Sekadau, Kab. Kapuas Hulu, Kab. Sintang, Kab. Bengkayang, Kab. Melawi, Kab. Sambas, Kab. Sanggau, Kab. Kubu Raya, Kota Pontianak, Kab. Kayong Utara, Kab. Landak, Kab. Mempawah, Kota Singkawang, Kab. Ketapang	Area 4\nKalimantan Selatan	Kab. Hulu Sungai Tengah, Kab. Tapin, Kab. Hulu Sungai Utara, Kab. Tabalong, Kota Banjarmasin, Kab. Banjar, Kab. Tanah Bumbu, Kota Banjarbaru, Kab. Hulu Sungai Selatan	Area 2\nKalimantan Selatan	Kab. Balangan, Kab. Barito Kuala, Kab. Tanah Laut, Kab. Kotabaru	Area 3\nKalimantan Tengah	Kab. Kapuas, Kab. Pulang Pisau, Kota Palangkaraya	Area 3\nKalimantan Tengah	Kab. Seruyan, Kab. Kotawaringin Barat, Kab. Katingan, Kab. Kotawaringin Timur, Kab. Sukamara, Kab. Lamandau, Kab. Murung Raya, Kab. Barito Timur, Kab. Barito Utara, Kab. Barito Selatan, Kab. Gunung Mas	Area 4\nKalimantan Timur	Kab. Penajam Paser Utara, Kota Balikpapan, Kab. Paser, Kab. Kutai Kartanegara, Kota Samarinda, Kota Bontang, Kab. Berau, Kab. Kutai Timur, Kab. Kutai Barat, Kab. Mahakam Ulu	Area 4\nKalimantan Utara	Kab. Tana Tidung, Kab. Malinau, Kab. Bulungan, Kota Tarakan, Kab. Nunukan	Area 4\nGorontalo	Kab. Pahuwato, Kab. Boalemo, Kab. Gorontalo, Kota Gorontalo, Kab. Gorontalo Utara, Kab. Bone Bolango	Area 4\nSulawesi Barat	Kab. Mamuju Tengah	Area 2\nSulawesi Barat	Kab. Majene, Kab. Polewali Mandar, Kab. Mamuju Utara	Area 3\nSulawesi Barat	Kab. Mamuju, Kab. Mamasa	Area 4\nSulawesi Selatan	Kab. Barru, Kota Pare Pare, Kab. Pinrang	Area 2\nSulawesi Selatan	Kab. Sinjai, Kab. Enrekang, Kab. Sidenreng Rappang, Kab. Luwu Timur, Kab. Soppeng, Kab. Tana Toraja	Area 3\nSulawesi Selatan	Kab. Kepulauan Selayar, Kab. Takalar, Kab. Jeneponto, Kab. Bulukumba, Kab. Pangkajene Kepulauan, Kota Makassar, Kab. Gowa, Kab. Maros, Kab. Bone, Kab. Wajo, Kab. Luwu, Kab. Luwu Utara, Kota Palopo, Kab. Toraja Utara	Area 4\nSulawesi Tengah	Kab. Banggai Kepulauan, Kab. Banggai Laut, Kota Palu, Kab. Toli Toli, Kab. Tojo Una Una, Kab. Morowali, Kab. Morowali Utara	Area 3\nSulawesi Tengah	Kab. Banggai, Kab. Parigi Moutong, Kab. Donggala, Kab. Sigi, Kab. Poso, Kab. Buol	Area 4\nSulawesi Tenggara	Kab. Konawe Kepulauan, Kab. Konawe Utara, Kab. Buton Utara, Kab. Wakatobi	Area 2\nSulawesi Tenggara	Kota Bau Bau, Kab. Muna, Kab. Buton Selatan, Kab. Buton Tengah, Kab. Muna Barat	Area 3\nSulawesi Tenggara	Kab. Kolaka, Kab. Kolaka Utara, Kab. Konawe, Kab. Konawe Selatan, Kota Kendari, Kab. Kolaka Timur, Kab. Buton, Kab. Bombana	Area 4\nSulawesi Utara	Kab. Bolaang Mongondow, Kab. Bolaang Mongondow Selatan, Kota Kotamobagu, Kab. Minahasa Selatan, Kab. Bolaang Mongondow Timur, Kab. Minahasa Tenggara, Kab. Bolaang Mongondow Utara, Kota Tomohon, Kab. Minahasa, Kota Manado, Kab. Minahasa Utara, Kota Bitung, Kab. Kepulauan Sangihe, Kab. Kepulauan Talaud, Kab. Siau Tagulandang Biaro	Area 4\nBali	Kab. Jembrana, Kab. Buleleng	Area 1\nBali	Kab. Badung, Kab. Karangasem, Kab. Tabanan, Kab. Bangli, Kab. Gianyar, Kab. Klungkung, Kota Denpasar	Area 2\nNusa Tenggara Barat	Kab. Lombok Barat, Kab. Lombok Timur, Kota Mataram, Kab. Lombok Tengah, Kab. Lombok Utara, Kab. Sumbawa Barat, Kab. Sumbawa, Kota Bima, Kab. Dompu	Area 2\nNusa Tenggara Barat	Kab. Bima	Area 4\nNusa Tenggara Timur	Kab. Alor, Kota Kupang, Kab. Kupang, Kab. Malaka, Kab. Manggarai Barat, Kab. Timor Tengah Selatan, Kab. Belu, Kab. Sikka, Kab. Timor Tengah Utara, Kab. Lembata, Kab. Manggarai Timur, Kab. Ende, Kab. Sumba Barat Daya, Kab. Rote Ndao, Kab. Nagekeo, Kab. Flores Timur, Kab. Ngada, Kab. Sumba Tengah, Kab. Manggarai, Kab. Sumba Barat, Kab. Sumba Timur, Kab. Sabu Raijua	Area 4\nMaluku	Kab. Maluku Tenggara Barat, Kab. Kepulauan Aru, Kota Tual, Kab. Seram Bagian Barat, Kab. Maluku Tengah, Kab. Seram Bagian Timur, Kota Ambon, Kab. Maluku Tenggara, Kab. Maluku Barat Daya, Kab. Buru Selatan, Kab. Buru	Area 1\nMaluku Utara	Kab. Halmahera Barat, Kab. Halmahera Utara, Kab. Kepulauan Sula, Kab. Halmahera Timur, Kab. Pulau Taliabu, Kab. Halmahera Selatan, Kota Tidore Kepulauan, Kota Ternate, Kab. Halmahera Tengah, Kab. Pulau Morotai	Area 1\nPapua	Kab. Asmat, Kab. Jayapura, Kab. Mimika, Kab. Keerom, Kab. Biak Numfor, Kota Jayapura, Kab. Kepulauan Yapen, Kab. Boven Digoel, Kab. Merauke, Kab. Deiyai, Kab. Dogiyai, Kab. Intan Jaya, Kab. Jayawijaya, Kab. Lanny Jaya, Kab. Mamberamo Raya, Kab. Mamberamo Tengah, Kab. Mappi, Kab. Nabire, Kab. Nduga, Kab. Paniai, Kab. Pegunungan Bintang, Kab. Puncak, Kab. Puncak Jaya, Kab. Sarmi, Kab. Supiori, Kab. Tolikara, Kab. Waropen, Kab. Yahukimo, Kab. Yalimo	Area 1\nPapua Barat	Kab. Teluk Bintuni, Kab. Sorong Selatan, Kab. Sorong, Kab. Teluk Wondama, Kota Sorong, Kab. Manokwari, Kab. Fak Fak, Kab. Kaimana, Kab. Manokwari Selatan, Kab. Maybrat, Kab. Pegunungan Arfak, Kab. Raja Ampat, Kab. Tambrauw	Area 1`;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInitialData();
+            buildOtherServicesMenu();
+            populateAreaTable();
+        });
+        
+        function loadInitialData() {
+            db.ref('products').on('value', snapshot => {
+                allProductsCache = snapshot.val() || {};
+                populateProductSelect();
+            });
+            db.ref('stats').on('value', snapshot => {
+                const stats = snapshot.val() || {};
+                document.getElementById('totalCustomers').textContent = (stats.totalCustomers || 0).toLocaleString();
+                document.getElementById('todayOrders').textContent = (stats.todayOrders || 0).toLocaleString();
+                document.getElementById('successRate').textContent = `${stats.successRate || 99.8}%`;
+                document.getElementById('avgProcessTime').textContent = stats.avgProcessTime || 15;
+            });
+        }
+
+        function openPopup(popupName) {
+            // Logika untuk Join Grup
+            if (popupName === 'joinGroup') {
+                document.getElementById('joinGroupPopup').classList.add('active');
+                return; // Hentikan eksekusi lebih lanjut
+            }
+            // Logika popup lainnya
+            switch(popupName) {
+                case 'produk30': populateProductTable('internet', document.getElementById('productTablePopup-internet')); break;
+                case 'stokBekasan': populateProductTable('stokBekasan', document.getElementById('productTablePopup-stokBekasan')); break;
+                case 'akunPremium': populateProductTable('akunPremium', document.getElementById('productTablePopup-akunPremium')); break;
+                case 'paketTV':
+                    document.getElementById('tvProviderSelection').classList.remove('hidden');
+                    document.getElementById('tvProductTable').classList.add('hidden');
+                    break;
+            }
+            document.getElementById(popupName + 'Popup').classList.add('active');
+        }
+        function closeAllPopups() {
+            document.querySelectorAll('.popup').forEach(p => p.classList.remove('active'));
+        }
+        function closePopup(popupName) { document.getElementById(popupName + 'Popup').classList.remove('active'); }
+        
+        function showTVProducts(provider) {
+            document.getElementById('selectedProvider').textContent = capitalize(provider);
+            document.getElementById('tvProviderSelection').classList.add('hidden');
+            document.getElementById('tvProductTable').classList.remove('hidden');
+            populateProductTable(`tv/${provider}`, document.getElementById('tvProductTableBody'));
+        }
+        function backToProviderSelection() {
+            document.getElementById('tvProviderSelection').classList.remove('hidden');
+            document.getElementById('tvProductTable').classList.add('hidden');
+        }
+        
+        function buildOtherServicesMenu() {
+            const services = { 'VPN': 'vpn', 'Paket Inject': 'paketInject', 'Pulsa': 'pulsa', 'Token Listrik': 'tokenListrik', 'TV Smart': 'tvSmart' };
+            const grid = document.getElementById('otherServicesGrid');
+            grid.innerHTML = '';
+            for(const [name, key] of Object.entries(services)) {
+                grid.innerHTML += `<button onclick="openServiceDetail('${key}', '${name}')" class="bg-indigo-500 hover:bg-indigo-600 text-white p-4 rounded-lg font-semibold">${name}</button>`;
+            }
+        }
+        function openServiceDetail(categoryKey, categoryName) {
+            closeAllPopups();
+            document.getElementById('serviceDetailTitle').innerText = categoryName;
+            populateProductTable(categoryKey, document.getElementById('serviceDetailTableBody'));
+            document.getElementById('serviceDetailPopup').classList.add('active');
+        }
+        function closeServiceDetail() { document.getElementById('serviceDetailPopup').classList.remove('active'); }
+
+        function populateProductTable(path, tableBodyElement) {
+            tableBodyElement.innerHTML = '<tr><td colspan="3" class="text-center p-4">Memuat...</td></tr>';
+            const pathParts = path.split('/');
+            let productsRef = db.ref(`products/${path}`);
+            productsRef.on('value', snapshot => {
+                const products = snapshot.val() || {};
+                if (Object.keys(products).length === 0) {
+                    tableBodyElement.innerHTML = '<tr><td colspan="3" class="text-center p-4 text-gray-500">Stok sedang kosong.</td></tr>';
+                    return;
+                }
+                tableBodyElement.innerHTML = '';
+                Object.values(products).forEach(item => {
+                    const row = document.createElement('tr');
+                    let stockStatus, actionButton;
+
+                    if (item.available && item.stock > 0) {
+                        stockStatus = `<span class="stock-available">✅ ${item.stock}</span>`;
+                        actionButton = `<button onclick="selectProductFromPopup('${path}|${item.name}')" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm">Pesan</button>`;
+                    } else {
+                        stockStatus = `<span class="stock-unavailable">❌ Habis</span>`;
+                        actionButton = `<button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed text-sm" disabled>Pesan</button>`;
+                    }
+                    row.innerHTML = `<td class="border p-3"><div class="font-semibold">${item.name}</div><div class="text-sm text-gray-600">Rp ${item.price.toLocaleString('id-ID')}</div></td><td class="border p-3 text-center">${stockStatus}</td><td class="border p-3 text-center">${actionButton}</td>`;
+                    tableBodyElement.appendChild(row);
+                });
+            });
+        }
+        
+        function populateProductSelect() {
+            const select = document.getElementById('productSelect');
+            select.innerHTML = '<option value="">-- Pilih Produk --</option>';
+            const processCategory = (category, products, prefix) => {
+                const group = document.createElement('optgroup');
+                group.label = `--- ${capitalize(category)} ---`;
+                Object.values(products).forEach(item => {
+                    const disabled = (!item.available || item.stock === 0) ? 'disabled' : '';
+                    const stockInfo = disabled ? ' (Habis)' : '';
+                    group.innerHTML += `<option value="${prefix}|${item.name}" ${disabled}>${item.name} (${(item.price/1000)}k)${stockInfo}</option>`;
+                });
+                if (group.childElementCount > 0) select.appendChild(group);
+            };
+            for (const categoryKey in allProductsCache) {
+                if (categoryKey === 'tv') {
+                    for (const providerKey in allProductsCache.tv) {
+                        processCategory(providerKey, allProductsCache.tv[providerKey], `tv/${providerKey}`);
+                    }
+                } else {
+                    processCategory(categoryKey, allProductsCache[categoryKey], categoryKey);
+                }
+            }
+        }
+
+        function selectProductFromPopup(productValueWithFullPath) {
+            const select = document.getElementById('productSelect');
+            const [path, productName] = productValueWithFullPath.split('|');
+            const valueForSelect = `${path}|${productName}`;
+            
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === valueForSelect) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+            select.dispatchEvent(new Event('change'));
+            closeAllPopups();
+            document.getElementById('orderForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        document.getElementById('productSelect').addEventListener('change', function() {
+            const detailsDiv = document.getElementById('productDetails');
+            const infoDiv = document.getElementById('productInfo');
+            const numberLabel = document.getElementById('phoneNumberLabel');
+            const numberInput = document.getElementById('phoneNumber');
+
+            if (!this.value || this.options[this.selectedIndex].disabled) {
+                detailsDiv.classList.add('hidden');
+                numberLabel.innerText = 'Nomor Tujuan:';
+                numberInput.placeholder = 'Pilih produk terlebih dahulu';
+                numberInput.disabled = true;
+                return;
+            }
+            
+            numberInput.disabled = false;
+            const [path, productName] = this.value.split('|');
+            const pathParts = path.split('/');
+            let products = allProductsCache;
+            pathParts.forEach(part => { products = products ? products[part] : null; });
+            const productData = Object.values(products || {}).find(p => p.name === productName);
+
+            if (productData) {
+                let detailsHTML = '<ul>';
+                const categoryKey = pathParts[0];
+
+                detailsHTML += `<li><strong>Harga</strong>: <span>Rp ${productData.price.toLocaleString('id-ID')}</span></li>`;
+                detailsHTML += `<li><strong>Stok</strong>: <span>${productData.stock > 0 ? productData.stock + ' tersedia' : 'Habis'}</span></li>`;
+
+                if (categoryKey === 'internet' && productData.details) {
+                    if(productData.details.area1) detailsHTML += `<li><strong>Area 1</strong>: <span>${productData.details.area1}</span></li>`;
+                    if(productData.details.area2) detailsHTML += `<li><strong>Area 2</strong>: <span>${productData.details.area2}</span></li>`;
+                    if(productData.details.area3) detailsHTML += `<li><strong>Area 3</strong>: <span>${productData.details.area3}</span></li>`;
+                    if(productData.details.area4) detailsHTML += `<li><strong>Area 4</strong>: <span>${productData.details.area4}</span></li>`;
+                } else if (categoryKey === 'tv') {
+                    if(productData.duration) detailsHTML += `<li><strong>Durasi</strong>: <span>${productData.duration}</span></li>`;
+                    if(productData.channels) detailsHTML += `<li><strong>Channel</strong>: <span>${productData.channels}</span></li>`;
+                }
+                
+                if(productData.description && productData.description.trim() !== '') {
+                    detailsHTML += `<li><strong>Catatan</strong>: <span>${productData.description}</span></li>`;
+                }
+                detailsHTML += '</ul>';
+                infoDiv.innerHTML = detailsHTML;
+                detailsDiv.classList.remove('hidden');
+
+                switch(categoryKey) {
+                    case 'tv': numberLabel.innerText = 'No. SN / ID Pelanggan:'; numberInput.placeholder = 'Contoh: C101...'; break;
+                    case 'tokenListrik': numberLabel.innerText = 'ID Pelanggan / No. Meter:'; numberInput.placeholder = 'Contoh: 56701234567'; break;
+                    case 'akunPremium': case 'vpn': numberLabel.innerText = 'Catatan (Email/Username):'; numberInput.placeholder = 'contoh: user@gmail.com'; break;
+                    default: numberLabel.innerText = 'Nomor Tujuan:'; numberInput.placeholder = 'Contoh: 087812345678'; break;
+                }
+            } else {
+                detailsDiv.classList.add('hidden');
+            }
+        });
+
+        function orderNow() {
+            const productValue = document.getElementById('productSelect').value;
+            const targetNumber = document.getElementById('phoneNumber').value;
+            if (!productValue || !targetNumber) {
+                alert('Silakan pilih produk dan isi data tujuan!'); return;
+            }
+            const [path, productName] = productValue.split('|');
+            const pathParts = path.split('/');
+            let products = allProductsCache;
+            pathParts.forEach(part => { products = products ? products[part] : null; });
+            const productData = Object.values(products || {}).find(p => p.name === productName);
+            
+            if (productData) {
+                const categoryKey = pathParts[0];
+                let targetLabel = "Nomor Tujuan";
+                if (categoryKey === 'tv') targetLabel = "No. SN/ID";
+                else if (categoryKey === 'tokenListrik') targetLabel = "ID Pelanggan";
+                else if (['akunPremium', 'vpn'].includes(categoryKey)) targetLabel = "Catatan";
+                const adminNumber = "6281803004607";
+                const message = encodeURIComponent(`*MIN MAU ORDER*,\nSaya ingin memesan:\nProduk: *${productData.name}*\nHarga: *Rp ${productData.price.toLocaleString('id-ID')}*\n${targetLabel}: *${targetNumber}*`);
+                window.open(`https://wa.me/${adminNumber}?text=${message}`, '_blank');
+            }
+        }
+        
+        function populateAreaTable() {
+            const tableBody = document.querySelector('#areaTable tbody');
+            tableBody.innerHTML = '';
+            const rows = areaData.trim().split('\n');
+            rows.forEach(row => {
+                const [provinsi, kota, area] = row.split('\t');
+                tableBody.innerHTML += `<tr><td class="border-t p-2">${provinsi}</td><td class="border-t p-2">${kota}</td><td class="border-t p-2 text-center font-semibold">${area}</td></tr>`;
+            });
+        }
+        function searchArea() {
+            let input = document.getElementById('areaSearch').value.toUpperCase();
+            let table = document.getElementById('areaTable');
+            let tr = table.getElementsByTagName('tr');
+            for (let i = 1; i < tr.length; i++) {
+                let txtValue = tr[i].textContent || tr[i].innerText;
+                tr[i].style.display = txtValue.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+        
+        function capitalize(s) { if (!s) return ''; return s.charAt(0).toUpperCase() + s.slice(1).replace(/([A-Z])/g, ' $1').trim(); }
+    </script>
+</body>
+</html>
