@@ -152,7 +152,7 @@
         }
         
         function buildOtherServicesMenu() {
-            const services = { 'VPN': 'vpn', 'Paket Inject': 'paketInject', 'Pulsa': 'pulsa', 'Token Listrik': 'tokenListrik', 'TV Smart': 'tvSmart' };
+            const services = { 'VPN/CONFIG': 'vpn/config', 'Paket Inject': 'paketInject', 'Pulsa': 'pulsa', 'Token Listrik': 'tokenListrik', 'TV Smart': 'tvSmart' };
             const grid = document.getElementById('otherServicesGrid');
             grid.innerHTML = '';
             for(const [name, key] of Object.entries(services)) {
