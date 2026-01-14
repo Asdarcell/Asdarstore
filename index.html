@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Asdar Store - Reseller Digital</title>
+    <meta name="theme-color" content="#0f172a">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --primary: #3b82f6; --dark: #0f172a; --card: #1e293b; --text: #f8fafc; }
+        body { background: var(--dark); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 90px; }
+        
+        /* Utility */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Header & Balance */
+        .app-header { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .card-saldo { background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 20px; box-shadow: 0 10px 20px rgba(59,130,246,0.3); }
+        
+        /* Products */
+        .product-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; transition: 0.2s; position: relative; overflow: hidden; cursor: pointer; }
+        .product-card:active { transform: scale(0.95); border-color: var(--primary); }
+        
+        /* Bottom Nav */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 10px 0; z-index: 1050; }
+        .nav-link { color: #64748b; text-align: center; font-size: 0.75rem; text-decoration: none; flex: 1; }
+        .nav-link.active { color: var(--primary); font-weight: bold; }
+        .nav-link i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+        
+        /* Modals & Dropdowns */
+        .modal-content { background: var(--card); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
+        .dropdown-menu-dark { background-color: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 10px !important; }
+        .form-control { background: #f8fafc; border-radius: 10px; padding: 12px; color: #000; }
+        
+        .badge-mitra { background: linear-gradient(135deg, #FFD700, #FFA500); color: black; font-weight: 800; font-size: 0.7rem; padding: 5px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="app-header p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold m-0">Asdar<span class="text-primary">Store</span></h5>
+                <span id="badge-status" style="display:none;" class="badge-mitra mt-1"><i class="fas fa-crown me-1"></i>MITRA RESELLER</span>
+            </div>
+            <div id="auth-btn">
+                 <button onclick="location.href='loginreseller.html'" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">Login</button>
+            </div>
+        </div>
+        
+        <div class="card-saldo p-3 text-white d-flex justify-content-between align-items-center">
+            <div>
+                <small class="opacity-75">Sisa Saldo Kamu</small>
+                <h3 class="fw-bold m-0 mt-1" id="user-balance">Rp 0</h3>
+            </div>
+            <button onclick="openTopup()" class="btn btn-light text-primary fw-bold rounded-pill px-3 shadow-sm">
+                <i class="fas fa-plus"></i> Isi
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mt-3 px-3">
+        <!-- Quick Menu -->
+        <div class="row g-2 mb-4 text-center">
+            <div class="col-3" onclick="openTopup()">
+                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-4 mb-1"><i class="fas fa-wallet fa-lg"></i></div>
+                <small style="font-size:0.7rem">Deposit</small>
+            </div>
+            <div class="col-3" onclick="openHistory()">
+                <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-4 mb-1"><i class="fas fa-history fa-lg"></i></div>
+                <small style="font-size:0.7rem">Riwayat</small>
+            </div>
+            <div class="col-3" onclick="openCS()">
+                <div class="bg-success bg-opacity-10 text-success p-2 rounded-4 mb-1"><i class="fas fa-headset fa-lg"></i></div>
+                <small style="font-size:0.7rem">Bantuan</small>
+            </div>
+            <div class="col-3" onclick="location.reload()">
+                <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-4 mb-1"><i class="fas fa-sync fa-lg"></i></div>
+                <small style="font-size:0.7rem">Refresh</small>
+            </div>
+        </div>
+
+        <div class="mb-3">
+             <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold m-0">Produk <span class="text-primary">Terpopuler</span></h6>
+                <small style="font-size:0.7rem">🟢 Ready 🔴 Gangguan</small>
+            </div>
+            <div id="category-tabs" class="d-flex gap-2 overflow-auto pb-2 no-scrollbar" style="white-space:nowrap"></div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-list" class="row g-2">
+            <div class="text-center py-5 text-muted col-12"><div class="spinner-border spinner-border-sm"></div> Memuat produk...</div>
+        </div>
+    </main>
+
+    <!-- Navigation Bottom -->
+    <div class="nav-bottom d-flex justify-content-around align-items-center">
+        <a href="#" class="nav-link active"><i class="fas fa-home"></i>Home</a>
+        <a href="javascript:void(0)" onclick="openHistory()" class="nav-link"><i class="fas fa-receipt"></i>Riwayat</a>
+        <div class="dropdown" style="flex:1">
+            <a href="#" class="nav-link dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle"></i>Akun
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg" aria-labelledby="profileDropdown">
+                <li>
+                    <div class="px-3 py-2">
+                        <strong id="profile-name-nav" class="text-white d-block text-truncate">Tamu</strong>
+                        <small id="profile-id-nav" class="text-white-50">Silakan login</small>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider border-secondary"></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="openProfileDetail()"><i class="fas fa-id-card me-2"></i> Detail Profil</a></li>
+                <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="auth.signOut()"><i class="fas fa-sign-out-alt me-2"></i> Keluar</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal Detail Profil -->
+    <div class="modal fade" id="modalProfil" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold">Detail Profil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <div class="bg-primary bg-opacity-10 d-inline-block p-4 rounded-circle mb-3">
+                            <i class="fas fa-user-tie fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" id="det-nama">-</h4>
+                        <span class="badge-mitra"><i class="fas fa-crown me-1"></i>MITRA RESELLER</span>
+                    </div>
+                    <div class="text-start bg-dark bg-opacity-50 rounded-4 p-3 mb-3 border border-secondary">
+                        <div class="mb-3">
+                            <small class="text-white-50 d-block small">ID Pengguna (UID)</small>
+                            <span class="fw-bold text-white small" id="det-uid">-</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50 d-block small">Email Akun</small>
+                            <span class="fw-bold text-white" id="det-email">-</span>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-white-50 d-block small">Saldo Saat Ini</small>
+                            <span class="fw-bold text-primary fs-5" id="det-saldo">Rp 0</span>
+                        </div>
+                    </div>
+                    <button onclick="auth.signOut()" class="btn btn-outline-danger w-100 rounded-3 py-2">
+                        <i class="fas fa-sign-out-alt me-2"></i> Keluar dari Akun
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Order (Offcanvas) -->
+    <div class="offcanvas offcanvas-bottom rounded-top-4" id="modalOrder" style="z-index: 1060;">
+        <div class="offcanvas-header bg-dark border-bottom border-secondary">
+            <h5 class="fw-bold m-0 text-white">Konfirmasi Pembelian</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body bg-dark">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-white">Produk</span>
+                <span class="fw-bold text-white" id="order-name">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-4">
+                <span class="text-white">Harga Mitra</span>
+                <span class="fw-bold text-primary fs-5" id="order-price">Rp 0</span>
+            </div>
+            <div class="mb-3">
+               <label class="text-white-50 small mb-2">Target (ID / No. HP / Akun)</label>
+                <input type="text" id="order-target" class="form-control form-control-lg" placeholder="Masukkan ID Tujuan...">
+            </div>
+            <button onclick="processOrder()" class="btn btn-primary w-100 py-3 fw-bold rounded-3">BAYAR SEKARANG</button>
+        </div>
+    </div>
+
+
+    <!-- Modal Topup -->
+    <div class="modal fade" id="modalTopup" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold">Isi Saldo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3 bg-primary bg-opacity-10 rounded-3 mb-3 border border-primary text-center">
+                        <small class="text-white-50 d-block">Transfer Ke:</small>
+                        <h5 class="fw-bold text-white my-1" id="bank-detail" data-nomor="">Memuat...</h5>
+                        <button onclick="copyBank()" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">
+                            <i class="fas fa-copy me-1"></i> Klik untuk Salin Nomor
+                        </button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small text mb-1">Nominal (Min. Rp 10.000)</label>
+                        <input type="number" id="topup-nominal" class="form-control" placeholder="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text mb-1">Unggah Bukti Transfer</label>
+                        <input type="file" id="topup-proof" class="form-control">
+                    </div>
+                    <button onclick="submitTopup()" class="btn btn-primary w-100 fw-bold py-2">KIRIM BUKTI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal History -->
+    <div class="modal fade" id="modalHistory" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable">
+            <div class="modal-content h-100">
+                <div class="modal-header">
+                    <h5 class="fw-bold">Riwayat Transaksi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="history-list">
+                        <div class="text-center py-5 text-muted small">Memuat data...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+            authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+            projectId: "asdarstoredigitalll-d89c4",
+            storageBucket: "asdarstoredigitalll-d89c4.appspot.com"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const ImgBB_API_KEY = "4bb65566f2b6bad0aef16ac5ae6b2fbc";
+
+        let currentUser = null;
+        let userData = null;
+        let selectedItem = null;
+        const bsOrder = new bootstrap.Offcanvas('#modalOrder');
+
+        // Jalankan muat data bank segera
+        loadBank();
+
+        // --- AUTH & PROFILE ---
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) {
+                db.collection('users').doc(user.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        userData = doc.data();
+                        const saldo = userData.saldo || 0;
+                        document.getElementById('user-balance').innerText = `Rp ${saldo.toLocaleString('id-ID')}`;
+                        document.getElementById('badge-status').style.display = 'inline-block';
+                        document.getElementById('profile-name-nav').innerText = userData.nama || 'Mitra Asdar';
+                        document.getElementById('profile-id-nav').innerText = `ID: ${user.uid.substring(0,8)}...`;
+                        document.getElementById('auth-btn').innerHTML = `<button onclick="auth.signOut()" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="fas fa-power-off"></i></button>`;
+                    }
+                });
+            } else {
+                document.getElementById('user-balance').innerText = 'Rp 0';
+                document.getElementById('badge-status').style.display = 'none';
+                document.getElementById('profile-name-nav').innerText = 'Tamu';
+                document.getElementById('profile-id-nav').innerText = 'Silakan login';
+                document.getElementById('auth-btn').innerHTML = `<button onclick="location.href='loginreseller.html'" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">Login</button>`;
+            }
+            loadProducts();
+        });
+
+        async function loadBank() {
+            try {
+                const snap = await db.collection('infoPembayaran').limit(1).get();
+                const bankEl = document.getElementById('bank-detail');
+                if(!snap.empty) {
+                    const d = snap.docs[0].data();
+                    bankEl.innerText = `${d.metode} : ${d.nomor}`;
+                    bankEl.setAttribute('data-nomor', d.nomor);
+                } else {
+                    bankEl.innerText = "Belum Diatur";
+                }
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('bank-detail').innerText = "Gagal Memuat";
+            }
+        }
+
+        function copyBank() {
+            const nomor = document.getElementById('bank-detail').getAttribute('data-nomor');
+            if (!nomor || nomor === "") return Swal.fire('Gagal', 'Nomor belum tersedia', 'error');
+
+            // Metode Salin Stabil HP (Fallback)
+            const textArea = document.createElement("textarea");
+            textArea.value = nomor;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+
+            let sukses = false;
+            try {
+                sukses = document.execCommand('copy');
+            } catch (err) {
+                sukses = false;
+            }
+            document.body.removeChild(textArea);
+
+            if (sukses) {
+                Swal.fire({toast: true, position: 'top', icon: 'success', title: 'Berhasil Salin: ' + nomor, showConfirmButton: false, timer: 1500});
+            } else {
+                // Jika masih gagal, coba Clipboard API
+                navigator.clipboard.writeText(nomor);
+                Swal.fire({toast: true, position: 'top', icon: 'success', title: 'Salin: ' + nomor, showConfirmButton: false, timer: 1500});
+            }
+        }
+
+        function openProfileDetail() {
+            if (!currentUser) return Swal.fire('Belum Login', 'Silakan login terlebih dahulu.', 'warning');
+            document.getElementById('det-nama').innerText = userData.nama || 'Mitra Asdar';
+            document.getElementById('det-uid').innerText = currentUser.uid;
+            document.getElementById('det-email').innerText = currentUser.email || '-';
+            document.getElementById('det-saldo').innerText = `Rp ${(userData.saldo || 0).toLocaleString('id-ID')}`;
+            new bootstrap.Modal('#modalProfil').show();
+        }
+
+        async function loadProducts() {
+            try {
+                const snap = await db.collection('produk').get();
+                const cats = [...new Set(snap.docs.map(d => d.data().kategori))].sort();
+                document.getElementById('category-tabs').innerHTML = cats.map((c, i) => 
+                    `<button class="btn btn-sm ${i===0?'btn-light':'btn-outline-light'} rounded-pill px-3" onclick="filterProduk('${c}', this)">${c}</button>`
+                ).join('');
+                if(cats.length) filterProduk(cats[0], document.querySelector('#category-tabs button'));
+            } catch(e) { console.error(e); }
+        }
+
+        async function filterProduk(cat, btn) {
+            if(btn) {
+                document.querySelectorAll('#category-tabs button').forEach(b => b.classList.replace('btn-light', 'btn-outline-light'));
+                btn.classList.replace('btn-outline-light', 'btn-light');
+            }
+            const snap = await db.collection('produk').where('kategori', '==', cat).get();
+            let html = '';
+            snap.forEach(doc => {
+                const p = doc.data();
+                const price = p.harga_reseller || 0;
+                const isReady = p.stok > 0;
+                html += `
+                <div class="col-6">
+                    <div class="product-card p-3 h-100" onclick="selectItem('${doc.id}', '${p.nama_produk}', ${price}, ${isReady})">
+                        <span class="badge ${isReady?'bg-success':'bg-danger'} mb-2" style="font-size:0.6rem">${isReady?'READY':'GANGGUAN'}</span>
+                        <div class="fw-bold text-white small text-truncate">${p.nama_produk}</div>
+                        <div class="text-primary fw-bold mt-1">Rp ${price.toLocaleString('id-ID')}</div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('product-list').innerHTML = html || '<div class="text-center w-100 text-muted mt-5">Produk kosong</div>';
+        }
+
+        function selectItem(id, name, price, ready) {
+            if(!ready) return Swal.fire('Gangguan', 'Produk ini sedang tidak tersedia.', 'error');
+            if(!currentUser) return Swal.fire('Login Dulu', 'Silakan login untuk bertransaksi.', 'warning');
+            selectedItem = { id, name, price };
+            document.getElementById('order-name').innerText = name;
+            document.getElementById('order-price').innerText = `Rp ${price.toLocaleString('id-ID')}`;
+            document.getElementById('order-target').value = '';
+            bsOrder.show();
+        }
+
+        async function processOrder() {
+            const target = document.getElementById('order-target').value;
+            if(!target || target.length < 3) return Swal.fire('Error', 'Target tidak valid.', 'warning');
+            bsOrder.hide();
+            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+                const userRef = db.collection('users').doc(currentUser.uid);
+                const prodRef = db.collection('produk').doc(selectedItem.id);
+                await db.runTransaction(async (t) => {
+                    const uDoc = await t.get(userRef);
+                    const pDoc = await t.get(prodRef);
+                    if(uDoc.data().saldo < selectedItem.price) throw "Saldo tidak cukup.";
+                    if(pDoc.data().stok <= 0) throw "Stok habis.";
+                    t.update(userRef, { saldo: uDoc.data().saldo - selectedItem.price });
+                    t.update(prodRef, { stok: pDoc.data().stok - 1 });
+                    t.set(db.collection('transaksi').doc(), {
+                        uid: currentUser.uid,
+                        nama_user: userData.nama || 'Mitra',
+                        produk: selectedItem.name,
+                        harga: selectedItem.price,
+                        target: target,
+                        status: 'Pending',
+                        waktu: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+                Swal.fire('Sukses!', 'Pesanan sedang diproses.', 'success');
+            } catch (e) { Swal.fire('Gagal', e.toString(), 'error'); }
+        }
+
+        function openHistory() {
+            if(!currentUser) return Swal.fire('Info', 'Login untuk melihat riwayat.', 'info');
+            new bootstrap.Modal('#modalHistory').show();
+            db.collection('transaksi').where('uid', '==', currentUser.uid).onSnapshot(snap => {
+                let html = '';
+                if(snap.empty) {
+                    html = '<div class="text-center p-5 text-muted">Belum ada transaksi</div>';
+                } else {
+                    const sorted = snap.docs.sort((a,b) => (b.data().waktu?.seconds || 0) - (a.data().waktu?.seconds || 0));
+                    sorted.forEach(doc => {
+                        const d = doc.data();
+                        const badge = d.status === 'Sukses' ? 'bg-success' : (d.status === 'Gagal' ? 'bg-danger' : 'bg-warning text-dark');
+                        html += `
+                        <div class="p-3 border-bottom border-secondary">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="fw-bold text-white small">${d.produk}</span>
+                                <span class="badge ${badge}" style="font-size:0.6rem">${d.status}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>${d.target}</span>
+                                <span>${d.waktu ? new Date(d.waktu.seconds * 1000).toLocaleDateString() : 'Baru'}</span>
+                            </div>
+                        </div>`;
+                    });
+                }
+                document.getElementById('history-list').innerHTML = html;
+            });
+        }
+
+        async function submitTopup() {
+            const nominal = parseInt(document.getElementById('topup-nominal').value);
+            const file = document.getElementById('topup-proof').files[0];
+            if(!nominal || nominal < 10000) return Swal.fire('Error', 'Min. Rp 10.000', 'warning');
+            if(!file) return Swal.fire('Error', 'Pilih foto bukti.', 'warning');
+            Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+                const formData = new FormData();
+                formData.append("image", file);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${ImgBB_API_KEY}`, { method: "POST", body: formData });
+                const json = await res.json();
+                if(!json.success) throw new Error("Upload gagal.");
+                await db.collection('topup_requests').add({
+                    uid: currentUser.uid,
+                    nama: userData.nama || 'User',
+                    nominal: nominal,
+                    bukti_url: json.data.url,
+                    status: 'pending',
+                    waktu: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                bootstrap.Modal.getInstance(document.getElementById('modalTopup')).hide();
+                Swal.fire('Terkirim', 'Tunggu konfirmasi admin.', 'success');
+            } catch(e) { Swal.fire('Gagal', e.message, 'error'); }
+        }
+
+        window.openTopup = () => !currentUser ? Swal.fire('Login Dulu') : new bootstrap.Modal('#modalTopup').show();
+        window.openCS = () => window.open('https://wa.me/6281234567890', '_blank');
+    </script>
+</body>
+</html>
