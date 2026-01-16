@@ -38,7 +38,7 @@
         
         .badge-mitra { background: linear-gradient(135deg, #FFD700, #FFA500); color: black; font-weight: 800; font-size: 0.7rem; padding: 5px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2); }
 
-        /* Fitur Copy Styling */
+        /* --- TAMBAHAN STYLE UNTUK FITUR COPY --- */
         .target-box {
             cursor: pointer;
             background: rgba(255, 255, 255, 0.08);
@@ -55,8 +55,12 @@
         .target-box:active {
             transform: scale(0.95);
             background: rgba(59, 130, 246, 0.2);
+            border-color: var(--primary);
         }
-        #bank-detail { cursor: pointer; letter-spacing: 1px; }
+        .target-box i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +90,7 @@
 
     <!-- Main Content -->
     <main class="container mt-3 px-3">
+        <!-- Quick Menu -->
         <div class="row g-2 mb-4 text-center">
             <div class="col-3" onclick="openTopup()">
                 <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-4 mb-1"><i class="fas fa-wallet fa-lg"></i></div>
@@ -113,6 +118,7 @@
             <div id="category-tabs" class="d-flex gap-2 overflow-auto pb-2 no-scrollbar" style="white-space:nowrap"></div>
         </div>
 
+        <!-- Product Grid -->
         <div id="product-list" class="row g-2">
             <div class="text-center py-5 text-muted col-12"><div class="spinner-border spinner-border-sm"></div> Memuat produk...</div>
         </div>
@@ -127,7 +133,12 @@
                 <i class="fas fa-user-circle"></i>Akun
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg" aria-labelledby="profileDropdown">
-                <li><div class="px-3 py-2"><strong id="profile-name-nav" class="text-white d-block text-truncate">Tamu</strong><small id="profile-id-nav" class="text-white-50">Silakan login</small></div></li>
+                <li>
+                    <div class="px-3 py-2">
+                        <strong id="profile-name-nav" class="text-white d-block text-truncate">Tamu</strong>
+                        <small id="profile-id-nav" class="text-white-50">Silakan login</small>
+                    </div>
+                </li>
                 <li><hr class="dropdown-divider border-secondary"></li>
                 <li><a class="dropdown-item" href="javascript:void(0)" onclick="openProfileDetail()"><i class="fas fa-id-card me-2"></i> Detail Profil</a></li>
                 <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="auth.signOut()"><i class="fas fa-sign-out-alt me-2"></i> Keluar</a></li>
@@ -145,14 +156,25 @@
                 </div>
                 <div class="modal-body text-center">
                     <div class="mb-3">
-                        <div class="bg-primary bg-opacity-10 d-inline-block p-4 rounded-circle mb-3"><i class="fas fa-user-tie fa-3x text-primary"></i></div>
+                        <div class="bg-primary bg-opacity-10 d-inline-block p-4 rounded-circle mb-3">
+                            <i class="fas fa-user-tie fa-3x text-primary"></i>
+                        </div>
                         <h4 class="fw-bold mb-0" id="det-nama">-</h4>
                         <span class="badge-mitra"><i class="fas fa-crown me-1"></i>MITRA RESELLER</span>
                     </div>
                     <div class="text-start bg-dark bg-opacity-50 rounded-4 p-3 mb-3 border border-secondary">
-                        <div class="mb-3"><small class="text-white-50 d-block small">ID Pengguna (UID)</small><span class="fw-bold text-white small" id="det-uid">-</span></div>
-                        <div class="mb-3"><small class="text-white-50 d-block small">Email Akun</small><span class="fw-bold text-white" id="det-email">-</span></div>
-                        <div class="mb-0"><small class="text-white-50 d-block small">Saldo Saat Ini</small><span class="fw-bold text-primary fs-5" id="det-saldo">Rp 0</span></div>
+                        <div class="mb-3">
+                            <small class="text-white-50 d-block small">ID Pengguna (UID)</small>
+                            <span class="fw-bold text-white small" id="det-uid">-</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50 d-block small">Email Akun</small>
+                            <span class="fw-bold text-white" id="det-email">-</span>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-white-50 d-block small">Saldo Saat Ini</small>
+                            <span class="fw-bold text-primary fs-5" id="det-saldo">Rp 0</span>
+                        </div>
                     </div>
                     <button onclick="auth.signOut()" class="btn btn-outline-danger w-100 rounded-3 py-2">
                         <i class="fas fa-sign-out-alt me-2"></i> Keluar dari Akun
@@ -162,15 +184,21 @@
         </div>
     </div>
 
-    <!-- Modal Order -->
+    <!-- Modal Order (Offcanvas) -->
     <div class="offcanvas offcanvas-bottom rounded-top-4" id="modalOrder" style="z-index: 1060;">
         <div class="offcanvas-header bg-dark border-bottom border-secondary">
             <h5 class="fw-bold m-0 text-white">Konfirmasi Pembelian</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body bg-dark">
-            <div class="d-flex justify-content-between mb-3"><span class="text-white">Produk</span><span class="fw-bold text-white" id="order-name">-</span></div>
-            <div class="d-flex justify-content-between mb-4"><span class="text-white">Harga Mitra</span><span class="fw-bold text-primary fs-5" id="order-price">Rp 0</span></div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-white">Produk</span>
+                <span class="fw-bold text-white" id="order-name">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-4">
+                <span class="text-white">Harga Mitra</span>
+                <span class="fw-bold text-primary fs-5" id="order-price">Rp 0</span>
+            </div>
             <div class="mb-3">
                <label class="text-white-50 small mb-2">Target (ID / No. HP / Akun)</label>
                 <input type="text" id="order-target" class="form-control form-control-lg" placeholder="Masukkan ID Tujuan...">
@@ -178,6 +206,7 @@
             <button onclick="processOrder()" class="btn btn-primary w-100 py-3 fw-bold rounded-3">BAYAR SEKARANG</button>
         </div>
     </div>
+
 
     <!-- Modal Topup -->
     <div class="modal fade" id="modalTopup" tabindex="-1">
@@ -190,13 +219,19 @@
                 <div class="modal-body">
                     <div class="p-3 bg-primary bg-opacity-10 rounded-3 mb-3 border border-primary text-center">
                         <small class="text-white-50 d-block">Transfer Ke:</small>
-                        <h5 class="fw-bold text-white my-1" id="bank-detail" data-nomor="" onclick="copyBank()">Memuat...</h5>
+                        <h5 class="fw-bold text-white my-1" id="bank-detail" data-nomor="">Memuat...</h5>
                         <button onclick="copyBank()" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">
                             <i class="fas fa-copy me-1"></i> Klik untuk Salin Nomor
                         </button>
                     </div>
-                    <div class="mb-2"><label class="small text mb-1">Nominal (Min. Rp 10.000)</label><input type="number" id="topup-nominal" class="form-control" placeholder="0"></div>
-                    <div class="mb-3"><label class="small text mb-1">Unggah Bukti Transfer</label><input type="file" id="topup-proof" class="form-control"></div>
+                    <div class="mb-2">
+                        <label class="small text mb-1">Nominal (Min. Rp 10.000)</label>
+                        <input type="number" id="topup-nominal" class="form-control" placeholder="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text mb-1">Unggah Bukti Transfer</label>
+                        <input type="file" id="topup-proof" class="form-control">
+                    </div>
                     <button onclick="submitTopup()" class="btn btn-primary w-100 fw-bold py-2">KIRIM BUKTI</button>
                 </div>
             </div>
@@ -207,8 +242,15 @@
     <div class="modal fade" id="modalHistory" tabindex="-1">
         <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable">
             <div class="modal-content h-100">
-                <div class="modal-header"><h5 class="fw-bold">Riwayat Transaksi</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body p-0"><div id="history-list"><div class="text-center py-5 text-muted small">Memuat data...</div></div></div>
+                <div class="modal-header">
+                    <h5 class="fw-bold">Riwayat Transaksi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="history-list">
+                        <div class="text-center py-5 text-muted small">Memuat data...</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -219,102 +261,116 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        // --- CONFIG ---
+        // --- KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
             authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
             projectId: "asdarstoredigitalll-d89c4",
             storageBucket: "asdarstoredigitalll-d89c4.appspot.com"
         };
+        
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const ImgBB_API_KEY = "4bb65566f2b6bad0aef16ac5ae6b2fbc";
 
-        let currentUser = null, userData = null, selectedItem = null;
+        let currentUser = null;
+        let userData = null;
+        let selectedItem = null;
         const bsOrder = new bootstrap.Offcanvas('#modalOrder');
 
-        // --- UNIVERSAL COPY ENGINE (WORKS IN ALL BROWSERS) ---
+        // --- FUNGSI COPY TEXT (DARI PERMINTAAN ANDA) ---
         function copyText(txt) {
-            if (!txt || txt === "Memuat...") return;
-
-            function fallbackCopy(text) {
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                textArea.style.position = "fixed"; 
-                textArea.style.left = "-9999px";
-                textArea.style.top = "0";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast(text);
-                } catch (err) {
-                    console.error('Fallback copy failed', err);
-                }
-                document.body.removeChild(textArea);
-            }
-
-            if (!navigator.clipboard) {
-                fallbackCopy(txt);
-            } else {
-                navigator.clipboard.writeText(txt).then(() => showToast(txt)).catch(() => fallbackCopy(txt));
-            }
-        }
-
-        function showToast(txt) {
-            Swal.fire({
-                toast: true, position: 'top-end', icon: 'success',
-                title: 'Disalin: ' + txt, showConfirmButton: false,
-                timer: 1500, background: '#1e293b', color: '#fff'
+            navigator.clipboard.writeText(txt).then(() => {
+                Swal.fire({
+                    toast: true, 
+                    icon: 'success', 
+                    title: 'Disalin: ' + txt, 
+                    position: 'top-end', 
+                    showConfirmButton: false, 
+                    timer: 1500,
+                    background: '#1e293b',
+                    color: '#fff'
+                });
+            }).catch(err => {
+                Swal.fire('Gagal', 'Tidak bisa menyalin teks', 'error');
             });
         }
 
+        // FUNGSI UNTUK MENGAMBIL NOMOR BANK DAN MENYALINNYA
         function copyBank() {
-            const num = document.getElementById('bank-detail').getAttribute('data-nomor');
-            if(num) copyText(num);
+            const bankEl = document.getElementById('bank-detail');
+            const nomor = bankEl.getAttribute('data-nomor');
+            if (nomor && nomor !== "") {
+                copyText(nomor);
+            } else {
+                Swal.fire('Gagal', 'Nomor rekening tidak ditemukan', 'error');
+            }
         }
 
-        // --- LOGIC ---
+        // Jalankan muat data bank segera
+        loadBank();
+
+        // --- AUTH & PROFILE ---
         auth.onAuthStateChanged(user => {
             currentUser = user;
             if (user) {
                 db.collection('users').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
                         userData = doc.data();
-                        document.getElementById('user-balance').innerText = `Rp ${(userData.saldo || 0).toLocaleString('id-ID')}`;
+                        const saldo = userData.saldo || 0;
+                        document.getElementById('user-balance').innerText = `Rp ${saldo.toLocaleString('id-ID')}`;
                         document.getElementById('badge-status').style.display = 'inline-block';
-                        document.getElementById('profile-name-nav').innerText = userData.nama || 'Mitra';
-                        document.getElementById('profile-id-nav').innerText = `ID: ${user.uid.substring(0,8)}`;
+                        document.getElementById('profile-name-nav').innerText = userData.nama || 'Mitra Asdar';
+                        document.getElementById('profile-id-nav').innerText = `ID: ${user.uid.substring(0,8)}...`;
                         document.getElementById('auth-btn').innerHTML = `<button onclick="auth.signOut()" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="fas fa-power-off"></i></button>`;
                     }
                 });
             } else {
                 document.getElementById('user-balance').innerText = 'Rp 0';
+                document.getElementById('badge-status').style.display = 'none';
+                document.getElementById('profile-name-nav').innerText = 'Tamu';
+                document.getElementById('profile-id-nav').innerText = 'Silakan login';
                 document.getElementById('auth-btn').innerHTML = `<button onclick="location.href='loginreseller.html'" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">Login</button>`;
             }
             loadProducts();
-            loadBank();
         });
 
         async function loadBank() {
-            const snap = await db.collection('infoPembayaran').limit(1).get();
-            if(!snap.empty) {
-                const d = snap.docs[0].data();
-                const el = document.getElementById('bank-detail');
-                el.innerText = `${d.metode} : ${d.nomor}`;
-                el.setAttribute('data-nomor', d.nomor);
+            try {
+                const snap = await db.collection('infoPembayaran').limit(1).get();
+                const bankEl = document.getElementById('bank-detail');
+                if(!snap.empty) {
+                    const d = snap.docs[0].data();
+                    bankEl.innerText = `${d.metode} : ${d.nomor}`;
+                    bankEl.setAttribute('data-nomor', d.nomor);
+                } else {
+                    bankEl.innerText = "Belum Diatur";
+                }
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('bank-detail').innerText = "Gagal Memuat";
             }
         }
 
+        function openProfileDetail() {
+            if (!currentUser) return Swal.fire('Belum Login', 'Silakan login terlebih dahulu.', 'warning');
+            document.getElementById('det-nama').innerText = userData.nama || 'Mitra Asdar';
+            document.getElementById('det-uid').innerText = currentUser.uid;
+            document.getElementById('det-email').innerText = currentUser.email || '-';
+            document.getElementById('det-saldo').innerText = `Rp ${(userData.saldo || 0).toLocaleString('id-ID')}`;
+            new bootstrap.Modal('#modalProfil').show();
+        }
+
         async function loadProducts() {
-            const snap = await db.collection('produk').get();
-            const cats = [...new Set(snap.docs.map(d => d.data().kategori))].sort();
-            document.getElementById('category-tabs').innerHTML = cats.map((c, i) => 
-                `<button class="btn btn-sm ${i===0?'btn-light':'btn-outline-light'} rounded-pill px-3" onclick="filterProduk('${c}', this)">${c}</button>`
-            ).join('');
-            if(cats.length) filterProduk(cats[0], document.querySelector('#category-tabs button'));
+            try {
+                const snap = await db.collection('produk').get();
+                const cats = [...new Set(snap.docs.map(d => d.data().kategori))].sort();
+                document.getElementById('category-tabs').innerHTML = cats.map((c, i) => 
+                    `<button class="btn btn-sm ${i===0?'btn-light':'btn-outline-light'} rounded-pill px-3" onclick="filterProduk('${c}', this)">${c}</button>`
+                ).join('');
+                if(cats.length) filterProduk(cats[0], document.querySelector('#category-tabs button'));
+            } catch(e) { console.error(e); }
         }
 
         async function filterProduk(cat, btn) {
@@ -366,8 +422,12 @@
                     t.update(userRef, { saldo: uDoc.data().saldo - selectedItem.price });
                     t.update(prodRef, { stok: pDoc.data().stok - 1 });
                     t.set(db.collection('transaksi').doc(), {
-                        uid: currentUser.uid, nama_user: userData.nama, produk: selectedItem.name,
-                        harga: selectedItem.price, target: target, status: 'Pending',
+                        uid: currentUser.uid,
+                        nama_user: userData.nama || 'Mitra',
+                        produk: selectedItem.name,
+                        harga: selectedItem.price,
+                        target: target,
+                        status: 'Pending',
                         waktu: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 });
@@ -375,13 +435,15 @@
             } catch (e) { Swal.fire('Gagal', e.toString(), 'error'); }
         }
 
+        // --- UPDATED HISTORY FUNCTION (WITH COPY TARGET) ---
         function openHistory() {
             if(!currentUser) return Swal.fire('Info', 'Login untuk melihat riwayat.', 'info');
             new bootstrap.Modal('#modalHistory').show();
             db.collection('transaksi').where('uid', '==', currentUser.uid).onSnapshot(snap => {
                 let html = '';
-                if(snap.empty) { html = '<div class="text-center p-5 text-muted">Belum ada transaksi</div>'; } 
-                else {
+                if(snap.empty) {
+                    html = '<div class="text-center p-5 text-muted">Belum ada transaksi</div>';
+                } else {
                     const sorted = snap.docs.sort((a,b) => (b.data().waktu?.seconds || 0) - (a.data().waktu?.seconds || 0));
                     sorted.forEach(doc => {
                         const d = doc.data();
@@ -393,8 +455,10 @@
                                 <span class="badge ${badge}" style="font-size:0.6rem">${d.status}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center small text-muted">
-                                <div class="target-box" onclick="copyText('${d.target}')">${d.target} <i class="fas fa-copy ms-2"></i></div>
-                                <span>${d.waktu ? new Date(d.waktu.seconds * 1000).toLocaleDateString() : 'Baru'}</span>
+                                <div class="target-box" onclick="copyText('${d.target}')" title="Klik untuk menyalin">
+                                    ${d.target} <i class="fas fa-copy ms-2"></i>
+                                </div>
+                                <span class="ms-2">${d.waktu ? new Date(d.waktu.seconds * 1000).toLocaleDateString() : 'Baru'}</span>
                             </div>
                         </div>`;
                     });
@@ -414,9 +478,14 @@
                 formData.append("image", file);
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${ImgBB_API_KEY}`, { method: "POST", body: formData });
                 const json = await res.json();
+                if(!json.success) throw new Error("Upload gagal.");
                 await db.collection('topup_requests').add({
-                    uid: currentUser.uid, nama: userData.nama, nominal: nominal,
-                    bukti_url: json.data.url, status: 'pending', waktu: firebase.firestore.FieldValue.serverTimestamp()
+                    uid: currentUser.uid,
+                    nama: userData.nama || 'User',
+                    nominal: nominal,
+                    bukti_url: json.data.url,
+                    status: 'pending',
+                    waktu: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 bootstrap.Modal.getInstance(document.getElementById('modalTopup')).hide();
                 Swal.fire('Terkirim', 'Tunggu konfirmasi admin.', 'success');
@@ -425,13 +494,6 @@
 
         window.openTopup = () => !currentUser ? Swal.fire('Login Dulu') : new bootstrap.Modal('#modalTopup').show();
         window.openCS = () => window.open('https://wa.me/6281234567890', '_blank');
-        window.openProfileDetail = () => {
-            document.getElementById('det-nama').innerText = userData.nama;
-            document.getElementById('det-uid').innerText = currentUser.uid;
-            document.getElementById('det-email').innerText = currentUser.email;
-            document.getElementById('det-saldo').innerText = `Rp ${userData.saldo.toLocaleString('id-ID')}`;
-            new bootstrap.Modal('#modalProfil').show();
-        };
     </script>
 </body>
 </html>
