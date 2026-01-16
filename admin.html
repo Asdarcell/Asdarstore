@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Asdar Store (Stable)</title>
+    
+    <!-- Load Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+        
+        /* Sidebar Sederhana */
+        .sidebar-container { background: #020617; min-height: 100vh; border-right: 1px solid rgba(255,255,255,0.1); }
+        .nav-button { 
+            width: 100%; text-align: left; background: transparent; border: none; 
+            color: #94a3b8; padding: 15px; border-radius: 8px; margin-bottom: 5px; 
+            display: flex; align-items: center; justify-content: space-between;
+            transition: 0.2s;
+        }
+        .nav-button:hover, .nav-button.active { background: #3b82f6; color: white; font-weight: bold; }
+        .badge-count { background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+
+        /* Tabel & Card */
+        .card-custom { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .table { --bs-table-bg: transparent; --bs-table-color: white; margin: 0; }
+        .table th { background-color: rgba(0,0,0,0.3) !important; color: #cbd5e1; font-size: 0.85rem; text-transform: uppercase; padding: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .table td { vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px; }
+        
+        /* Utils - Target Box (Tombol Salin) */
+        .target-box { 
+            font-family: monospace; 
+            background: rgba(56, 189, 248, 0.1); 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            border: 1px dashed #38bdf8; 
+            cursor: pointer; 
+            color: #38bdf8; 
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .target-box:active { transform: scale(0.95); background: rgba(56, 189, 248, 0.3); }
+        .target-box:hover { background: rgba(56, 189, 248, 0.2); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        
+        <!-- SIDEBAR (KIRI) -->
+        <div class="col-md-3 col-lg-2 sidebar-container p-3">
+            <h4 class="fw-bold text-white mb-4 px-2">Asdar<span class="text-primary">Admin</span></h4>
+            
+            <button class="nav-button active" onclick="switchView('antrian', this)">
+                <span><i class="fas fa-list me-2"></i> Antrian</span>
+                <span id="badge-antrian" class="badge-count" style="display:none">0</span>
+            </button>
+            
+            <button class="nav-button" onclick="switchView('deposit', this)">
+                <span><i class="fas fa-wallet me-2"></i> Deposit</span>
+                <span id="badge-deposit" class="badge-count" style="display:none">0</span>
+            </button>
+
+            <button class="nav-button" onclick="switchView('riwayat', this)">
+                <span><i class="fas fa-history me-2"></i> Riwayat</span>
+            </button>
+            
+            <button class="nav-button" onclick="switchView('produk', this)">
+                <span><i class="fas fa-box me-2"></i> Produk</span>
+            </button>
+            
+            <button class="nav-button" onclick="switchView('users', this)">
+                <span><i class="fas fa-users me-2"></i> User</span>
+            </button>
+
+            <button class="nav-button" onclick="switchView('settings', this)">
+                <span><i class="fas fa-cog me-2"></i> Setting</span>
+            </button>
+
+            <div class="mt-5 border-top border-secondary pt-3">
+                <button class="nav-button text-danger" onclick="auth.signOut()">
+                    <span><i class="fas fa-sign-out-alt me-2"></i> Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT (KANAN) -->
+        <div class="col-md-9 col-lg-10 p-4" style="height: 100vh; overflow-y: auto;">
+            
+            <!-- 1. VIEW ANTRIAN -->
+            <div id="view-antrian" class="view-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Antrian Pesanan (Pending)</h3>
+                    <button onclick="initData()" class="btn btn-sm btn-outline-light"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="card-custom">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Detail</th>
+                                    <th>Target (Klik Salin)</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tb-antrian">
+                                <tr><td colspan="4" class="text-center py-4">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. VIEW DEPOSIT -->
+            <div id="view-deposit" class="view-section" style="display:none;">
+                <h3>Permintaan Deposit</h3>
+                <div class="card-custom">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>User</th><th>Nominal</th><th>Bukti</th><th>Aksi</th></tr></thead>
+                            <tbody id="tb-deposit"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. VIEW RIWAYAT -->
+            <div id="view-riwayat" class="view-section" style="display:none;">
+                <h3>Riwayat Selesai</h3>
+                <div class="card-custom">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Tanggal</th><th>User</th><th>Produk & Target</th><th>Status</th></tr></thead>
+                            <tbody id="tb-riwayat"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. VIEW PRODUK -->
+            <div id="view-produk" class="view-section" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Daftar Produk</h3>
+                    <button onclick="addProduct()" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah</button>
+                </div>
+                <div class="row g-3" id="grid-produk"></div>
+            </div>
+
+            <!-- 5. VIEW USER -->
+            <div id="view-users" class="view-section" style="display:none;">
+                <h3>Data Pengguna</h3>
+                <div class="card-custom">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Nama</th><th>Email</th><th>Saldo</th><th>Aksi</th></tr></thead>
+                            <tbody id="tb-users"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+             <!-- 6. VIEW SETTINGS -->
+             <div id="view-settings" class="view-section" style="display:none;">
+                <h3>Pengaturan</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card-custom p-3">
+                            <h5 class="text-warning mb-3">Rekening Deposit</h5>
+                            <input id="set-bank-method" class="form-control mb-2 bg-dark text-white" placeholder="Nama Bank">
+                            <input id="set-bank-number" class="form-control mb-2 bg-dark text-white" placeholder="No Rekening">
+                            <input id="set-bank-name" class="form-control mb-3 bg-dark text-white" placeholder="Atas Nama">
+                            <button onclick="saveBank()" class="btn btn-success w-100">Simpan Bank</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-custom p-3">
+                            <h5 class="text-info mb-3">Banner</h5>
+                            <input id="set-banner" class="form-control mb-3 bg-dark text-white" placeholder="URL Gambar Banner">
+                            <button onclick="saveBanner()" class="btn btn-primary w-100">Simpan Banner</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    // --- 1. SETUP FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_L6U3HKM1DnKuq_Q1zKFH4bk8GMAz210",
+        authDomain: "asdarstoredigitalll-d89c4.firebaseapp.com",
+        projectId: "asdarstoredigitalll-d89c4",
+        storageBucket: "asdarstoredigitalll-d89c4.appspot.com"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const formatRupiah = (n) => `Rp ${parseInt(n).toLocaleString('id-ID')}`;
+
+    // --- 2. AUTH CHECK ---
+    auth.onAuthStateChanged(user => {
+        if(!user) {
+            window.location.href = 'loginreseller.html';
+        } else {
+            console.log("Admin Login:", user.email);
+            initData();
+        }
+    });
+
+    // --- 3. NAVIGATION ---
+    function switchView(viewName, btn) {
+        document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+        document.getElementById('view-' + viewName).style.display = 'block';
+        
+        if(btn) {
+            document.querySelectorAll('.nav-button').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    }
+
+    // --- 4. CORE DATA LOAD ---
+    function initData() {
+        console.log("Memulai Load Data...");
+
+        // A. ANTRIAN (PENDING)
+        db.collection('transaksi').where('status', '==', 'Pending')
+            .onSnapshot(snap => {
+                const tbody = document.getElementById('tb-antrian');
+                const badge = document.getElementById('badge-antrian');
+                
+                badge.innerText = snap.size;
+                badge.style.display = snap.size > 0 ? 'inline-block' : 'none';
+
+                if(snap.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-muted">Tidak ada pesanan pending.</td></tr>';
+                } else {
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `
+                        <tr>
+                            <td>${d.waktu ? new Date(d.waktu.seconds*1000).toLocaleTimeString() : '-'}</td>
+                            <td>
+                                <div class="fw-bold text-white">${d.produk}</div>
+                                <div class="small text-muted">${d.nama_user}</div>
+                            </td>
+                            <td>
+                                <div class="target-box" onclick="copyText('${d.target}')" title="Klik untuk menyalin">
+                                    ${d.target} <i class="fas fa-copy ms-2"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <button onclick="actSuccess('${doc.id}')" class="btn btn-success btn-sm me-1"><i class="fas fa-check"></i></button>
+                                <button onclick="actRefund('${doc.id}', ${d.harga}, '${d.uid}')" class="btn btn-danger btn-sm"><i class="fas fa-undo"></i></button>
+                            </td>
+                        </tr>`;
+                    });
+                    tbody.innerHTML = html;
+                }
+            }, err => console.error("Error Antrian:", err));
+
+        // B. DEPOSIT
+        db.collection('topup_requests').where('status', '==', 'pending')
+            .onSnapshot(snap => {
+                const tbody = document.getElementById('tb-deposit');
+                const badge = document.getElementById('badge-deposit');
+                badge.innerText = snap.size;
+                badge.style.display = snap.size > 0 ? 'inline-block' : 'none';
+
+                let html = '';
+                if(snap.empty) html = '<tr><td colspan="4" class="text-center py-4 text-muted">Aman.</td></tr>';
+                
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `
+                    <tr>
+                        <td>${d.displayName || d.nama}<br><small>${d.email || '-'}</small></td>
+                        <td class="text-success fw-bold">${formatRupiah(d.nominal)}</td>
+                        <td><a href="${d.bukti_url}" target="_blank" class="btn btn-sm btn-outline-info">Cek</a></td>
+                        <td>
+                            <button onclick="actDeposit('${doc.id}', '${d.uid}', ${d.nominal})" class="btn btn-primary btn-sm">Terima</button>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+
+        // C. RIWAYAT (DENGAN FITUR COPY)
+        db.collection('transaksi').where('status', '!=', 'Pending').limit(20)
+            .onSnapshot(snap => {
+                let html = '';
+                const sorted = snap.docs.sort((a,b) => (b.data().waktu?.seconds || 0) - (a.data().waktu?.seconds || 0));
+                
+                sorted.forEach(doc => {
+                    const d = doc.data();
+                    const color = d.status === 'Sukses' ? 'text-success' : 'text-danger';
+                    html += `
+                    <tr>
+                        <td>${d.waktu ? new Date(d.waktu.seconds*1000).toLocaleDateString() : '-'}</td>
+                        <td>${d.nama_user}</td>
+                        <td>
+                            <div class="fw-bold">${d.produk}</div>
+                            <div class="target-box mt-1" onclick="copyText('${d.target}')" style="font-size:0.8rem">
+                                ${d.target} <i class="fas fa-copy ms-2"></i>
+                            </div>
+                        </td>
+                        <td class="fw-bold ${color}">${d.status}</td>
+                    </tr>`;
+                });
+                document.getElementById('tb-riwayat').innerHTML = html;
+            });
+
+        // D. PRODUK
+        db.collection('produk').onSnapshot(snap => {
+            let html = '';
+            snap.forEach(doc => {
+                const p = doc.data();
+                html += `
+                <div class="col-md-4 col-sm-6">
+                    <div class="card-custom p-3 h-100 position-relative">
+                        <h6 class="fw-bold">${p.nama_produk}</h6>
+                        <div class="small text-muted mb-2">${p.kategori}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="text-primary fw-bold">${formatRupiah(p.harga_reseller)}</span>
+                            <span class="badge ${p.stok>0?'bg-success':'bg-danger'}">Stok: ${p.stok}</span>
+                        </div>
+                        <button onclick="actDelProd('${doc.id}')" class="btn btn-sm text-danger position-absolute top-0 end-0"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('grid-produk').innerHTML = html;
+        });
+
+        // E. USERS
+        db.collection('users').limit(20).onSnapshot(snap => {
+            let html = '';
+            snap.forEach(doc => {
+                const u = doc.data();
+                html += `<tr><td>${u.displayName || u.nama}<br><small>${u.email}</small></td><td>${formatRupiah(u.saldo || 0)}</td><td><button onclick="actEditSaldo('${doc.id}', ${u.saldo || 0})" class="btn btn-sm btn-outline-light">Edit</button></td></tr>`;
+            });
+            document.getElementById('tb-users').innerHTML = html;
+        });
+
+        // F. SETTINGS
+        db.collection('infoPembayaran').limit(1).get().then(s => {
+            if(!s.empty) {
+                const d = s.docs[0].data();
+                document.getElementById('set-bank-method').value = d.metode;
+                document.getElementById('set-bank-number').value = d.nomor;
+                document.getElementById('set-bank-name').value = d.atas_nama;
+            }
+        });
+    }
+
+    // --- ACTIONS ---
+    
+    // FUNGSI COPY YANG LEBIH AMAN
+    function copyText(txt) {
+        // Coba pakai API Clipboard modern
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(txt).then(() => {
+                Swal.fire({
+                    toast:true, 
+                    icon:'success', 
+                    title:'Disalin: ' + txt, 
+                    position:'top-end', 
+                    showConfirmButton:false, 
+                    timer:1500,
+                    background: '#020617',
+                    color: '#fff'
+                });
+            }).catch(err => {
+                console.error(err);
+                manualCopy(txt); // Fallback jika gagal
+            });
+        } else {
+            manualCopy(txt); // Fallback untuk browser lama/HTTP
+        }
+    }
+
+    function manualCopy(txt) {
+        const textArea = document.createElement("textarea");
+        textArea.value = txt;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            Swal.fire({toast:true, icon:'success', title:'Disalin', position:'top-end', showConfirmButton:false, timer:1000});
+        } catch (err) {
+            Swal.fire('Gagal', 'Tidak bisa menyalin text', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    async function actSuccess(id) {
+        await db.collection('transaksi').doc(id).update({ status: 'Sukses' });
+        Swal.fire({toast:true, icon:'success', title:'Pesanan Selesai'});
+    }
+
+    async function actRefund(id, harga, uid) {
+        if(!confirm('Refund saldo user?')) return;
+        try {
+            await db.runTransaction(async (t) => {
+                const tRef = db.collection('transaksi').doc(id);
+                const uRef = db.collection('users').doc(uid);
+                const uDoc = await t.get(uRef);
+                t.update(tRef, { status: 'Gagal' });
+                t.update(uRef, { saldo: (uDoc.data().saldo || 0) + harga });
+            });
+            Swal.fire('Berhasil Refund', '', 'success');
+        } catch(e) { console.error(e); alert('Gagal Refund'); }
+    }
+
+    async function actDeposit(reqId, uid, nominal) {
+        if(!confirm('Terima Deposit?')) return;
+        try {
+            await db.runTransaction(async (t) => {
+                const reqRef = db.collection('topup_requests').doc(reqId);
+                const uRef = db.collection('users').doc(uid);
+                const uDoc = await t.get(uRef);
+                t.update(reqRef, { status: 'success' });
+                t.update(uRef, { saldo: (uDoc.data().saldo || 0) + nominal });
+            });
+            Swal.fire('Deposit Diterima', '', 'success');
+        } catch(e) { console.error(e); alert('Error Deposit'); }
+    }
+
+    async function addProduct() {
+        const { value: f } = await Swal.fire({
+            title: 'Tambah Produk',
+            html: `<input id="swal-n" class="swal2-input" placeholder="Nama"><input id="swal-c" class="swal2-input" placeholder="Kategori"><input id="swal-p" type="number" class="swal2-input" placeholder="Harga"><input id="swal-s" type="number" class="swal2-input" placeholder="Stok">`,
+            focusConfirm: false,
+            preConfirm: () => ({n: document.getElementById('swal-n').value, c: document.getElementById('swal-c').value, p: document.getElementById('swal-p').value, s: document.getElementById('swal-s').value})
+        });
+        if(f) {
+            await db.collection('produk').add({nama_produk: f.n, kategori: f.c, harga_reseller: parseInt(f.p), harga_umum: parseInt(f.p)+2000, stok: parseInt(f.s)});
+            Swal.fire('Sukses', '', 'success');
+        }
+    }
+    
+    function actDelProd(id) { if(confirm('Hapus?')) db.collection('produk').doc(id).delete(); }
+    
+    async function actEditSaldo(uid, old) {
+        const { value: n } = await Swal.fire({title:'Saldo Baru', input:'number', inputValue:old});
+        if(n) db.collection('users').doc(uid).update({saldo: parseInt(n)});
+    }
+
+    async function saveBank() {
+        const data = { metode: document.getElementById('set-bank-method').value, nomor: document.getElementById('set-bank-number').value, atas_nama: document.getElementById('set-bank-name').value };
+        const s = await db.collection('infoPembayaran').limit(1).get();
+        if(s.empty) await db.collection('infoPembayaran').add(data); else await db.collection('infoPembayaran').doc(s.docs[0].id).update(data);
+        alert('Disimpan');
+    }
+    async function saveBanner() {
+        const url = document.getElementById('set-banner').value;
+        const s = await db.collection('banners').limit(1).get();
+        if(s.empty) await db.collection('banners').add({gambar: url}); else await db.collection('banners').doc(s.docs[0].id).update({gambar: url});
+        alert('Disimpan');
+    }
+</script>
+</body>
+</html>
